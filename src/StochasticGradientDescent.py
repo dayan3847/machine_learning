@@ -140,9 +140,9 @@ class StochasticGradientDescent:
         y_init = self.h_init(x)
         plt.plot(x, y_init, color='red', label='initial')
         y_best = self.h_best(x)
-        plt.plot(x, y_best, color='green', label='final')
+        plt.plot(x, y_best, color='blue', label='best')
         y = self.h(x)
-        plt.plot(x, y, color='black', label='current')
+        plt.plot(x, y, color='green', label='current')
 
         plt.show()
 
