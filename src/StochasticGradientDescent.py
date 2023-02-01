@@ -122,8 +122,7 @@ class StochasticGradientDescent:
                 yi = self.data_point['y_list'][i]
                 for j in range(self.d + 1):
                     hi = self.h(xi)
-                    self.parameters[j] -= self.a * (hi - yi) * (xi ** j)
-                    # self.parameters[j] += self.a * (yi - hi) * xi
+                    self.parameters[j] += self.a * (yi - hi) * (xi ** j)
             ek = self.error()
             if ek < self.min_error:
                 self.min_error = ek
@@ -135,7 +134,7 @@ class StochasticGradientDescent:
         plt.xlabel('x')
         plt.ylabel('y')
         # points
-        plt.scatter(self.data_point['x_list'], self.data_point['y_list'], color='blue', label='data points')
+        plt.scatter(self.data_point['x_list'], self.data_point['y_list'], color='gray', label='data points')
 
         x = np.arange(0, 1, 0.01)
         y_init = self.h_init(x)
@@ -153,3 +152,10 @@ class StochasticGradientDescent:
         plt.ylabel('error')
         plt.title('Errors')
         plt.show()
+
+    def main(self):
+        self.init()
+        self.run()
+        self.plot_errors()
+        self.plot_data()
+        print(self.parameters)

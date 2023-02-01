@@ -15,7 +15,4 @@ class StochasticGradientDescentConstant(StochasticGradientDescent):
 
 if __name__ == '__main__':
     stochastic_gradient_descent = StochasticGradientDescentConstant()
-    stochastic_gradient_descent.init()
-    stochastic_gradient_descent.run()
-    stochastic_gradient_descent.plot_errors()
-    stochastic_gradient_descent.plot_data()
+    stochastic_gradient_descent.main()

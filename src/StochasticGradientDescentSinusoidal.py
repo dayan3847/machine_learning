@@ -6,7 +6,7 @@ from src.StochasticGradientDescent import StochasticGradientDescent
 class StochasticGradientDescentSinusoidal(StochasticGradientDescent):
     def __init__(self):
         super().__init__()
-        self.d = 5
+        self.d = 10
         self.iterations_count: int = 5000
 
     def source_function(self, x):
@@ -18,7 +18,4 @@ class StochasticGradientDescentSinusoidal(StochasticGradientDescent):
 
 if __name__ == '__main__':
     stochastic_gradient_descent = StochasticGradientDescentSinusoidal()
-    stochastic_gradient_descent.init()
-    stochastic_gradient_descent.run()
-    stochastic_gradient_descent.plot_errors()
-    stochastic_gradient_descent.plot_data()
+    stochastic_gradient_descent.main()
