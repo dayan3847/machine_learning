@@ -123,7 +123,7 @@ class StochasticGradientDescent:
                 for j in range(self.d + 1):
                     hi = self.h(xi)
                     self.parameters[j] += self.a * (yi - hi) * (xi ** j)
-            ek = self.error()
+            ek = self.error_rms()
             if ek < self.min_error:
                 self.min_error = ek
                 self.best_parameters = self.parameters.copy()
