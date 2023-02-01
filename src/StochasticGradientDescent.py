@@ -8,6 +8,7 @@ class StochasticGradientDescent:
 
     def __init__(self):
         # Artificial Count
+        self.graphics = None
         self.min_error = None
         self.m: int = 100
         # Polynomial Degree
@@ -38,7 +39,6 @@ class StochasticGradientDescent:
     def init(self):
         self.generate_data_points()
         self.generate_initial_parameters()
-        self.parameters = self.initial_parameters.copy()
 
         self.best_parameters = self.initial_parameters.copy()
         self.min_error = self.error()
@@ -55,6 +55,13 @@ class StochasticGradientDescent:
             e = self.noise()
             y = self.source_function(x) + e
             self.data_point['y_list'].append(y)
+
+        self.graphics = {
+            'x': np.arange(0, 1, 0.01),
+            'y': [],
+            'y_init': [],
+            'y_best': [],
+        }
 
     def source_function(self, x):
         return math.sin(2 * math.pi * x)
@@ -84,22 +91,28 @@ class StochasticGradientDescent:
         for i in range(self.d + 1):
             self.initial_parameters.append(self.random(self.initial_parameters_interval))
 
+        self.parameters = self.initial_parameters.copy()
+        y_list = self.get_current_y_list()
+        self.graphics['y'] = y_list
+        self.graphics['y_init'] = y_list
+        self.graphics['y_best'] = y_list
+
+    def get_current_y_list(self):
+        y_list = []
+        for x in self.graphics['x']:
+            y = self.h(x)
+            y_list.append(y)
+        return y_list
+
+    def update_graphics(self, graphic: str, show: bool = True):
+        self.graphics[graphic] = self.get_current_y_list()
+        if show:
+            self.plot_data()
+
     def h(self, x):
         result = 0
         for i in range(self.d + 1):
             result += self.parameters[i] * (x ** i)
-        return result
-
-    def h_init(self, x):
-        result = 0
-        for i in range(self.d + 1):
-            result += self.initial_parameters[i] * (x ** i)
-        return result
-
-    def h_best(self, x):
-        result = 0
-        for i in range(self.d + 1):
-            result += self.best_parameters[i] * (x ** i)
         return result
 
     def error(self):
@@ -116,6 +129,7 @@ class StochasticGradientDescent:
         return (2 * e / self.m) ** 0.5
 
     def run(self):
+        self.plot_data()
         for k in range(self.iterations_count):
             for i in range(self.m):
                 xi = self.data_point['x_list'][i]
@@ -123,10 +137,12 @@ class StochasticGradientDescent:
                 for j in range(self.d + 1):
                     hi = self.h(xi)
                     self.parameters[j] += self.a * (yi - hi) * (xi ** j)
+                    self.update_graphics('y')
             ek = self.error()
             if ek < self.min_error:
                 self.min_error = ek
                 self.best_parameters = self.parameters.copy()
+                self.update_graphics('y_best')
             self.errors.append(ek)
 
     def plot_data(self):
@@ -136,26 +152,27 @@ class StochasticGradientDescent:
         # points
         plt.scatter(self.data_point['x_list'], self.data_point['y_list'], color='gray', label='data points')
 
-        x = np.arange(0, 1, 0.01)
-        y_init = self.h_init(x)
+        x = self.graphics['x']
+        y_init = self.graphics['y_init']
+        y_best = self.graphics['y_best']
+        y = self.graphics['y']
+
         plt.plot(x, y_init, color='red', label='initial')
-        y_best = self.h_best(x)
         plt.plot(x, y_best, color='blue', label='best')
-        y = self.h(x)
         plt.plot(x, y, color='green', label='current')
 
-        plt.show()
+        plt.pause(0.001)
 
     def plot_errors(self):
         plt.plot(self.errors)
         plt.xlabel('i')
         plt.ylabel('error')
         plt.title('Errors')
-        plt.show()
+        plt.pause(0.001)
 
     def main(self):
         self.init()
         self.run()
-        self.plot_errors()
-        self.plot_data()
+        # self.plot_errors()
+        # self.plot_data()
         print(self.parameters)

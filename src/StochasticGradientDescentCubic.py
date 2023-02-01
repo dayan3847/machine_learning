@@ -7,7 +7,7 @@ class StochasticGradientDescentCubic(StochasticGradientDescent):
         self.d = 3
         # Alpha
         self.a: float = .001
-        self.iterations_count: int = 1000
+        self.iterations_count: int = 100
 
     def source_function(self, x):
         return 5 + 0 * x - 9 * x ** 2 + 10 * x ** 3
