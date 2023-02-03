@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
+from IPython.core.display_functions import clear_output
+
 plt.ion() # habilita la modalidad interactiva
 
 fig, ax = plt.subplots()
@@ -15,6 +17,7 @@ def update(frame):
 for i in range(100):
     update(i)
     plt.pause(0.05)
+    # clear_output(wait=True)
 
+    plt.show()
 plt.ioff() # desactiva la modalidad interactiva
-plt.show()

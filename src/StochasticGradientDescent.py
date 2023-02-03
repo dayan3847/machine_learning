@@ -149,6 +149,9 @@ class StochasticGradientDescent:
         plt.title('Data')
         plt.xlabel('x')
         plt.ylabel('y')
+        plt.grid()
+        plt.axvline(color='black')
+        plt.axhline(color='black')
         # points
         plt.scatter(self.data_point['x_list'], self.data_point['y_list'], color='gray', label='data points')
 
