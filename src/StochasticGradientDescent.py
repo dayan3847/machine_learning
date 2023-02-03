@@ -105,10 +105,8 @@ class StochasticGradientDescent:
             y_list.append(y)
         return y_list
 
-    def update_graphics(self, graphic: str, show: bool = True):
+    def update_graphics(self, graphic: str = 'y'):
         self.graphics[graphic] = self.get_current_y_list()
-        if show:
-            self.plot_data()
 
     def h(self, x):
         result = 0
@@ -130,7 +128,6 @@ class StochasticGradientDescent:
         return (2 * e / self.m) ** 0.5
 
     def run(self, plot: bool = False):
-        self.plot_data()
         for k in range(self.iterations_count):
             for i in range(self.m):
                 xi = self.data_point['x_list'][i]
@@ -138,7 +135,6 @@ class StochasticGradientDescent:
                 for j in range(self.d + 1):
                     hi = self.h(xi)
                     self.parameters[j] += self.a * (yi - hi) * (xi ** j)
-                    self.update_graphics('y')
             ek = self.error_rms()
             if ek < self.min_error:
                 self.min_error = ek
@@ -147,49 +143,46 @@ class StochasticGradientDescent:
             self.errors.append(ek)
             if plot:
                 clear_output(wait=True)
+                self.update_graphics()
                 self.plot_data()
 
     def plot_data(self):
-        # Errors
-        plt.clf()
-        plt.plot(self.errors, color='red', label='Errors')
-        plt.xlabel('i')
-        plt.ylabel('error')
-        plt.title('Errors')
-        plt.legend()
-        plt.show()
         # Data
+        plt.clf()
         plt.title('Data')
         plt.xlabel('x')
         plt.ylabel('y')
-        plt.grid()
         plt.axvline(color='black')
         plt.axhline(color='black')
         # points
         plt.scatter(self.data_point['x_list'], self.data_point['y_list'], color='gray', label='data points')
-
         x = self.graphics['x']
         y_init = self.graphics['y_init']
         y_best = self.graphics['y_best']
         y = self.graphics['y']
-
-        x = np.arange(0, 1, 0.01)
-        y_init = self.h_init(x)
         plt.plot(x, y_init, color='red', label='initial')
         plt.plot(x, y_best, color='blue', label='best')
         plt.plot(x, y, color='green', label='current')
-
+        plt.legend()
+        plt.grid()
         plt.show()
-
-    def plot_errors(self):
-        plt.plot(self.errors)
+        # Errors
+        plt.clf()
+        plt.title('Error')
         plt.xlabel('i')
         plt.ylabel('error')
-        plt.title('Errors')
+        plt.plot(self.errors, color='red', label='error')
+        plt.legend()
+        plt.grid()
         plt.show()
 
     def main(self, plot: bool = False):
         self.init()
         self.run(plot)
+        if plot:
+            clear_output(wait=True)
+        else:
+            self.update_graphics()
         self.plot_data()
+        print('Final Parameters:')
         print(self.parameters)
