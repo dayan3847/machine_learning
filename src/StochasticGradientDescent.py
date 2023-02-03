@@ -2,6 +2,7 @@ import math
 import random
 import matplotlib.pyplot as plt
 import numpy as np
+from IPython.display import clear_output
 
 
 class StochasticGradientDescent:
@@ -115,7 +116,7 @@ class StochasticGradientDescent:
         e = self.error()
         return (2 * e / self.m) ** 0.5
 
-    def run(self):
+    def run(self, plot: bool = False):
         for k in range(self.iterations_count):
             for i in range(self.m):
                 xi = self.data_point['x_list'][i]
@@ -128,14 +129,25 @@ class StochasticGradientDescent:
                 self.min_error = ek
                 self.best_parameters = self.parameters.copy()
             self.errors.append(ek)
+            if plot:
+                clear_output(wait=True)
+                self.plot_data()
 
     def plot_data(self):
+        # Errors
+        plt.clf()
+        plt.plot(self.errors, color='red', label='Errors')
+        plt.xlabel('i')
+        plt.ylabel('error')
+        plt.title('Errors')
+        plt.legend()
+        plt.show()
+        # Data
         plt.title('Data')
         plt.xlabel('x')
         plt.ylabel('y')
         # points
         plt.scatter(self.data_point['x_list'], self.data_point['y_list'], color='gray', label='data points')
-
         x = np.arange(0, 1, 0.01)
         y_init = self.h_init(x)
         plt.plot(x, y_init, color='red', label='initial')
@@ -143,19 +155,11 @@ class StochasticGradientDescent:
         plt.plot(x, y_best, color='blue', label='best')
         y = self.h(x)
         plt.plot(x, y, color='green', label='current')
-
+        plt.legend()
         plt.show()
 
-    def plot_errors(self):
-        plt.plot(self.errors)
-        plt.xlabel('i')
-        plt.ylabel('error')
-        plt.title('Errors')
-        plt.show()
-
-    def main(self):
+    def main(self, plot: bool = False):
         self.init()
-        self.run()
-        self.plot_errors()
+        self.run(plot)
         self.plot_data()
         print(self.parameters)
