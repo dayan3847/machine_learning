@@ -1,5 +1,7 @@
 import math
 import random
+import time
+
 import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import clear_output
@@ -8,9 +10,12 @@ from IPython.display import clear_output
 class StochasticGradientDescent:
 
     def __init__(self):
-        # Artificial Count
+        self.last_plot_time = -1
+        self.plot_interval = 1
+        self.save_best_parameters = False
         self.graphics = None
         self.min_error = None
+        # Artificial Count
         self.m: int = 100
         # Polynomial Degree
         self.d: int = 10
@@ -40,8 +45,8 @@ class StochasticGradientDescent:
     def init(self):
         self.generate_data_points()
         self.generate_initial_parameters()
-
-        self.best_parameters = self.initial_parameters.copy()
+        if self.save_best_parameters:
+            self.best_parameters = self.initial_parameters.copy()
         self.min_error = self.error()
 
     # Generate Data Points
@@ -136,7 +141,7 @@ class StochasticGradientDescent:
                     hi = self.h(xi)
                     self.parameters[j] += self.a * (yi - hi) * (xi ** j)
             ek = self.error_rms()
-            if ek < self.min_error:
+            if self.save_best_parameters and ek < self.min_error:
                 self.min_error = ek
                 self.best_parameters = self.parameters.copy()
                 self.update_graphics('y_best')
@@ -146,7 +151,12 @@ class StochasticGradientDescent:
                 self.update_graphics()
                 self.plot_data()
 
-    def plot_data(self):
+    def plot_data(self, force: bool = False):
+        current_time = int(time.time())
+        if not force and current_time - self.last_plot_time < self.plot_interval:
+            return
+        self.last_plot_time = current_time
+
         # Data
         plt.clf()
         plt.title('Data')
@@ -158,10 +168,11 @@ class StochasticGradientDescent:
         plt.scatter(self.data_point['x_list'], self.data_point['y_list'], color='gray', label='data points')
         x = self.graphics['x']
         y_init = self.graphics['y_init']
-        y_best = self.graphics['y_best']
+        plt.plot(x, y_init, color='blue', label='initial')
+        if self.save_best_parameters:
+            y_best = self.graphics['y_best']
+            plt.plot(x, y_best, color='yellow', label='best')
         y = self.graphics['y']
-        plt.plot(x, y_init, color='red', label='initial')
-        plt.plot(x, y_best, color='blue', label='best')
         plt.plot(x, y, color='green', label='current')
         plt.legend()
         plt.grid()
@@ -176,6 +187,15 @@ class StochasticGradientDescent:
         plt.grid()
         plt.show()
 
+    def print_repo(self):
+        print('REPORT')
+        print(f'Alpha: {self.a}')
+        print(f'Iterations: {self.iterations_count}')
+        print(f'Polynomial Degree: {self.d}')
+        print(f'Min Error: {self.min_error}')
+        print('Final Parameters:')
+        print(self.parameters)
+
     def main(self, plot: bool = False):
         self.init()
         self.run(plot)
@@ -183,6 +203,5 @@ class StochasticGradientDescent:
             clear_output(wait=True)
         else:
             self.update_graphics()
-        self.plot_data()
-        print('Final Parameters:')
-        print(self.parameters)
+        self.plot_data(True)
+        self.print_repo()

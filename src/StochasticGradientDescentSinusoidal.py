@@ -16,6 +16,7 @@ if __name__ == '__main__':
     # Config
     stochastic_gradient_descent.a = 0.1
     stochastic_gradient_descent.d = 10
-    stochastic_gradient_descent.iterations_count = 5000
+    stochastic_gradient_descent.iterations_count = 50
+    stochastic_gradient_descent.plot_interval = 2
     # Run
     stochastic_gradient_descent.main()
