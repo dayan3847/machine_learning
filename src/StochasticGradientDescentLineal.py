@@ -5,9 +5,6 @@ class StochasticGradientDescentLineal(StochasticGradientDescent):
     def __init__(self):
         super().__init__()
         self.d = 1
-        # Alpha
-        self.a: float = .001
-        self.iterations_count: int = 1000
 
     def source_function(self, x):
         return 5 + 10 * x
@@ -18,4 +15,8 @@ class StochasticGradientDescentLineal(StochasticGradientDescent):
 
 if __name__ == '__main__':
     stochastic_gradient_descent = StochasticGradientDescentLineal()
+    # Config
+    stochastic_gradient_descent.a = .001
+    stochastic_gradient_descent.iterations_count = 100
+    # Run
     stochastic_gradient_descent.main()

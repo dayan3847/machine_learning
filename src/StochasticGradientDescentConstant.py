@@ -15,4 +15,8 @@ class StochasticGradientDescentConstant(StochasticGradientDescent):
 
 if __name__ == '__main__':
     stochastic_gradient_descent = StochasticGradientDescentConstant()
+    # Config
+    stochastic_gradient_descent.a = .001
+    stochastic_gradient_descent.iterations_count = 100
+    # Run
     stochastic_gradient_descent.main()

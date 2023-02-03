@@ -11,8 +11,9 @@ class StochasticGradientDescent:
 
     def __init__(self):
         self.last_plot_time = -1
-        self.plot_interval = 1
+        self.plot_interval = 2
         self.save_best_parameters = False
+        self.sleep_for_each_iteration = 0
         self.graphics = None
         self.min_error = None
         # Artificial Count
@@ -150,6 +151,7 @@ class StochasticGradientDescent:
                 clear_output(wait=True)
                 self.update_graphics()
                 self.plot_data()
+            time.sleep(self.sleep_for_each_iteration)
 
     def plot_data(self, force: bool = False):
         current_time = int(time.time())
