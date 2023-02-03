@@ -1,5 +1,7 @@
 import math
 import random
+import time
+
 import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import clear_output
@@ -8,8 +10,12 @@ from IPython.display import clear_output
 class StochasticGradientDescent:
 
     def __init__(self):
-        # Artificial Count
+        self.last_plot_time = -1
+        self.plot_interval = 1
+        self.save_best_parameters = False
+        self.graphics = None
         self.min_error = None
+        # Artificial Count
         self.m: int = 100
         # Polynomial Degree
         self.d: int = 10
@@ -39,9 +45,8 @@ class StochasticGradientDescent:
     def init(self):
         self.generate_data_points()
         self.generate_initial_parameters()
-        self.parameters = self.initial_parameters.copy()
-
-        self.best_parameters = self.initial_parameters.copy()
+        if self.save_best_parameters:
+            self.best_parameters = self.initial_parameters.copy()
         self.min_error = self.error()
 
     # Generate Data Points
@@ -56,6 +61,13 @@ class StochasticGradientDescent:
             e = self.noise()
             y = self.source_function(x) + e
             self.data_point['y_list'].append(y)
+
+        self.graphics = {
+            'x': np.arange(0, 1, 0.01),
+            'y': [],
+            'y_init': [],
+            'y_best': [],
+        }
 
     def source_function(self, x):
         return math.sin(2 * math.pi * x)
@@ -85,22 +97,26 @@ class StochasticGradientDescent:
         for i in range(self.d + 1):
             self.initial_parameters.append(self.random(self.initial_parameters_interval))
 
+        self.parameters = self.initial_parameters.copy()
+        y_list = self.get_current_y_list()
+        self.graphics['y'] = y_list
+        self.graphics['y_init'] = y_list
+        self.graphics['y_best'] = y_list
+
+    def get_current_y_list(self):
+        y_list = []
+        for x in self.graphics['x']:
+            y = self.h(x)
+            y_list.append(y)
+        return y_list
+
+    def update_graphics(self, graphic: str = 'y'):
+        self.graphics[graphic] = self.get_current_y_list()
+
     def h(self, x):
         result = 0
         for i in range(self.d + 1):
             result += self.parameters[i] * (x ** i)
-        return result
-
-    def h_init(self, x):
-        result = 0
-        for i in range(self.d + 1):
-            result += self.initial_parameters[i] * (x ** i)
-        return result
-
-    def h_best(self, x):
-        result = 0
-        for i in range(self.d + 1):
-            result += self.best_parameters[i] * (x ** i)
         return result
 
     def error(self):
@@ -125,41 +141,67 @@ class StochasticGradientDescent:
                     hi = self.h(xi)
                     self.parameters[j] += self.a * (yi - hi) * (xi ** j)
             ek = self.error_rms()
-            if ek < self.min_error:
+            if self.save_best_parameters and ek < self.min_error:
                 self.min_error = ek
                 self.best_parameters = self.parameters.copy()
+                self.update_graphics('y_best')
             self.errors.append(ek)
             if plot:
                 clear_output(wait=True)
+                self.update_graphics()
                 self.plot_data()
 
-    def plot_data(self):
-        # Errors
-        plt.clf()
-        plt.plot(self.errors, color='red', label='Errors')
-        plt.xlabel('i')
-        plt.ylabel('error')
-        plt.title('Errors')
-        plt.legend()
-        plt.show()
+    def plot_data(self, force: bool = False):
+        current_time = int(time.time())
+        if not force and current_time - self.last_plot_time < self.plot_interval:
+            return
+        self.last_plot_time = current_time
+
         # Data
+        plt.clf()
         plt.title('Data')
         plt.xlabel('x')
         plt.ylabel('y')
+        plt.axvline(color='black')
+        plt.axhline(color='black')
         # points
         plt.scatter(self.data_point['x_list'], self.data_point['y_list'], color='gray', label='data points')
-        x = np.arange(0, 1, 0.01)
-        y_init = self.h_init(x)
-        plt.plot(x, y_init, color='red', label='initial')
-        y_best = self.h_best(x)
-        plt.plot(x, y_best, color='blue', label='best')
-        y = self.h(x)
+        x = self.graphics['x']
+        y_init = self.graphics['y_init']
+        plt.plot(x, y_init, color='blue', label='initial')
+        if self.save_best_parameters:
+            y_best = self.graphics['y_best']
+            plt.plot(x, y_best, color='yellow', label='best')
+        y = self.graphics['y']
         plt.plot(x, y, color='green', label='current')
         plt.legend()
+        plt.grid()
         plt.show()
+        # Errors
+        plt.clf()
+        plt.title('Error')
+        plt.xlabel('i')
+        plt.ylabel('error')
+        plt.plot(self.errors, color='red', label='error')
+        plt.legend()
+        plt.grid()
+        plt.show()
+
+    def print_repo(self):
+        print('REPORT')
+        print(f'Alpha: {self.a}')
+        print(f'Iterations: {self.iterations_count}')
+        print(f'Polynomial Degree: {self.d}')
+        print(f'Min Error: {self.min_error}')
+        print('Final Parameters:')
+        print(self.parameters)
 
     def main(self, plot: bool = False):
         self.init()
         self.run(plot)
-        self.plot_data()
-        print(self.parameters)
+        if plot:
+            clear_output(wait=True)
+        else:
+            self.update_graphics()
+        self.plot_data(True)
+        self.print_repo()
