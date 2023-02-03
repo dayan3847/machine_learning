@@ -12,8 +12,8 @@ class StochasticGradientDescentLineal(StochasticGradientDescent):
     def source_function(self, x):
         return 5 + 10 * x
 
-    def noise(self):
-        return 0
+    # def noise(self):
+    #     return 0
 
 
 if __name__ == '__main__':
