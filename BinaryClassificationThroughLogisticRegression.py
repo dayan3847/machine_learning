@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-class StochasticGradientDescent:
+class BinaryClassificationThroughLogisticRegression:
 
     def __init__(self):
         self.data_point = None
@@ -67,5 +67,5 @@ class StochasticGradientDescent:
 
 
 if __name__ == '__main__':
-    stochastic_gradient_descent = StochasticGradientDescent()
-    stochastic_gradient_descent.main()
+    controller = BinaryClassificationThroughLogisticRegression()
+    controller.main()
