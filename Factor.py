@@ -1,10 +1,10 @@
 class Factor:
-    # variable index
-    variable: int
     # variable degree
     degree: int
+    # variable index
+    variable: int
 
     # init
-    def __init__(self, variable: int = 0, degree: int = 0):
-        self.variable = variable
+    def __init__(self, degree: int = 0, variable: int = 0):
         self.degree = degree
+        self.variable = variable

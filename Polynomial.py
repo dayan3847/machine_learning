@@ -37,8 +37,28 @@ class Polynomial:
             result += theta * x ** self.factors[i].degree
         return result
 
+    # evaluate the polynomial despejando una variable xk
+    def evaluate_despejando(self, x_list: List[float], k: int, y: float = 0) -> float:
+        result: float = 0
+        theta_xk: float | None = None
+        for i in range(len(self.factors)):
+            factor: Factor = self.factors[i]
+            if k == factor.variable:
+                if theta_xk is not None:
+                    raise ValueError("The variable is repeated")
+                if 1 != factor.degree:
+                    raise ValueError("The variable is not in the first degree")
+                theta_xk = self.thetas[i]
+                continue
+            theta: float = self.thetas[i]
+            if 0 == theta:
+                continue
+            x: float = x_list[factor.variable]
+            result += theta * x ** self.factors[i].degree
+        return (y - result) / theta_xk
+
     # initialize the thetas randomly
-    def init_thetas(self, thetas_range: (float, float)):
+    def init_thetas(self, thetas_range: tuple[float, float]):
         for i in range(len(self.thetas)):
             self.thetas[i] = random.uniform(thetas_range[0], thetas_range[1])
 
@@ -49,3 +69,15 @@ class Polynomial:
             if factor.variable >= variables_count:
                 variables_count = factor.variable + 1
         return variables_count
+
+    # get the last factor of highest degree
+    def get_last_factor(self) -> Factor:
+        last_factor: Factor = self.factors[0]
+        for factor in self.factors[1:]:
+            if factor.variable > last_factor.variable or factor.degree > last_factor.degree:
+                last_factor = factor
+        return last_factor
+
+    def get_last_variable_degree(self) -> int:
+        last_factor: Factor = self.get_last_factor()
+        return last_factor.degree
