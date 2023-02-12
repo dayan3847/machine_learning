@@ -8,11 +8,12 @@ from Polynomial import Polynomial
 
 
 class GrapherPlotly3D(GrapherPlotly):
+    figure_3d_data: Figure
 
     def __init__(self):
         super().__init__()
 
-        self.figure_3d_data: Figure = go.Figure()
+        self.figure_3d_data = go.Figure()
         self.figure_3d_data.update_layout(
             scene=dict(
                 xaxis_title='x0',
@@ -25,7 +26,7 @@ class GrapherPlotly3D(GrapherPlotly):
             showlegend=True,
         )
 
-    def plot_artificial_data_3d(self, artificial: List[Artificial], show: bool = False):
+    def plot_artificial_data_3d(self, artificial: List[Artificial]):
         x0_list = []
         x1_list = []
         y_list = []
@@ -43,10 +44,8 @@ class GrapherPlotly3D(GrapherPlotly):
                 name='Points',
             )
         )
-        if show:
-            self.figure_3d_data.show()
 
-    def plot_polynomial(self, polinomial: Polynomial, name: str, color: str = 'Grays', show: bool = False):
+    def plot_polynomial(self, polinomial: Polynomial, name: str, color: str = 'Grays'):
         if polinomial.get_variables_count() > 3:
             return
         x0 = self.data_to_pot['x0']
@@ -64,11 +63,9 @@ class GrapherPlotly3D(GrapherPlotly):
                 showlegend=True,
             )
         )
-        if show:
-            self.figure_3d_data.show()
 
     # graficar el plano y = 0
-    def plot_plane_y0(self, show: bool = False):
+    def plot_plane_y0(self):
         x0 = self.data_to_pot['x0']
         x1 = self.data_to_pot['x1']
         y = np.zeros(x0.shape)
@@ -84,5 +81,9 @@ class GrapherPlotly3D(GrapherPlotly):
                 showlegend=True,
             )
         )
-        if show:
-            self.figure_3d_data.show()
+
+    def save(self, path: str = './'):
+        self.figure_3d_data.write_html(f"{path}figure_3d_data.html", auto_open=True)
+
+    def show(self):
+        self.figure_3d_data.show()

@@ -1,11 +1,8 @@
 from abc import ABC, abstractmethod
-
+from Polynomial import Polynomial
 import numpy as np
 
-from Polynomial import Polynomial
 
-
-# abstract class
 class GrapherPlotly(ABC):
 
     def __init__(self):

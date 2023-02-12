@@ -44,7 +44,7 @@ class GrapherPlotly2D(GrapherPlotly):
             yaxis_title="error",
         )
 
-    def plot_artificial_data_2d(self, artificial: List[Artificial], show: bool = False):
+    def plot_artificial_data_2d(self, artificial: List[Artificial]):
         data_to_print: dict = {}
         for data in artificial:
             if data.y not in data_to_print:
@@ -62,10 +62,8 @@ class GrapherPlotly2D(GrapherPlotly):
                     marker_color=color,
                 )
             )
-        if show:
-            self.figure_2d_data.show()
 
-    def plot_polynomial(self, polinomial: Polynomial, name: str, color: str = 'gray', show: bool = False):
+    def plot_polynomial(self, polinomial: Polynomial, name: str, color: str = 'gray'):
         if polinomial.get_variables_count() > 2:
             return
         if polinomial.get_last_variable_degree() > 1:
@@ -84,8 +82,6 @@ class GrapherPlotly2D(GrapherPlotly):
                 marker_color=color,
             )
         )
-        if show:
-            self.figure_2d_data.show()
 
     def plot_sigmoid_function(self):
         range = (-20, 20)
@@ -150,4 +146,41 @@ class GrapherPlotly2D(GrapherPlotly):
                 marker_color='black'
             )
         )
-        figure_sigmoid.show()
+
+    def plot_errors(self, errors: List[float]):
+        self.figure_2d_error.add_trace(
+            go.Scatter(
+                x=list(range(len(errors))),
+                y=errors,
+                mode='lines',
+                name='error',
+                marker_color='red',
+            )
+        )
+        # add axis lines
+        self.figure_2d_error.add_trace(
+            go.Scatter(
+                x=[-1, len(errors) - 1],
+                y=[0, 0],
+                mode='lines',
+                name='x',
+                marker_color='gray'
+            )
+        )
+        self.figure_2d_error.add_trace(
+            go.Scatter(
+                x=[0, 0],
+                y=[-.01, max(errors) + .1],
+                mode='lines',
+                name='y',
+                marker_color='gray'
+            )
+        )
+
+    def save(self, path: str = './'):
+        self.figure_2d_error.write_html(f"{path}figure_2d_data.html", auto_open=True)
+        self.figure_2d_error.write_html(f"{path}figure_2d_error.html", auto_open=True)
+
+    def show(self):
+        self.figure_2d_data.show()
+        self.figure_2d_error.show()
