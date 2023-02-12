@@ -8,8 +8,7 @@ from src.models import Artificial
 from src.models import Polynomial
 from src.models import Factor
 from src.repositories import DataRepo
-from src.tools import GrapherPlotly2D
-from src.tools import GrapherPlotly3D
+from src.tools import GrapherPlotlyData3D, GrapherPlotlyData2D, GrapherPlotlyErrors2D
 
 
 class BinaryClassificationThroughLogisticRegression:
@@ -24,6 +23,8 @@ class BinaryClassificationThroughLogisticRegression:
         self.path_reports = f"{self.path_reports}{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}/"
         os.mkdir(self.path_reports)
         self.path_files = f'{self.root}files/'
+        os.system(f'cp {self.path_files}data.txt {self.path_reports}')
+        os.system(f'cp {self.path_files}thetas.txt {self.path_reports}')
         # config
         #   Iterations Count
         self.iterations_count: int = 100
@@ -60,21 +61,24 @@ class BinaryClassificationThroughLogisticRegression:
         # GrapherMatplotlib.plot_polynomial_2d(polinomial, clf=False, show=True)
         # ax = GrapherMatplotlib.plot_artificial_data_3d(self.training_data, clf=True, show=False)
         # GrapherMatplotlib.plot_polynomial_3d(polinomial, clf=False, show=True, ax=ax)
-        # Grapher Plotly 2D
-        grapher_plotly2d: GrapherPlotly2D = GrapherPlotly2D()
-        # grapher_plotly2d.plot_sigmoid_function()
-        grapher_plotly2d.plot_artificial_data_2d(self.training_data)
-        grapher_plotly2d.plot_polynomial(self.polinomial_initial, name='Initial', color='red')
-        grapher_plotly2d.plot_polynomial(self.polinomial, name='Final', color='green')
-        grapher_plotly2d.plot_errors(self.errors)
-        grapher_plotly2d.save(self.path_reports)
-        # Grapher Plotly 3D
-        grapher_plotly3d: GrapherPlotly3D = GrapherPlotly3D()
+        # Grapher Plotly Data 3D
+        grapher_plotly3d: GrapherPlotlyData3D = GrapherPlotlyData3D()
         grapher_plotly3d.plot_plane_y0()
-        grapher_plotly3d.plot_artificial_data_3d(self.training_data)
+        grapher_plotly3d.plot_artificial_data(self.training_data)
         grapher_plotly3d.plot_polynomial(self.polinomial_initial, name='Initial', color='Reds')
         grapher_plotly3d.plot_polynomial(self.polinomial, name='Final', color='Greens')
         grapher_plotly3d.save(self.path_reports)
+        # Grapher Plotly Data 2D
+        grapher_plotly2d: GrapherPlotlyData2D = GrapherPlotlyData2D()
+        grapher_plotly2d.plot_artificial_data(self.training_data)
+        grapher_plotly2d.plot_polynomial(self.polinomial_initial, name='Initial', color='red')
+        grapher_plotly2d.plot_polynomial(self.polinomial, name='Final', color='green')
+        grapher_plotly2d.save(self.path_reports)
+        # Grapher Plotly Errors 2D
+        grapher_plotly2d_errors: GrapherPlotlyErrors2D = GrapherPlotlyErrors2D()
+        grapher_plotly2d_errors.plot_errors(self.errors)
+        grapher_plotly2d_errors.save(self.path_reports)
+        grapher_plotly2d_errors.plot_sigmoid_function()
 
     def error(self) -> float:
         error = 0

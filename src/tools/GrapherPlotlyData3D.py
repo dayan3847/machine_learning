@@ -1,20 +1,16 @@
 import numpy as np
 import plotly.graph_objs as go
 from typing import List
-from plotly.graph_objs import Figure
 from src.models import Artificial
 from src.models import Polynomial
-from src.tools import GrapherPlotly
+from src.tools import GrapherPlotlyData
 
 
-class GrapherPlotly3D(GrapherPlotly):
-    figure_3d_data: Figure
+class GrapherPlotlyData3D(GrapherPlotlyData):
 
     def __init__(self):
         super().__init__()
-
-        self.figure_3d_data = go.Figure()
-        self.figure_3d_data.update_layout(
+        self.figure.update_layout(
             scene=dict(
                 xaxis_title='x0',
                 yaxis_title='x1',
@@ -26,7 +22,7 @@ class GrapherPlotly3D(GrapherPlotly):
             showlegend=True,
         )
 
-    def plot_artificial_data_3d(self, artificial: List[Artificial]):
+    def plot_artificial_data(self, artificial: List[Artificial]):
         x0_list = []
         x1_list = []
         y_list = []
@@ -34,7 +30,7 @@ class GrapherPlotly3D(GrapherPlotly):
             x0_list.append(data.x_vector[0])
             x1_list.append(data.x_vector[1])
             y_list.append(data.y)
-        self.figure_3d_data.add_trace(
+        self.figure.add_trace(
             go.Scatter3d(
                 x=x0_list,
                 y=x1_list,
@@ -51,7 +47,7 @@ class GrapherPlotly3D(GrapherPlotly):
         x0 = self.data_to_pot['x0']
         x1 = self.data_to_pot['x1']
         y = polinomial.evaluate([x0, x1])
-        self.figure_3d_data.add_trace(
+        self.figure.add_trace(
             go.Surface(
                 z=y,
                 x=x0,
@@ -69,7 +65,7 @@ class GrapherPlotly3D(GrapherPlotly):
         x0 = self.data_to_pot['x0']
         x1 = self.data_to_pot['x1']
         y = np.zeros(x0.shape)
-        self.figure_3d_data.add_trace(
+        self.figure.add_trace(
             go.Surface(
                 z=y,
                 x=x0,
@@ -82,8 +78,5 @@ class GrapherPlotly3D(GrapherPlotly):
             )
         )
 
-    def save(self, path: str = './'):
-        self.figure_3d_data.write_html(f"{path}figure_3d_data.html", auto_open=True)
-
-    def show(self):
-        self.figure_3d_data.show()
+    def file_name(self) -> str:
+        return 'figure_3d_data.html'
