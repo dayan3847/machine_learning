@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
-from Polynomial import Polynomial
 import numpy as np
+from abc import ABC, abstractmethod
+from src.models import Polynomial
 
 
 class GrapherPlotly(ABC):

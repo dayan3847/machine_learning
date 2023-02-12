@@ -1,14 +1,15 @@
-from copy import deepcopy
-from typing import List
+import os
+from datetime import datetime
 
 import numpy as np
-
-from Artificial import Artificial
-from DataRepo import DataRepo
-from Factor import Factor
-from GrapherPlotly2D import GrapherPlotly2D
-from GrapherPlotly3D import GrapherPlotly3D
-from Polynomial import Polynomial
+from copy import deepcopy
+from typing import List
+from src.models import Artificial
+from src.models import Polynomial
+from src.models import Factor
+from src.repositories import DataRepo
+from src.tools import GrapherPlotly2D
+from src.tools import GrapherPlotly3D
 
 
 class BinaryClassificationThroughLogisticRegression:
@@ -17,6 +18,12 @@ class BinaryClassificationThroughLogisticRegression:
     polinomial_initial: Polynomial
 
     def __init__(self):
+        self.root = './../'
+        self.path_reports: str = f'{self.root}reports/'
+        # create sub folder with current date
+        self.path_reports = f"{self.path_reports}{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}/"
+        os.mkdir(self.path_reports)
+        self.path_files = f'{self.root}files/'
         # config
         #   Iterations Count
         self.iterations_count: int = 100
@@ -27,8 +34,9 @@ class BinaryClassificationThroughLogisticRegression:
         #   use sigmoid function
         self.use_sigmoid = True
 
+        self.data_repo: DataRepo = DataRepo(self.path_files)
         # init training data
-        self.training_data = DataRepo.load_training_data()
+        self.training_data = self.data_repo.load_training_data()
         # init polinomial
         factors: List[Factor] = [
             Factor(),  # 1 (Independent Term)
@@ -37,7 +45,7 @@ class BinaryClassificationThroughLogisticRegression:
             # Factor(0,3),  # x0^2 (Cubic Term of x1)
             Factor(1, 1)  # x1^1 (Linear Term of x2)
         ]
-        thetas: List[float] = DataRepo.load_thetas(len(factors))
+        thetas: List[float] = self.data_repo.load_thetas(len(factors))
         self.polinomial = Polynomial(factors, thetas)
         # clone polinomial
         self.polinomial_initial = deepcopy(self.polinomial)
@@ -59,14 +67,14 @@ class BinaryClassificationThroughLogisticRegression:
         grapher_plotly2d.plot_polynomial(self.polinomial_initial, name='Initial', color='red')
         grapher_plotly2d.plot_polynomial(self.polinomial, name='Final', color='green')
         grapher_plotly2d.plot_errors(self.errors)
-        grapher_plotly2d.save()
+        grapher_plotly2d.save(self.path_reports)
         # Grapher Plotly 3D
         grapher_plotly3d: GrapherPlotly3D = GrapherPlotly3D()
         grapher_plotly3d.plot_plane_y0()
         grapher_plotly3d.plot_artificial_data_3d(self.training_data)
         grapher_plotly3d.plot_polynomial(self.polinomial_initial, name='Initial', color='Reds')
         grapher_plotly3d.plot_polynomial(self.polinomial, name='Final', color='Greens')
-        grapher_plotly3d.save()
+        grapher_plotly3d.save(self.path_reports)
 
     def error(self) -> float:
         error = 0
@@ -106,19 +114,16 @@ class BinaryClassificationThroughLogisticRegression:
 
         # plot data
         self.plot_data()
-        self.print_report()
+        self.save_report()
 
-    def print_report(self):
-        print('Initial Polinomial')
-        print(self.polinomial_initial)
-        print('Final Polinomial')
-        print(self.polinomial)
-        print('Initial Error')
-        print(self.errors[0])
-        print('Final Error')
-        print(self.errors[-1])
-
-
-if __name__ == '__main__':
-    controller = BinaryClassificationThroughLogisticRegression()
-    controller.main()
+    def save_report(self):
+        file = open(f'{self.path_reports}report.txt', 'w')
+        file.write('Initial Polinomial\n')
+        file.write(str(self.polinomial_initial) + '\n')
+        file.write('Final Polinomial\n')
+        file.write(str(self.polinomial) + '\n')
+        file.write('Initial Error\n')
+        file.write(str(self.errors[0]) + '\n')
+        file.write('Final Error\n')
+        file.write(str(self.errors[-1]))
+        file.close()

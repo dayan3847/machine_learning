@@ -2,9 +2,9 @@ import numpy as np
 import plotly.graph_objs as go
 from typing import List
 from plotly.graph_objs import Figure
-from Artificial import Artificial
-from GrapherPlotly import GrapherPlotly
-from Polynomial import Polynomial
+from src.models import Artificial
+from src.models import Polynomial
+from src.tools import GrapherPlotly
 
 
 class GrapherPlotly3D(GrapherPlotly):

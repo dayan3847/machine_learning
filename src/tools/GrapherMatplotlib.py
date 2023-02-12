@@ -1,9 +1,8 @@
-from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
-
-from Artificial import Artificial
-from Polynomial import Polynomial
+from typing import List
+from src.models import Artificial
+from src.models import Polynomial
 
 
 # Training Data (data unit)

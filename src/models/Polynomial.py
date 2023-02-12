@@ -1,7 +1,6 @@
-import random
 from typing import List
 
-from Factor import Factor
+from src.models import Factor
 
 
 class Polynomial:
