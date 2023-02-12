@@ -24,12 +24,12 @@ class BinaryClassificationThroughLogisticRegression:
         os.mkdir(self.path_reports)
         self.path_files = f'{self.root}files/'
         os.system(f'cp {self.path_files}data.txt {self.path_reports}')
-        os.system(f'cp {self.path_files}thetas.txt {self.path_reports}')
+
         # config
         #   Iterations Count
-        self.iterations_count: int = 100
+        self.iterations_count: int = 5000
         #   Alpha
-        self.a: float = .001
+        self.a: float = .01
         #   Errors
         self.errors: List[float] = []
         #   use sigmoid function
@@ -42,11 +42,16 @@ class BinaryClassificationThroughLogisticRegression:
         factors: List[Factor] = [
             Factor(),  # 1 (Independent Term)
             Factor(0, 1),  # x0^1 (Linear Term of x1)
-            Factor(0, 2),  # x0^2 (Quadratic Term of x1)
-            Factor(0, 3),  # x0^2 (Cubic Term of x1)
-            Factor(1, 1)  # x1^1 (Linear Term of x2)
+            # Factor(0, 2),  # x0^2 (Quadratic Term of x1)
+            # Factor(0, 3),  # x0^3 (Cubic Term of x1)
+            # Factor(0, 4),  # x0^4 (Quartic Term of x1)
+            Factor(1, 1),  # x1^1 (Linear Term of x2)
+            # Factor(1, 2),  # x1^2 (Quadratic Term of x2)
+            # Factor(1, 3),  # x1^3 (Cubic Term of x2)
+            # Factor(1, 4),  # x1^4 (Quartic Term of x2)
         ]
         thetas: List[float] = self.data_repo.load_thetas(len(factors))
+        os.system(f'cp {self.path_files}thetas.txt {self.path_reports}')
         self.polinomial = Polynomial(factors, thetas)
         # clone polinomial
         self.polinomial_initial = deepcopy(self.polinomial)
@@ -62,6 +67,7 @@ class BinaryClassificationThroughLogisticRegression:
         # GrapherMatplotlib.plot_polynomial_2d(polinomial, clf=False, show=True)
         # ax = GrapherMatplotlib.plot_artificial_data_3d(self.training_data, clf=True, show=False)
         # GrapherMatplotlib.plot_polynomial_3d(polinomial, clf=False, show=True, ax=ax)
+
         # Grapher Plotly Data 3D
         grapher_plotly3d: GrapherPlotlyData3D = GrapherPlotlyData3D()
         grapher_plotly3d.plot_plane_y0()
@@ -97,8 +103,6 @@ class BinaryClassificationThroughLogisticRegression:
         return (2 * e / m) ** 0.5
 
     def main(self):
-        self.iterations_count = 1000
-        self.a = .1
         self.errors.append(self.error_rms())
 
         for i in range(self.iterations_count):
@@ -130,7 +134,7 @@ class BinaryClassificationThroughLogisticRegression:
         file.write('Initial Error\n')
         file.write(str(self.errors[0]) + '\n')
         file.write('Final Error\n')
-        file.write(str(self.errors[-1]))
+        file.write(str(self.errors[-1]) + '\n')
         file.write('Iterations Count\n')
         file.write(str(self.iterations_count) + '\n')
         file.write('Alpha\n')

@@ -5,7 +5,8 @@ Final Polinomial
 Initial Error
 0.4976845036954126
 Final Error
-0.01368860830771898Iterations Count
+0.01368860830771898
+Iterations Count
 1000
 Alpha
 0.1
