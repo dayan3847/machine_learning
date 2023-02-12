@@ -43,7 +43,7 @@ class BinaryClassificationThroughLogisticRegression:
             Factor(),  # 1 (Independent Term)
             Factor(0, 1),  # x0^1 (Linear Term of x1)
             Factor(0, 2),  # x0^2 (Quadratic Term of x1)
-            # Factor(0,3),  # x0^2 (Cubic Term of x1)
+            Factor(0, 3),  # x0^2 (Cubic Term of x1)
             Factor(1, 1)  # x1^1 (Linear Term of x2)
         ]
         thetas: List[float] = self.data_repo.load_thetas(len(factors))
@@ -52,7 +52,8 @@ class BinaryClassificationThroughLogisticRegression:
         self.polinomial_initial = deepcopy(self.polinomial)
 
     # sigmoid function
-    def sigmoid(self, x):
+    @staticmethod
+    def sigmoid(x):
         return 1 / (1 + np.exp(-x))
 
     def plot_data(self):
@@ -96,8 +97,8 @@ class BinaryClassificationThroughLogisticRegression:
         return (2 * e / m) ** 0.5
 
     def main(self):
-        self.iterations_count = 100
-        self.a = .01
+        self.iterations_count = 1000
+        self.a = .1
         self.errors.append(self.error_rms())
 
         for i in range(self.iterations_count):
@@ -130,4 +131,8 @@ class BinaryClassificationThroughLogisticRegression:
         file.write(str(self.errors[0]) + '\n')
         file.write('Final Error\n')
         file.write(str(self.errors[-1]))
+        file.write('Iterations Count\n')
+        file.write(str(self.iterations_count) + '\n')
+        file.write('Alpha\n')
+        file.write(str(self.a) + '\n')
         file.close()
