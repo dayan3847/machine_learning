@@ -1,5 +1,5 @@
-from src.logic import BinaryClassificationThroughLogisticRegression
+from src.logic import LogisticRegression
 
 if __name__ == '__main__':
-    controller = BinaryClassificationThroughLogisticRegression()
+    controller = LogisticRegression()
     controller.main()

@@ -11,7 +11,7 @@ from src.repositories import DataRepo
 from src.tools import GrapherPlotlyData3D, GrapherPlotlyData2D, GrapherPlotlyErrors2D
 
 
-class BinaryClassificationThroughLogisticRegression:
+class LogisticRegression:
     training_data: List[Artificial]
     polinomial: Polynomial
     polinomial_initial: Polynomial

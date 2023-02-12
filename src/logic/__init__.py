@@ -1,1 +1,1 @@
-from src.logic.BinaryClassificationThroughLogisticRegression import BinaryClassificationThroughLogisticRegression
+from src.logic.LogisticRegression import LogisticRegression
