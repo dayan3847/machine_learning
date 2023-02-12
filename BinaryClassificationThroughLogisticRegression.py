@@ -5,6 +5,8 @@ from DataRepo import DataRepo
 from Factor import Factor
 from GrapherMatplotlib import GrapherMatplotlib
 from GrapherPlotly import GrapherPlotly
+from GrapherPlotly2D import GrapherPlotly2D
+from GrapherPlotly3D import GrapherPlotly3D
 from Polynomial import Polynomial
 
 
@@ -32,10 +34,14 @@ class BinaryClassificationThroughLogisticRegression:
         ax = GrapherMatplotlib.plot_artificial_data_3d(self.training_data, clf=True, show=False)
         GrapherMatplotlib.plot_polynomial_3d(polinomial, clf=False, show=True, ax=ax)
         # Grapher Plotly
-        fig = GrapherPlotly.plot_artificial_data_2d(self.training_data)
-        GrapherPlotly.plot_polynomial_2d(polinomial, fig=fig)
-        fig = GrapherPlotly.plot_artificial_data_3d(self.training_data)
-        GrapherPlotly.plot_polynomial_3d(polinomial, fig=fig)
+        grapher_plotly2d: GrapherPlotly2D = GrapherPlotly2D()
+        grapher_plotly2d.plot_artificial_data_2d(self.training_data)
+        grapher_plotly2d.plot_polynomial_2d(polinomial, show=True)
+        grapher_plotly3d: GrapherPlotly3D = GrapherPlotly3D()
+        grapher_plotly3d.plot_plane_y0()
+        grapher_plotly3d.plot_artificial_data_3d(self.training_data)
+        grapher_plotly3d.plot_polynomial_3d(polinomial)
+        grapher_plotly3d.plot_polynomial_projection_3d(polinomial, show=True)
 
 
 if __name__ == '__main__':

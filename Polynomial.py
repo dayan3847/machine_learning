@@ -11,6 +11,8 @@ class Polynomial:
     thetas: List[float]
     # Number of terms of the polynomial
     n_terms: int
+    # Number of variables of the polynomial
+    n_variables: int
 
     # init
     def __init__(self, factors: List[Factor] = None, thetas=None):
@@ -28,10 +30,15 @@ class Polynomial:
                 thetas.append(1)
         self.thetas = thetas
         self.n_terms = len_factors
+        self.n_variables = 0
+        for factor in factors:
+            if factor.variable > self.n_variables:
+                self.n_variables = factor.variable
+        self.n_variables += 1
 
     # evaluate the polynomial
     def evaluate(self, x_list: List[float]) -> float:
-        if len(x_list) != self.n_terms:
+        if len(x_list) != self.n_variables:
             raise ValueError("x_list and the polynomial must have the same length")
         result: float = 0
         for i in range(self.n_terms):
