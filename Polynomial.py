@@ -39,7 +39,7 @@ class Polynomial:
     # evaluate the polynomial
     def evaluate(self, x_list: List[float]) -> float:
         if len(x_list) != self.n_variables:
-            raise ValueError("x_list and the polynomial must have the same length")
+            raise ValueError("x_vector and the polynomial must have the same length")
         result: float = 0
         for i in range(self.n_terms):
             theta: float = self.thetas[i]
@@ -92,3 +92,15 @@ class Polynomial:
     def get_last_variable_degree(self) -> int:
         last_factor: Factor = self.get_last_factor()
         return last_factor.degree
+
+    def __str__(self) -> str:
+        result: str = ""
+        for i in range(self.n_terms):
+            if 0 == self.thetas[i]:
+                continue
+            if 0 < i:
+                result += ' +' if 0 < self.thetas[i] else ' '
+            result += str(self.thetas[i])
+            if 0 != self.factors[i].degree:
+                result += " * " + str(self.factors[i])
+        return result

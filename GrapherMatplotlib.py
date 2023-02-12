@@ -20,8 +20,8 @@ class GrapherMatplotlib:
         plt.axvline(color='black')
         plt.axhline(color='black')
         for data in artificial:
-            color: str = 'red' if data.y_data == 1 else 'blue' if data.y_data == 0 else 'gray'
-            plt.scatter(data.x_list_data[0], data.x_list_data[1], color=color, marker='o')
+            color: str = 'red' if data.y == 1 else 'blue' if data.y == 0 else 'gray'
+            plt.scatter(data.x_vector[0], data.x_vector[1], color=color, marker='o')
         plt.grid()
         if show:
             plt.show()
@@ -58,8 +58,8 @@ class GrapherMatplotlib:
         if ax is None:
             ax = fig.add_subplot(111, projection='3d')
         for data in artificial:
-            color: str = 'red' if data.y_data == 1 else 'blue' if data.y_data == 0 else 'gray'
-            ax.scatter3D(data.x_list_data[0], data.x_list_data[1], data.y_data, c=color, marker='o')
+            color: str = 'red' if data.y == 1 else 'blue' if data.y == 0 else 'gray'
+            ax.scatter3D(data.x_vector[0], data.x_vector[1], data.y, c=color, marker='o')
         ax.set_xlabel('x0')
         ax.set_ylabel('x1')
         ax.set_zlabel('y')

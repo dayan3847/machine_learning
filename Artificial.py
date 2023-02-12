@@ -3,12 +3,11 @@ from typing import List
 
 # Training Data (data unit)
 class Artificial:
-    # valores de las variables independientes
-    x_list_data: List[float]
-    # valor de la variable dependiente
-    y_data: float
+    # vector x (valores de las variables independientes)
+    x_vector: List[float]
+    # escalar y (valor de la variable dependiente)
+    y: float
 
-    # init
-    def __init__(self, x_list_data: List[float], y_data: float = 0):
-        self.x_list_data = x_list_data
-        self.y_data = y_data
+    def __init__(self, x_vector: List[float], y: float = 0):
+        self.x_vector = x_vector
+        self.y = y

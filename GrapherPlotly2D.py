@@ -47,10 +47,10 @@ class GrapherPlotly2D(GrapherPlotly):
     def plot_artificial_data_2d(self, artificial: List[Artificial], show: bool = False):
         data_to_print: dict = {}
         for data in artificial:
-            if data.y_data not in data_to_print:
-                data_to_print[data.y_data] = {'x0': [], 'x1': []}
-            data_to_print[data.y_data]['x0'].append(data.x_list_data[0])
-            data_to_print[data.y_data]['x1'].append(data.x_list_data[1])
+            if data.y not in data_to_print:
+                data_to_print[data.y] = {'x0': [], 'x1': []}
+            data_to_print[data.y]['x0'].append(data.x_vector[0])
+            data_to_print[data.y]['x1'].append(data.x_vector[1])
         for key in data_to_print:
             color: str = 'purple' if key == 0 else 'orange' if key == 1 else 'gray'
             self.figure_2d_data.add_trace(
@@ -65,7 +65,7 @@ class GrapherPlotly2D(GrapherPlotly):
         if show:
             self.figure_2d_data.show()
 
-    def plot_polynomial_2d(self, polinomial: Polynomial, show: bool = False):
+    def plot_polynomial(self, polinomial: Polynomial, name: str, color: str = 'gray', show: bool = False):
         if polinomial.get_variables_count() > 2:
             return
         if polinomial.get_last_variable_degree() > 1:
@@ -80,8 +80,8 @@ class GrapherPlotly2D(GrapherPlotly):
                 x=x0_list,
                 y=x1_list,
                 mode='lines',
-                name='Initial',
-                marker_color='red',
+                name=name,
+                marker_color=color,
             )
         )
         if show:

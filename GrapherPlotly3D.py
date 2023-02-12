@@ -30,9 +30,9 @@ class GrapherPlotly3D(GrapherPlotly):
         x1_list = []
         y_list = []
         for data in artificial:
-            x0_list.append(data.x_list_data[0])
-            x1_list.append(data.x_list_data[1])
-            y_list.append(data.y_data)
+            x0_list.append(data.x_vector[0])
+            x1_list.append(data.x_vector[1])
+            y_list.append(data.y)
         self.figure_3d_data.add_trace(
             go.Scatter3d(
                 x=x0_list,
@@ -46,7 +46,7 @@ class GrapherPlotly3D(GrapherPlotly):
         if show:
             self.figure_3d_data.show()
 
-    def plot_polynomial_3d(self, polinomial: Polynomial, show: bool = False):
+    def plot_polynomial(self, polinomial: Polynomial, name: str, color: str = 'Grays', show: bool = False):
         if polinomial.get_variables_count() > 3:
             return
         x0 = self.data_to_pot['x0']
@@ -59,8 +59,8 @@ class GrapherPlotly3D(GrapherPlotly):
                 y=x1,
                 opacity=0.5,
                 showscale=False,
-                colorscale='Reds',
-                name='Initial',
+                colorscale=color,
+                name=name,
                 showlegend=True,
             )
         )
@@ -83,25 +83,6 @@ class GrapherPlotly3D(GrapherPlotly):
                 name='Plane y = 0',
                 showlegend=True,
             )
-        )
-        if show:
-            self.figure_3d_data.show()
-
-    def plot_polynomial_projection_3d(self, polinomial: Polynomial, show: bool = False):
-        if polinomial.get_variables_count() > 2:
-            return
-        if polinomial.get_last_variable_degree() > 1:
-            return
-        x0_list = np.linspace(-3, 3, 100)
-        x1_list = []
-        for x0 in x0_list:
-            x1 = polinomial.evaluate_despejando([x0], 1)
-            x1_list.append(x1)
-
-        x0_list, x1_list, y_list_zeros = np.meshgrid(x0_list, x1_list, [0])
-
-        self.figure_3d_data.add_trace(
-            go.Scatter3d(x=x0_list, y=x1_list, mode='lines', name='Polinomial', marker_color='green')
         )
         if show:
             self.figure_3d_data.show()

@@ -1,6 +1,8 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 import numpy as np
+
+from Polynomial import Polynomial
 
 
 # abstract class
@@ -16,3 +18,9 @@ class GrapherPlotly(ABC):
         self.data_to_pot['x0'], self.data_to_pot['x1'] = np.meshgrid(
             self.data_to_pot['x0'], self.data_to_pot['x1']
         )
+
+    # abstract method
+
+    @abstractmethod
+    def plot_polynomial(self, polinomial: Polynomial, name: str, color: str = 'gray', show: bool = False):
+        pass
