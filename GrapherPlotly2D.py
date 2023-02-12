@@ -44,7 +44,7 @@ class GrapherPlotly2D(GrapherPlotly):
             yaxis_title="error",
         )
 
-    def plot_artificial_data_2d(self, artificial: List[Artificial], show: bool = True):
+    def plot_artificial_data_2d(self, artificial: List[Artificial], show: bool = False):
         data_to_print: dict = {}
         for data in artificial:
             if data.y_data not in data_to_print:
@@ -52,7 +52,7 @@ class GrapherPlotly2D(GrapherPlotly):
             data_to_print[data.y_data]['x0'].append(data.x_list_data[0])
             data_to_print[data.y_data]['x1'].append(data.x_list_data[1])
         for key in data_to_print:
-            color: str = 'blue' if key == 0 else 'red' if key == 1 else 'gray'
+            color: str = 'purple' if key == 0 else 'orange' if key == 1 else 'gray'
             self.figure_2d_data.add_trace(
                 go.Scatter(
                     x=data_to_print[key]['x0'],
@@ -65,7 +65,7 @@ class GrapherPlotly2D(GrapherPlotly):
         if show:
             self.figure_2d_data.show()
 
-    def plot_polynomial_2d(self, polinomial: Polynomial, show: bool = True):
+    def plot_polynomial_2d(self, polinomial: Polynomial, show: bool = False):
         if polinomial.get_variables_count() > 2:
             return
         if polinomial.get_last_variable_degree() > 1:
@@ -81,8 +81,73 @@ class GrapherPlotly2D(GrapherPlotly):
                 y=x1_list,
                 mode='lines',
                 name='Initial',
-                marker_color='orange',
+                marker_color='red',
             )
         )
         if show:
             self.figure_2d_data.show()
+
+    def plot_sigmoid_function(self):
+        range = (-20, 20)
+        x0_list = np.linspace(range[0], range[1], 100)
+        x1_list = []
+        for x0 in x0_list:
+            x1 = 1 / (1 + np.exp(-x0))
+            x1_list.append(x1)
+
+        figure_sigmoid: Figure = go.Figure()
+        figure_sigmoid.update_layout(
+            xaxis_title="x",
+            yaxis_title="sigmoid(x)",
+            xaxis_range=(range[0], range[1]),
+            yaxis_range=(-.1, 1.1),
+        )
+        figure_sigmoid.add_trace(
+            go.Scatter(
+                x=x0_list,
+                y=x1_list,
+                mode='lines',
+                name='Sigmoid',
+                marker_color='green',
+            )
+        )
+        # add horizontal lines for 0 and 1
+        figure_sigmoid.add_trace(
+            go.Scatter(
+                x=[range[0], range[1]],
+                y=[0, 0],
+                mode='lines',
+                name='0',
+                marker_color='gray'
+            )
+        )
+        figure_sigmoid.add_trace(
+            go.Scatter(
+                x=[range[0], range[1]],
+                y=[1, 1],
+                mode='lines',
+                name='1',
+                marker_color='gray'
+            )
+        )
+        # add vertical line for 0
+        figure_sigmoid.add_trace(
+            go.Scatter(
+                x=[0, 0],
+                y=[-.1, 1.1],
+                mode='lines',
+                name='v0',
+                marker_color='gray'
+            )
+        )
+        # add center point (0, 0.5)
+        figure_sigmoid.add_trace(
+            go.Scatter(
+                x=[0],
+                y=[0.5],
+                mode='markers',
+                name='center',
+                marker_color='black'
+            )
+        )
+        figure_sigmoid.show()

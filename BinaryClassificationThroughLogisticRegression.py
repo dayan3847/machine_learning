@@ -1,5 +1,7 @@
 from typing import List
 
+import numpy as np
+
 from Artificial import Artificial
 from DataRepo import DataRepo
 from Factor import Factor
@@ -29,12 +31,13 @@ class BinaryClassificationThroughLogisticRegression:
         thetas: List[float] = DataRepo.load_thetas(len(factors))
         polinomial: Polynomial = Polynomial(factors, thetas)
         # Grapher Matplotlib
-        GrapherMatplotlib.plot_artificial_data_2d(self.training_data, clf=True, show=False)
-        GrapherMatplotlib.plot_polynomial_2d(polinomial, clf=False, show=True)
-        ax = GrapherMatplotlib.plot_artificial_data_3d(self.training_data, clf=True, show=False)
-        GrapherMatplotlib.plot_polynomial_3d(polinomial, clf=False, show=True, ax=ax)
+        # GrapherMatplotlib.plot_artificial_data_2d(self.training_data, clf=True, show=False)
+        # GrapherMatplotlib.plot_polynomial_2d(polinomial, clf=False, show=True)
+        # ax = GrapherMatplotlib.plot_artificial_data_3d(self.training_data, clf=True, show=False)
+        # GrapherMatplotlib.plot_polynomial_3d(polinomial, clf=False, show=True, ax=ax)
         # Grapher Plotly
         grapher_plotly2d: GrapherPlotly2D = GrapherPlotly2D()
+        # grapher_plotly2d.plot_sigmoid_function()
         grapher_plotly2d.plot_artificial_data_2d(self.training_data)
         grapher_plotly2d.plot_polynomial_2d(polinomial, show=True)
         grapher_plotly3d: GrapherPlotly3D = GrapherPlotly3D()
@@ -42,6 +45,10 @@ class BinaryClassificationThroughLogisticRegression:
         grapher_plotly3d.plot_artificial_data_3d(self.training_data)
         grapher_plotly3d.plot_polynomial_3d(polinomial)
         grapher_plotly3d.plot_polynomial_projection_3d(polinomial, show=True)
+
+    # def sigmoid function
+    def sigmoid(self, z):
+        return 1 / (1 + np.exp(-z))
 
 
 if __name__ == '__main__':

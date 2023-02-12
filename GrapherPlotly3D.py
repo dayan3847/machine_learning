@@ -1,8 +1,7 @@
-from typing import List
 import numpy as np
 import plotly.graph_objs as go
+from typing import List
 from plotly.graph_objs import Figure
-
 from Artificial import Artificial
 from GrapherPlotly import GrapherPlotly
 from Polynomial import Polynomial
@@ -60,7 +59,7 @@ class GrapherPlotly3D(GrapherPlotly):
                 y=x1,
                 opacity=0.5,
                 showscale=False,
-                colorscale='Oranges',
+                colorscale='Reds',
                 name='Initial',
                 showlegend=True,
             )
