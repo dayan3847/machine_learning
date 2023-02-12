@@ -9,6 +9,8 @@ class Polynomial:
     factors: List[Factor]
     # Coefficients of the polynomial
     thetas: List[float]
+    # Number of terms of the polynomial
+    n_terms: int
 
     # init
     def __init__(self, factors: List[Factor] = None, thetas=None):
@@ -25,11 +27,14 @@ class Polynomial:
             for i in range(len_factors):
                 thetas.append(1)
         self.thetas = thetas
+        self.n_terms = len_factors
 
     # evaluate the polynomial
     def evaluate(self, x_list: List[float]) -> float:
+        if len(x_list) != self.n_terms:
+            raise ValueError("x_list and the polynomial must have the same length")
         result: float = 0
-        for i in range(len(self.factors)):
+        for i in range(self.n_terms):
             theta: float = self.thetas[i]
             if 0 == theta:
                 continue
@@ -49,6 +54,8 @@ class Polynomial:
                 if 1 != factor.degree:
                     raise ValueError("The variable is not in the first degree")
                 theta_xk = self.thetas[i]
+                if 0 == theta_xk:
+                    raise ValueError("No se puede despejar una variable con theta = 0")
                 continue
             theta: float = self.thetas[i]
             if 0 == theta:
@@ -56,11 +63,6 @@ class Polynomial:
             x: float = x_list[factor.variable]
             result += theta * x ** self.factors[i].degree
         return (y - result) / theta_xk
-
-    # initialize the thetas randomly
-    def init_thetas(self, thetas_range: tuple[float, float]):
-        for i in range(len(self.thetas)):
-            self.thetas[i] = random.uniform(thetas_range[0], thetas_range[1])
 
     # get number of independent variables
     def get_variables_count(self) -> int:
@@ -74,7 +76,9 @@ class Polynomial:
     def get_last_factor(self) -> Factor:
         last_factor: Factor = self.factors[0]
         for factor in self.factors[1:]:
-            if factor.variable > last_factor.variable or factor.degree > last_factor.degree:
+            if factor.variable > last_factor.variable or (
+                    factor.variable == last_factor.variable and factor.degree > last_factor.degree
+            ):
                 last_factor = factor
         return last_factor
 

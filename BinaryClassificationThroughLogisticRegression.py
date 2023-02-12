@@ -1,7 +1,7 @@
 from typing import List
 
 from Artificial import Artificial
-from ArtificialRepo import ArtificialRepo
+from DataRepo import DataRepo
 from Factor import Factor
 from GrapherMatplotlib import GrapherMatplotlib
 from GrapherPlotly import GrapherPlotly
@@ -13,27 +13,19 @@ class BinaryClassificationThroughLogisticRegression:
     def __init__(self):
         self.training_data: List[Artificial] = []
 
-    def init(self):
-        self.load_training_data()
-
-    # Generate Data Points
-    def load_training_data(self):
-        if not self.training_data:
-            self.training_data = ArtificialRepo.load_training_data()
-
     def main(self):
-        self.init()
+        if not self.training_data:
+            self.training_data = DataRepo.load_training_data()
 
-        polinomial: Polynomial = Polynomial(
-            [
-                Factor(),  # x1^0 (Independent Term)
-                Factor(1),  # x1^1 (Linear Term of x1)
-                # Factor(2),  # x1^2 (Quadratic Term of x1)
-                # Factor(3),  # x1^2 (Cubic Term of x1)
-                Factor(1, 1)  # x2^1 (Linear Term of x2)
-            ]
-        )
-        polinomial.init_thetas((-0.01, 0.01))
+        factors: List[Factor] = [
+            Factor(),  # 1 (Independent Term)
+            Factor(0, 1),  # x0^1 (Linear Term of x1)
+            Factor(0, 2),  # x0^2 (Quadratic Term of x1)
+            # Factor(0,3),  # x0^2 (Cubic Term of x1)
+            Factor(1, 1)  # x1^1 (Linear Term of x2)
+        ]
+        thetas: List[float] = DataRepo.load_thetas(len(factors))
+        polinomial: Polynomial = Polynomial(factors, thetas)
         # Grapher Matplotlib
         GrapherMatplotlib.plot_artificial_data_2d(self.training_data, clf=True, show=False)
         GrapherMatplotlib.plot_polynomial_2d(polinomial, clf=False, show=True)

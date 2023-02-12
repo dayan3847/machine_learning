@@ -38,7 +38,6 @@ class GrapherPlotly:
             return
         if polinomial.get_last_variable_degree() > 1:
             return
-        # x0_list = np.arange(-3, 3, 0.01)
         x0_list = np.linspace(-3, 3, 100)
         x1_list = []
         for x0 in x0_list:
@@ -46,6 +45,11 @@ class GrapherPlotly:
             x1_list.append(x1)
         if fig is None:
             fig = go.Figure()
+            fig.update_layout(
+                xaxis_title="x0",
+                yaxis_title="x1",
+            )
+
         fig.add_trace(go.Scatter(x=x0_list, y=x1_list, mode='lines', name='Polinomial', marker_color='green'))
         if show:
             fig.show()
@@ -64,8 +68,22 @@ class GrapherPlotly:
             y_list.append(data.y_data)
         if fig is None:
             fig = go.Figure()
-        fig.add_trace(go.Scatter3d(x=x0_list, y=x1_list, z=y_list, mode='markers',
-                                   marker=dict(size=12, color=y_list, colorscale='Viridis', opacity=0.8)))
+        fig.add_trace(
+            go.Scatter3d(
+                x=x0_list,
+                y=x1_list,
+                z=y_list,
+                mode='markers',
+                marker=dict(size=12, color=y_list, colorscale='Viridis', opacity=0.8)
+            )
+        )
+        fig.update_layout(
+            scene=dict(
+                xaxis_title='x0',
+                yaxis_title='x1',
+                zaxis_title='y'
+            )
+        )
         if show:
             fig.show()
         return fig
