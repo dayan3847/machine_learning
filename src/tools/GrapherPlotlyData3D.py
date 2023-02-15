@@ -22,22 +22,44 @@ class GrapherPlotlyData3D(GrapherPlotlyData):
             showlegend=True,
         )
 
-    def plot_artificial_data(self, artificial: List[Artificial]):
-        x0_list = []
-        x1_list = []
-        y_list = []
+    def plot_artificial_data(self, artificial: List[Artificial], name: str = 'Data', color: str = 'blue'):
+        x0_list_y0 = []
+        x1_list_y0 = []
+        x0_list_y1 = []
+        x1_list_y1 = []
         for data in artificial:
-            x0_list.append(data.x_vector[0])
-            x1_list.append(data.x_vector[1])
-            y_list.append(data.y)
+            if data.y == 0:
+                x0_list_y0.append(data.x_vector[0])
+                x1_list_y0.append(data.x_vector[1])
+            else:
+                x0_list_y1.append(data.x_vector[0])
+                x1_list_y1.append(data.x_vector[1])
         self.figure.add_trace(
             go.Scatter3d(
-                x=x0_list,
-                y=x1_list,
-                z=y_list,
+                x=x0_list_y0,
+                y=x1_list_y0,
+                z=[0] * len(x0_list_y0),
                 mode='markers',
-                marker=dict(size=12, color=y_list, opacity=.8, colorscale='Viridis'),
-                name='Points',
+                marker=dict(
+                    size=5,
+                    color=color,
+                    opacity=.3,
+                ),
+                name=f'{name} 0',
+            )
+        )
+        self.figure.add_trace(
+            go.Scatter3d(
+                x=x0_list_y1,
+                y=x1_list_y1,
+                z=[1] * len(x0_list_y1),
+                mode='markers',
+                marker=dict(
+                    size=5,
+                    color=color,
+                    opacity=1,
+                ),
+                name=f'{name} 1',
             )
         )
 

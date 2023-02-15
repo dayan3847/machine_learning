@@ -27,5 +27,5 @@ class GrapherPlotlyData(GrapherPlotly):
         pass
 
     @abstractmethod
-    def plot_artificial_data(self, artificial: List[Artificial]):
+    def plot_artificial_data(self, artificial: List[Artificial], name: str = 'Data', color: str = 'blue'):
         pass

@@ -36,8 +36,11 @@ class LogisticRegression:
         self.use_sigmoid = True
 
         self.data_repo: DataRepo = DataRepo(self.path_files)
+        self.data_repo.distribute_data_if_not_exists()
         # init training data
         self.training_data = self.data_repo.load_training_data()
+        self.validation_data = self.data_repo.load_validation_data()
+        self.test_data = self.data_repo.load_test_data()
         # init polinomial
         factors: List[Factor] = [
             Factor(),  # 1 (Independent Term)
@@ -71,13 +74,17 @@ class LogisticRegression:
         # Grapher Plotly Data 3D
         grapher_plotly3d: GrapherPlotlyData3D = GrapherPlotlyData3D()
         grapher_plotly3d.plot_plane_y(.5)
-        grapher_plotly3d.plot_artificial_data(self.training_data)
+        grapher_plotly3d.plot_artificial_data(self.training_data, name='Training Data', color='blue')
+        grapher_plotly3d.plot_artificial_data(self.validation_data, name='Validation Data', color='orange')
+        grapher_plotly3d.plot_artificial_data(self.test_data, name='Test Data', color='green')
         grapher_plotly3d.plot_polynomial(self.polinomial_initial, name='Initial', color='Reds')
         grapher_plotly3d.plot_polynomial(self.polinomial, name='Final', color='Greens')
         grapher_plotly3d.save(self.path_reports)
         # Grapher Plotly Data 2D
         grapher_plotly2d: GrapherPlotlyData2D = GrapherPlotlyData2D()
-        grapher_plotly2d.plot_artificial_data(self.training_data)
+        grapher_plotly2d.plot_artificial_data(self.training_data, name='Training Data', color='blue')
+        grapher_plotly2d.plot_artificial_data(self.validation_data, name='Validation Data', color='orange')
+        grapher_plotly2d.plot_artificial_data(self.test_data, name='Test Data', color='green')
         grapher_plotly2d.plot_polynomial(self.polinomial_initial, name='Initial', color='red')
         grapher_plotly2d.plot_polynomial(self.polinomial, name='Final 1', color='yellow', y=1)
         grapher_plotly2d.plot_polynomial(self.polinomial, name='Final', color='green')

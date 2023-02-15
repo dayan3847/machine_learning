@@ -35,7 +35,7 @@ class GrapherPlotlyData2D(GrapherPlotlyData):
             )
         )
 
-    def plot_artificial_data(self, artificial: List[Artificial]):
+    def plot_artificial_data(self, artificial: List[Artificial], name: str = 'Data', color: str = 'blue'):
         data_to_print: dict = {}
         for data in artificial:
             if data.y not in data_to_print:
@@ -43,14 +43,14 @@ class GrapherPlotlyData2D(GrapherPlotlyData):
             data_to_print[data.y]['x0'].append(data.x_vector[0])
             data_to_print[data.y]['x1'].append(data.x_vector[1])
         for key in data_to_print:
-            color: str = 'purple' if key == 0 else 'orange' if key == 1 else 'gray'
             self.figure.add_trace(
                 go.Scatter(
                     x=data_to_print[key]['x0'],
                     y=data_to_print[key]['x1'],
                     mode='markers',
-                    name=str(key),
+                    name=f'{name} {key}',
                     marker_color=color,
+                    opacity=.3 if 0 == key else 1,
                 )
             )
 

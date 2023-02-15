@@ -78,7 +78,7 @@ class Polynomial:
                 variables_count = factor.variable + 1
         return variables_count
 
-    # get the last factor of highest degree
+    # get the last factor of the highest degree
     def get_last_factor(self) -> Factor:
         last_factor: Factor = self.factors[0]
         for factor in self.factors[1:]:
