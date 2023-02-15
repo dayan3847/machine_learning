@@ -9,6 +9,7 @@ from src.models import Polynomial
 from src.models import Factor
 from src.repositories import DataRepo
 from src.tools import GrapherPlotlyData3D, GrapherPlotlyData2D, GrapherPlotlyErrors2D
+from src.tools.GrapherPlotlyRoc2D import GrapherPlotlyRoc2D
 
 
 class LogisticRegression:
@@ -25,11 +26,19 @@ class LogisticRegression:
         self.path_files = f'{self.root}files/'
         os.system(f'cp {self.path_files}data.txt {self.path_reports}')
 
+        # ROC
+        self.tp: List[int] = []
+        self.tn: List[int] = []
+        self.fp: List[int] = []
+        self.fn: List[int] = []
+        self.fpr: List[float] = []
+        self.tpr: List[float] = []
+
         # config
         #   Iterations Count
-        self.iterations_count: int = 1500
+        self.iterations_count: int = 1000
         #   Alpha
-        self.a: float = .001
+        self.a: float = .1
         #   Errors
         self.errors: List[float] = []
         #   use sigmoid function
@@ -45,8 +54,8 @@ class LogisticRegression:
         factors: List[Factor] = [
             Factor(),  # 1 (Independent Term)
             Factor(0, 1),  # x0^1 (Linear Term of x1)
-            # Factor(0, 2),  # x0^2 (Quadratic Term of x1)
-            # Factor(0, 3),  # x0^3 (Cubic Term of x1)
+            Factor(0, 2),  # x0^2 (Quadratic Term of x1)
+            Factor(0, 3),  # x0^3 (Cubic Term of x1)
             # Factor(0, 4),  # x0^4 (Quartic Term of x1)
             Factor(1, 1),  # x1^1 (Linear Term of x2)
             # Factor(1, 2),  # x1^2 (Quadratic Term of x2)
@@ -86,15 +95,18 @@ class LogisticRegression:
         grapher_plotly2d.plot_artificial_data(self.validation_data, name='Validation Data', color='orange')
         grapher_plotly2d.plot_artificial_data(self.test_data, name='Test Data', color='green')
         grapher_plotly2d.plot_polynomial(self.polinomial_initial, name='Initial', color='red')
-        grapher_plotly2d.plot_polynomial(self.polinomial, name='Final 1', color='yellow', y=1)
+        # grapher_plotly2d.plot_polynomial(self.polinomial, name='Final 1', color='yellow', y=1)
         grapher_plotly2d.plot_polynomial(self.polinomial, name='Final', color='green')
-        grapher_plotly2d.plot_polynomial(self.polinomial, name='Final 0', color='violet', y=0)
+        # grapher_plotly2d.plot_polynomial(self.polinomial, name='Final 0', color='violet', y=0)
         grapher_plotly2d.save(self.path_reports)
         # Grapher Plotly Errors 2D
         grapher_plotly2d_errors: GrapherPlotlyErrors2D = GrapherPlotlyErrors2D()
         grapher_plotly2d_errors.plot_errors(self.errors)
         grapher_plotly2d_errors.save(self.path_reports)
         grapher_plotly2d_errors.plot_sigmoid_function()
+        grapher_plotly_roc: GrapherPlotlyRoc2D = GrapherPlotlyRoc2D()
+        self.calculate_roc()
+        grapher_plotly_roc.plot_roc(self.fpr, self.tpr)
 
     def error(self) -> float:
         error = 0
@@ -129,6 +141,7 @@ class LogisticRegression:
                     # se actualiza el theta
                     self.polinomial.thetas[j] += self.a * (yi - hi) * xj ** factor_j.degree
             self.errors.append(self.error_rms())
+            self.calculate_sensitivity_and_specificity()
 
         # plot data
         self.plot_data()
@@ -149,3 +162,34 @@ class LogisticRegression:
         file.write('Alpha\n')
         file.write(str(self.a) + '\n')
         file.close()
+
+    def calculate_sensitivity_and_specificity(self):
+        tp = 0
+        fp = 0
+        tn = 0
+        fn = 0
+        for data in self.validation_data:
+            yi = data.y
+            xi_list = data.x_vector
+            hi = self.polinomial.evaluate(xi_list)
+            if self.use_sigmoid:
+                hi = self.sigmoid(hi)
+            if yi == 1:
+                if hi >= .5:
+                    tp += 1
+                else:
+                    fn += 1
+            else:
+                if hi >= .5:
+                    fp += 1
+                else:
+                    tn += 1
+        self.tp.append(tp)
+        self.fp.append(fp)
+        self.tn.append(tn)
+        self.fn.append(fn)
+
+    def calculate_roc(self):
+        for i in range(len(self.tp)):
+            self.fpr.append(self.fp[i] / (self.fp[i] + self.tn[i]))
+            self.tpr.append(self.tp[i] / (self.tp[i] + self.fn[i]))
