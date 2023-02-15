@@ -29,10 +29,10 @@ class DataRepo:
             return result
         result = []
         for i in range(count):
-            # generar una theta aleatoria entre -0.01 y 0.01 diferente de 0
-            theta_i = 0
-            while 0 == theta_i:
-                theta_i = random.uniform(-0.01, 0.01)
+            theta_i = random.uniform(.01, .1)
+            # cambiar el signo
+            if 0 == random.randint(0, 1):
+                theta_i *= -1
             result.append(theta_i)
         self.save_thetas(result)
         return result

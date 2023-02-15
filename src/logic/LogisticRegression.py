@@ -27,9 +27,9 @@ class LogisticRegression:
 
         # config
         #   Iterations Count
-        self.iterations_count: int = 5000
+        self.iterations_count: int = 1500
         #   Alpha
-        self.a: float = .01
+        self.a: float = .001
         #   Errors
         self.errors: List[float] = []
         #   use sigmoid function
@@ -70,7 +70,7 @@ class LogisticRegression:
 
         # Grapher Plotly Data 3D
         grapher_plotly3d: GrapherPlotlyData3D = GrapherPlotlyData3D()
-        grapher_plotly3d.plot_plane_y0()
+        grapher_plotly3d.plot_plane_y(.5)
         grapher_plotly3d.plot_artificial_data(self.training_data)
         grapher_plotly3d.plot_polynomial(self.polinomial_initial, name='Initial', color='Reds')
         grapher_plotly3d.plot_polynomial(self.polinomial, name='Final', color='Greens')
@@ -79,7 +79,9 @@ class LogisticRegression:
         grapher_plotly2d: GrapherPlotlyData2D = GrapherPlotlyData2D()
         grapher_plotly2d.plot_artificial_data(self.training_data)
         grapher_plotly2d.plot_polynomial(self.polinomial_initial, name='Initial', color='red')
+        grapher_plotly2d.plot_polynomial(self.polinomial, name='Final 1', color='yellow', y=1)
         grapher_plotly2d.plot_polynomial(self.polinomial, name='Final', color='green')
+        grapher_plotly2d.plot_polynomial(self.polinomial, name='Final 0', color='violet', y=0)
         grapher_plotly2d.save(self.path_reports)
         # Grapher Plotly Errors 2D
         grapher_plotly2d_errors: GrapherPlotlyErrors2D = GrapherPlotlyErrors2D()
@@ -100,7 +102,7 @@ class LogisticRegression:
     def error_rms(self) -> float:
         e = self.error()
         m = len(self.training_data)
-        return (2 * e / m) ** 0.5
+        return (2 * e / m) ** .5
 
     def main(self):
         self.errors.append(self.error_rms())

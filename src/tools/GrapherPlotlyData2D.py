@@ -54,7 +54,7 @@ class GrapherPlotlyData2D(GrapherPlotlyData):
                 )
             )
 
-    def plot_polynomial(self, polinomial: Polynomial, name: str, color: str = 'gray'):
+    def plot_polynomial(self, polinomial: Polynomial, name: str, color: str = 'gray', y: int = .5):
         if polinomial.get_variables_count() > 2:
             return
         if polinomial.get_last_variable_degree() > 1:
@@ -62,7 +62,7 @@ class GrapherPlotlyData2D(GrapherPlotlyData):
         x0_list = np.linspace(-3, 3, 100)
         x1_list = []
         for x0 in x0_list:
-            x1 = polinomial.evaluate_despejando([x0], 1)
+            x1 = polinomial.evaluate_despejando([x0], 1, y=y)
             x1_list.append(x1)
         self.figure.add_trace(
             go.Scatter(

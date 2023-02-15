@@ -36,7 +36,7 @@ class GrapherPlotlyData3D(GrapherPlotlyData):
                 y=x1_list,
                 z=y_list,
                 mode='markers',
-                marker=dict(size=12, color=y_list, opacity=0.8, colorscale='Viridis'),
+                marker=dict(size=12, color=y_list, opacity=.8, colorscale='Viridis'),
                 name='Points',
             )
         )
@@ -60,17 +60,18 @@ class GrapherPlotlyData3D(GrapherPlotlyData):
             )
         )
 
-    # graficar el plano y = 0
-    def plot_plane_y0(self):
+    # graficar un plano y
+    def plot_plane_y(self, y: float):
         x0 = self.data_to_pot['x0']
         x1 = self.data_to_pot['x1']
-        y = np.zeros(x0.shape)
+        y = np.full((len(x0), len(x1)), y)
+
         self.figure.add_trace(
             go.Surface(
                 z=y,
                 x=x0,
                 y=x1,
-                opacity=0.3,
+                opacity=.3,
                 showscale=False,
                 colorscale='Greys',
                 name='Plane y = 0',

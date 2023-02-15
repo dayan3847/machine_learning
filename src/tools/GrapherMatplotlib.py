@@ -38,7 +38,7 @@ class GrapherMatplotlib:
         plt.ylabel('x1')
         plt.axvline(color='black')
         plt.axhline(color='black')
-        x0_list = np.arange(-3, 3, 0.01)
+        x0_list = np.arange(-3, 3, .01)
         x1_list = []
         for x0 in x0_list:
             x1 = polinomial.evaluate_despejando([x0], 1)

@@ -49,7 +49,7 @@ class Polynomial:
         return result
 
     # evaluate the polynomial despejando una variable xk
-    def evaluate_despejando(self, x_list: List[float], k: int, y: float = 0) -> float:
+    def evaluate_despejando(self, x_list: List[float], k: int, y: float = .5) -> float:
         result: float = 0
         theta_xk: float | None = None
         for i in range(len(self.factors)):

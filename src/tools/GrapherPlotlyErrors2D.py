@@ -105,7 +105,7 @@ class GrapherPlotlyErrors2D(GrapherPlotly):
         figure_sigmoid.add_trace(
             go.Scatter(
                 x=[0],
-                y=[0.5],
+                y=[.5],
                 mode='markers',
                 name='center',
                 marker_color='black'
