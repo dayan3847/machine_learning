@@ -24,4 +24,4 @@ if __name__ == '__main__':
     network: Network = Network([10, 2, 2])
     print(f'Network {network.propagate(features)}')
 
-    GrapherNetworkX.draw_network(network)
+    # GrapherNetworkX.draw_network(network)
