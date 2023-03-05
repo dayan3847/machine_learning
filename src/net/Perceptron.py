@@ -1,8 +1,6 @@
 from typing import List
 import numpy as np
 
-np.random.seed(123)
-
 
 class Perceptron:
     weight_features: List[float]
