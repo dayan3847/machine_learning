@@ -11,7 +11,7 @@ class Network:
         for i in range(1, len(topology)):
             layer: List[Perceptron] = []
             for j in range(topology[i]):
-                layer.append(Perceptron(topology[i - 1] + 1))
+                layer.append(Perceptron(topology[i - 1]))
             self.neurons.append(layer)
 
     def propagate(self, features: List[float]) -> List[float]:
