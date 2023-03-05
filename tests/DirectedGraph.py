@@ -1,6 +1,5 @@
 import networkx as nx
 from networkx import Graph, DiGraph
-from scipy.ndimage import label
 
 graph: Graph = DiGraph()
 graph.add_node(1, pos=(0, -1))

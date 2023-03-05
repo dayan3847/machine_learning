@@ -1,6 +1,6 @@
 from typing import List
 
-from Perceptron import Perceptron
+from src.net.Perceptron import Perceptron
 
 
 class Network:

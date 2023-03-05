@@ -1,8 +1,8 @@
 from typing import List
-from DataSet import DataSet
-from GrapherNetworkX import GrapherNetworkX
-from Network import Network
-from Perceptron import Perceptron
+from src.tools.DataSet import DataSet
+from src.tools.GrapherNetworkX import GrapherNetworkX
+from src.net.Network import Network
+from src.net.Perceptron import Perceptron
 
 if __name__ == '__main__':
     features: List[int] = [1, 4, 7, 8, 10, -1, -4, -7, -8, -10]

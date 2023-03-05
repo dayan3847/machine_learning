@@ -1,10 +1,9 @@
-from typing import List
-
 import networkx as nx
 import matplotlib.pyplot as plt
+from typing import List
 
-from Network import Network
-from Perceptron import Perceptron
+from src.net.Network import Network
+from src.net.Perceptron import Perceptron
 
 
 class GrapherNetworkX:
