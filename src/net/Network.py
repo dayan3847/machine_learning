@@ -7,8 +7,6 @@ from src.net.Neuron import Neuron
 from src.net.NeuronInput import NeuronInput
 from src.net.NeuronPerceptron import NeuronPerceptron
 
-from src.net.Perceptron import Perceptron
-
 
 class Network:
     _graph: DiGraph
@@ -48,14 +46,18 @@ class Network:
             self.connect_neuron_with_layer(neuron, -2)
 
     def propagate(self, features: List[float]) -> List[float]:
+        count: int = len(features)
+        if count != len(self._neurons_input):
+            raise Exception('Error')
         # Clear neurons values:
         for layer in self._neurons:
             for neuron in layer:
-                neuron.set_value()
+                neuron.clear_value()
         # Set network input values:
-        for f in features:
-            for neuron in self._neurons_input:
-                neuron.set_value(f)
+        for i in range(count):
+            f: float = features[i]
+            neuron: NeuronInput = self._neurons_input[i]
+            neuron.set_value(f)
 
         return [o_neuron.get_value() for o_neuron in self._neurons_output]
 

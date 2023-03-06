@@ -18,7 +18,8 @@ class NeuronPerceptron(Neuron):
             in_edges = self._graph.in_edges(self, data=True)
             for in_edge in in_edges:
                 prev_neuron: Neuron = in_edge[0]
-                prev_neuron_value = prev_neuron.get_value()
-                self._value += prev_neuron_value * in_edge.get('weight')
+                prev_neuron_value: float = prev_neuron.get_value()
+                in_edge_weight: float = in_edge[2]['weight']
+                self._value += prev_neuron_value * in_edge_weight
 
         return self._value
