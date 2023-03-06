@@ -3,7 +3,7 @@ from networkx import DiGraph
 
 class Neuron:
     _graph: DiGraph
-    _value: float | None
+    # _value: float | None
 
     counter: int = 0
 
