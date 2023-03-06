@@ -6,6 +6,7 @@ from typing import List
 
 from src.net.Neuron import Neuron
 from src.net.NeuronInput import NeuronInput
+from src.net.NeuronOutput import NeuronOutput
 from src.net.NeuronPerceptron import NeuronPerceptron
 
 
@@ -13,7 +14,7 @@ class Network:
     _graph: DiGraph
     _neurons: List[List[Neuron]]
     _neurons_input: List[NeuronInput]  # _neurons[0]
-    _neurons_output: List[NeuronPerceptron]  # _neurons[-1]
+    _neurons_output: List[NeuronOutput]  # _neurons[-1]
 
     def __init__(self, topology: List[int]):
         topology_len: int = len(topology)
@@ -43,7 +44,7 @@ class Network:
         self._neurons_output = []
         output_layer_count: int = topology[-1]
         for i in range(output_layer_count):
-            neuron: NeuronPerceptron = NeuronPerceptron(self._graph, self.generate_weight())
+            neuron: NeuronOutput = NeuronOutput(self._graph, self.generate_weight())
             self._graph.add_node(neuron, pos=(topology_len - 1, -i))
             self._neurons_output.append(neuron)
             self.connect_neuron_with_layer(neuron, -1)
