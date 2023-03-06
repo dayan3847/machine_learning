@@ -1,3 +1,5 @@
+from typing import Callable, Any
+
 import numpy as np
 from networkx import DiGraph
 
@@ -5,6 +7,7 @@ from src.net.Neuron import Neuron
 
 
 class NeuronPerceptron(Neuron):
+    activation_function: Callable[[float], float]
     weight_bias: float
 
     def __init__(self, graph: DiGraph, weight_bias: float):

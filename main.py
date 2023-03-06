@@ -2,9 +2,7 @@ import numpy as np
 from typing import List
 
 from src.tools.DataSet import DataSet
-from src.tools.GrapherNetworkX import GrapherNetworkX
 from src.net.Network import Network
-from src.net.Perceptron import Perceptron
 
 if __name__ == '__main__':
     np.random.seed(123)
@@ -13,6 +11,7 @@ if __name__ == '__main__':
 
     network: Network = Network([10, 2, 2])
     print(f'Network {network.propagate(features)}')
+    network.draw()
 
     # perceptron: Perceptron = Perceptron()
     # weights: List[float] = DataSet.data1()
