@@ -22,4 +22,6 @@ class NeuronPerceptron(Neuron):
                 in_edge_weight: float = in_edge[2]['weight']
                 self._value += prev_neuron_value * in_edge_weight
 
+        self._value = self.activation_function(self._value)
+
         return self._value
