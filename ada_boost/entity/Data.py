@@ -19,7 +19,7 @@ class Data:
         self.weights = self.weights / sum_weights
 
     @staticmethod
-    def load_data() -> 'Data':
+    def load_data(corpus_dir: str) -> 'Data':
         x: List[np.ndarray] = [
             np.array([]),  # x0
             np.array([]),  # x1
@@ -28,7 +28,7 @@ class Data:
         target: np.ndarray = np.array([])
 
         # cargar de un archivo
-        with open('corpus/dataCircle.txt', 'r') as f:
+        with open(f'{corpus_dir}/dataCircle.txt', 'r') as f:
             for line in f:
                 nums = line.split()
                 # coordinate x0 (dimension 0)

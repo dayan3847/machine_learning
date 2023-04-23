@@ -3,8 +3,8 @@ from ada_boost.entity import WeakClassifier, Data
 
 class AdaBoostMain:
 
-    def __init__(self):
-        self.data: Data = Data.load_data()
+    def __init__(self, corpus_dir: str = './corpus'):
+        self.data: Data = Data.load_data(corpus_dir)
 
     def search_best_classifier(self) -> WeakClassifier:
         classifier_optimo = None
