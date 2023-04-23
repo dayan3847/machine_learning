@@ -38,7 +38,7 @@ class WeakClassifier:
 
     def fix_polarity(self, data: Data) -> float:
         self.error = self.get_error(data)
-        if self.error < .5:
+        if self.error > .5:
             self.polarity = not self.polarity
             self.error = 1 - self.error
         return self.error

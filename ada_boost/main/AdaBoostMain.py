@@ -1,20 +1,15 @@
 from ada_boost.entity import WeakClassifier, Data
-from ada_boost.tools import Plotter
 
 
 class AdaBoostMain:
 
     def __init__(self):
-        self.plotter: Plotter = Plotter()
         self.data: Data = Data.load_data()
 
-    def plot_data(self):
-        self.plotter.plot_data(self.data)
-
     def search_best_classifier(self) -> WeakClassifier:
-        features_count: int = len(self.data.x)
         classifier_optimo = None
         error_optimo = None
+        features_count: int = len(self.data.x)
         for feature in range(features_count):
             for threshold in range(1, 100):
                 classifier = WeakClassifier(feature, threshold)

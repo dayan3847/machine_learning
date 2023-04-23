@@ -4,8 +4,12 @@ from ada_boost.entity import Data, WeakClassifier
 
 
 class Plotter:
-    def __init__(self):
-        self.fig, self.ax = plt.subplots()
+    def __init__(self, subplots: bool = True):
+        if subplots:
+            self.fig, self.ax = plt.subplots()
+        else:
+            self.fig = plt
+            self.ax = plt
 
     def clear(self):
         self.ax.clear()
