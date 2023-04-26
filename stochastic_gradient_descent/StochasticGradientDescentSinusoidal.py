@@ -1,4 +1,4 @@
-from src.StochasticGradientDescent import StochasticGradientDescent
+from stochastic_gradient_descent.StochasticGradientDescent import StochasticGradientDescent
 import numpy as np
 
 

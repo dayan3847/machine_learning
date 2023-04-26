@@ -20,7 +20,7 @@ and yi = sin(2πxi) + ε. Here, ε is a random noise value in the interval [−0
 #### Code
 
 ```python
-from src.StochasticGradientDescentSinusoidal import StochasticGradientDescentSinusoidal
+from stochastic_gradient_descent.StochasticGradientDescentSinusoidal import StochasticGradientDescentSinusoidal
 
 stochastic_gradient_descent = StochasticGradientDescentSinusoidal()
 ```
@@ -107,4 +107,4 @@ stochastic_gradient_descent.print_repo()
 
 #### PDF
 
-[Report](./reports/reportStochasticGradientDescentSinusoidal.pdf)
+[Report](reports/reportStochasticGradientDescentSinusoidal.pdf)
