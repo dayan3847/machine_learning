@@ -1,12 +1,6 @@
 import numpy as np
 from typing import List
-from enum import Enum
 from bandit.entity.BanditMachine import BanditMachine
-
-
-class ActionType(Enum):
-    EXPLORATION = 'exploration'
-    EXPLOITATION = 'exploitation'
 
 
 class BanditMachinePlayerEpsilonGreedy:
@@ -23,11 +17,11 @@ class BanditMachinePlayerEpsilonGreedy:
         # epsilon
         self.epsilon: float = epsilon
 
-    def get_next_action_type(self) -> ActionType:
-        if np.random.random() < self.epsilon:
-            return ActionType.EXPLORATION
-        else:
-            return ActionType.EXPLOITATION
+    # Get next action type
+    # True: exploration
+    # False: exploitation
+    def get_next_action_type(self) -> bool:
+        return np.random.random() < self.epsilon
 
     def get_next_action_exploration(self) -> int:
         return np.random.randint(self.bandit_machine.n_actions)
@@ -36,13 +30,11 @@ class BanditMachinePlayerEpsilonGreedy:
         return np.random.choice(self.best_actions)
 
     def get_next_action(self) -> int:
-        action_type = self.get_next_action_type()
-        if action_type == ActionType.EXPLORATION:
+        exploration: bool = self.get_next_action_type()
+        if exploration:
             return self.get_next_action_exploration()
-        elif action_type == ActionType.EXPLOITATION:
-            return self.get_next_action_exploitation()
         else:
-            raise ValueError('Invalid action type')
+            return self.get_next_action_exploitation()
 
     def push(self, action_id: int):
         reward: float = self.bandit_machine.push(action_id)
