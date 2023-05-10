@@ -48,5 +48,13 @@ class BanditMachinePlayerEpsilonGreedy:
             self.best_actions = [a]
         elif self.Q[a] == self.best_q:
             self.best_actions.append(a)
+        elif a in self.best_actions:
+            self.best_actions.remove(a)
+            if len(self.best_actions) == 0:
+                self.calculate_best_q()
 
         return reward, a
+
+    def calculate_best_q(self):
+        self.best_q = self.Q.max()
+        self.best_actions = np.where(self.Q == self.best_q)[0].tolist()

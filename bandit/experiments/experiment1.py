@@ -20,10 +20,8 @@ if __name__ == '__main__':
     y = np.array(y)
     plt.xlabel('Action')
     plt.ylabel('Reward Mean')
-    # scatter rectangulos verticales
     plt.scatter(x, y, color='blue', marker='h', s=500)
 
-    # linea discontinua en y = 0, opacidad 0.5
     plt.axhline(y=0, color='black', linestyle='--', alpha=0.5)
     for xi in x:
         plt.axvline(x=xi, color='black', linestyle='-', alpha=0.5)
@@ -41,12 +39,10 @@ if __name__ == '__main__':
 
     plt.xlabel('Iterations')
     plt.ylabel('Reward')
-    # grafico de linea
     plt.plot(iterations, rewards, label='epsilon greedy')
     plt.show()
 
     plt.xlabel('Iterations')
     plt.ylabel('Best Q')
-    # grafico de linea
     plt.plot(iterations, q_bests, label='best q')
     plt.show()
