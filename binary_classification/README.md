@@ -70,7 +70,7 @@ Esta sería la vista del modelo inicial en dos dimensiones
 
 ### Vistas en 3 Dimensiones
 
-[3D Data](./reports/2023-02-12_02-43-59/figure_3d_data.html)
+[3D Data](reports/2023-02-12_02-43-59/figure_3d_data.html)
 
 ![](img/data_points_3d.png)
 ![](img/newplot_2.png)

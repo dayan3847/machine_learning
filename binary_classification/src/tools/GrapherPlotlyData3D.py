@@ -1,9 +1,9 @@
 import numpy as np
 import plotly.graph_objs as go
 from typing import List
-from src.models import Artificial
-from src.models import Polynomial
-from src.tools import GrapherPlotlyData
+from binary_classification.src.models import Artificial
+from binary_classification.src.models import Polynomial
+from binary_classification.src.tools import GrapherPlotlyData
 
 
 class GrapherPlotlyData3D(GrapherPlotlyData):

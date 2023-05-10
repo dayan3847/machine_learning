@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import List
-from src.models import Artificial
-from src.models import Polynomial
+from binary_classification.src.models import Artificial
+from binary_classification.src.models import Polynomial
 
 
 # Training Data (data unit)

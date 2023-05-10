@@ -1,6 +1,6 @@
 from typing import List
 
-from src.models import Factor
+from binary_classification.src.models import Factor
 
 
 class Polynomial:

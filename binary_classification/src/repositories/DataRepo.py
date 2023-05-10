@@ -1,6 +1,6 @@
 import random
 from typing import List
-from src.models import Artificial
+from binary_classification.src.models import Artificial
 
 
 # Artificial Repository

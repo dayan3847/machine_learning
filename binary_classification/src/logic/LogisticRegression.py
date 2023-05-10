@@ -4,12 +4,12 @@ from datetime import datetime
 import numpy as np
 from copy import deepcopy
 from typing import List
-from src.models import Artificial
-from src.models import Polynomial
-from src.models import Factor
-from src.repositories import DataRepo
-from src.tools import GrapherPlotlyData3D, GrapherPlotlyData2D, GrapherPlotlyErrors2D
-from src.tools.GrapherPlotlyRoc2D import GrapherPlotlyRoc2D
+from binary_classification.src.models import Artificial
+from binary_classification.src.models import Polynomial
+from binary_classification.src.models import Factor
+from binary_classification.src.repositories import DataRepo
+from binary_classification.src.tools import GrapherPlotlyData3D, GrapherPlotlyData2D, GrapherPlotlyErrors2D
+from binary_classification.src.tools.GrapherPlotlyRoc2D import GrapherPlotlyRoc2D
 
 
 class LogisticRegression:

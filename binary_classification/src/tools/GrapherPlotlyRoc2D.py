@@ -1,7 +1,7 @@
 from typing import List
 
 import plotly.graph_objs as go
-from src.tools import GrapherPlotly
+from binary_classification.src.tools import GrapherPlotly
 
 
 class GrapherPlotlyRoc2D(GrapherPlotly):

@@ -1,8 +1,8 @@
 import numpy as np
 from typing import List
 from abc import abstractmethod
-from src.models import Polynomial, Artificial
-from src.tools import GrapherPlotly
+from binary_classification.src.models import Polynomial, Artificial
+from binary_classification.src.tools import GrapherPlotly
 
 
 class GrapherPlotlyData(GrapherPlotly):

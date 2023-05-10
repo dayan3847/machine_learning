@@ -2,7 +2,7 @@ import numpy as np
 import plotly.graph_objs as go
 from typing import List
 from plotly.graph_objs import Figure
-from src.tools import GrapherPlotly
+from binary_classification.src.tools import GrapherPlotly
 
 
 class GrapherPlotlyErrors2D(GrapherPlotly):
