@@ -10,7 +10,7 @@
 
 ## Task1: Stochastic Gradient Descent
 
-**GitHub**: https://github.com/dayan3847/mcc_ml_task1
+**GitHub**: https://github.com/dayan3847/machine_learning/tree/master/stochastic_gradient_descent
 
 ### Generate artificial data points
 
