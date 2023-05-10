@@ -4,9 +4,9 @@ from networkx import DiGraph
 from matplotlib import pyplot as plt
 from typing import List
 
-from src.net.Neuron import Neuron
-from src.net.NeuronInput import NeuronInput
-from src.net.NeuronPerceptron import NeuronPerceptron
+from multi_layer_perceptron.src.net.Neuron import Neuron
+from multi_layer_perceptron.src.net.NeuronInput import NeuronInput
+from multi_layer_perceptron.src.net.NeuronPerceptron import NeuronPerceptron
 
 
 class Network:

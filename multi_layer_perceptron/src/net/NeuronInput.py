@@ -1,4 +1,4 @@
-from src.net.Neuron import Neuron
+from multi_layer_perceptron.src.net.Neuron import Neuron
 
 
 class NeuronInput(Neuron):
