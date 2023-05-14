@@ -1,14 +1,14 @@
 # Universidad Autónoma de Yucatán
 
-### Maestría en Ciencias de la Computación
+## Facultad de Matemáticas
 
-## Machine Learning
+### Machine Learning
 
 **Teacher:** Dr. Victor Uc Cetina
 
 **Student:** Dayan Bravo Fraga
 
-## Task1: Stochastic Gradient Descent
+# Task1: Stochastic Gradient Descent
 
 **GitHub**: https://github.com/dayan3847/machine_learning/tree/master/stochastic_gradient_descent
 
@@ -17,40 +17,18 @@
 Generate 100 artificial data points (xi, yi) where each xi is randomly generated from the interval [0, 1]
 and yi = sin(2πxi) + ε. Here, ε is a random noise value in the interval [−0.3, 0.3].
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/stochastic_gradient_descent/colab/generate_artificial_data_points.ipynb)
-
-
 #### Code
 
-```python
-from stochastic_gradient_descent.StochasticGradientDescentSinusoidal import StochasticGradientDescentSinusoidal
-
-stochastic_gradient_descent = StochasticGradientDescentSinusoidal()
-```
-
-```python
-# Generate Data Points
-stochastic_gradient_descent.m = 100  # Artificial Count
-stochastic_gradient_descent.generate_data_points()
-stochastic_gradient_descent.plot_data()
-```
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/stochastic_gradient_descent/colab/1_generate_artificial_data_points.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/stochastic_gradient_descent/colab/2_stochastic_gradient_descent.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/stochastic_gradient_descent/colab/3_plot_results.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/stochastic_gradient_descent/colab/4_create_animation.ipynb)
 
 #### Output
 
 Artificial points have been generated:
 
 ![](img/output1.png)
-
-### Initialize Polynomial Regression Model
-
-#### Code
-
-```python
-# Polynomial Degree
-stochastic_gradient_descent.d = 10
-stochastic_gradient_descent.generate_initial_parameters()
-stochastic_gradient_descent.plot_data(initial=True)
-```
 
 #### Output
 
@@ -60,20 +38,6 @@ stochastic_gradient_descent.plot_data(initial=True)
 
 Implement in your favorite programming language the Stochastic Gradient Descent algorithm to solve the regression
 problem using the 100 data points you generated.
-
-#### Code
-
-```python
-# Config
-stochastic_gradient_descent.a = .1
-stochastic_gradient_descent.iterations_count = 1000
-stochastic_gradient_descent.run()
-```
-
-```python
-stochastic_gradient_descent.update_graphics()
-stochastic_gradient_descent.plot_data_all()
-```
 
 #### Output
 
@@ -88,12 +52,6 @@ Artificial points have been generated:
 ![](img/output4.png)
 
 ### Report
-
-#### Code
-
-```python
-stochastic_gradient_descent.print_repo()
-```
 
 #### Output
 
