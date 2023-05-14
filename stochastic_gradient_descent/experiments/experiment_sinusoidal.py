@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from stochastic_gradient_descent.StochasticGradientDescent import StochasticGradientDescent
+from stochastic_gradient_descent.src.StochasticGradientDescent import StochasticGradientDescent
 
 if __name__ == '__main__':
     _file_name = 'data_points.csv'

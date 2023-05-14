@@ -1,5 +1,5 @@
 import numpy as np
-from stochastic_gradient_descent.TrainingDataGenerator import TrainingDataGenerator
+from stochastic_gradient_descent.src.TrainingDataGenerator import TrainingDataGenerator
 
 if __name__ == '__main__':
     _file_name = 'data_points.csv'
