@@ -5,6 +5,17 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 if __name__ == '__main__':
+    reports_root: str = 'reports'
+    # creando una carpeta con la fecha y hora como subcarpeta de reports
+
+
+    import os
+    import datetime
+
+    now = datetime.datetime.now()
+    folder_name = now.strftime("%Y-%m-%d-%H-%M-%S")
+    folder_path = os.path.join(reports_root, folder_name)
+
     _file_name = 'data_points.csv'
 
     # load data points
@@ -53,9 +64,11 @@ if __name__ == '__main__':
     plt.grid()
     plt.show()
 
+    total_frames = 1001
+
 
     def update_plot(frame):
-        print('\033[92m' + 'frame: {} de 250'.format(frame) + '\033[0m')
+        print('\033[92m' + f'frame: {frame} de {total_frames}' + '\033[0m')
         ff = frame * 4
         plt.cla()
         yf_current = [sp.sympify(history_polynomial[ff]).subs('x', x) for x in xf]
@@ -81,5 +94,5 @@ if __name__ == '__main__':
 
     print('\033[92m' + 'creating animation... ' + '\033[0m')
     fig = plt.figure()
-    ani = animation.FuncAnimation(fig, update_plot, frames=50, interval=200)
+    ani = animation.FuncAnimation(fig, update_plot, frames=1001, interval=200)
     ani.save('mi_animacion.mp4', writer='ffmpeg')
