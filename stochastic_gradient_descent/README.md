@@ -17,6 +17,9 @@
 Generate 100 artificial data points (xi, yi) where each xi is randomly generated from the interval [0, 1]
 and yi = sin(2πxi) + ε. Here, ε is a random noise value in the interval [−0.3, 0.3].
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/stochastic_gradient_descent/colab/generate_artificial_data_points.ipynb)
+
+
 #### Code
 
 ```python
