@@ -5,17 +5,6 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 if __name__ == '__main__':
-    reports_root: str = 'reports'
-    # creando una carpeta con la fecha y hora como subcarpeta de reports
-
-
-    import os
-    import datetime
-
-    now = datetime.datetime.now()
-    folder_name = now.strftime("%Y-%m-%d-%H-%M-%S")
-    folder_path = os.path.join(reports_root, folder_name)
-
     _file_name = 'data_points.csv'
 
     # load data points
