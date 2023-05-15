@@ -1,4 +1,6 @@
 import random
+import time
+
 import numpy as np
 import sympy as sp
 
@@ -58,7 +60,8 @@ class StochasticGradientDescent:
             error += (hi - yi) ** 2
         return error / 2
 
-    def run(self):
+    def run(self) -> float:
+        init_time: float = time.time()
         for k in range(self.iterations_count):
             for i in range(self.m):
                 xi = self.data_point[0][i]
@@ -71,6 +74,8 @@ class StochasticGradientDescent:
                 self.error_best = ek
                 self.polynomial_best = self.get_polynomial()
             self.save_history(k + 1)
+        end_time: float = time.time()
+        return end_time - init_time
 
     def h(self, x: float) -> float:
         result = 0
