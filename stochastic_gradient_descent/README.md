@@ -74,4 +74,4 @@ problem using the 100 data points you generated.
 
 ### Report in PDF
 
-[Report](doc/reportStochasticGradientDescentSinusoidal.pdf)
+[Report](doc/out/reportStochasticGradientDescentSinusoidal.pdf)
