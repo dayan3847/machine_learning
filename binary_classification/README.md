@@ -10,7 +10,9 @@
 
 # Task2: Binary Classification through Logistic Regression
 
-**GitHub**: https://github.com/dayan3847/mcc_ml_task2
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/binary_classification/colab/logistic_regression.ipynb)
+
+**GitHub**: https://github.com/dayan3847/machine_learning/tree/master/binary_classification
 
 ## Carga de Datos
 
