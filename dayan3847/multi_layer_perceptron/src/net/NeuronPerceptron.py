@@ -3,7 +3,7 @@ from typing import Callable
 import numpy as np
 from networkx import DiGraph
 
-from multi_layer_perceptron.src.net.Neuron import Neuron
+from dayan3847.multi_layer_perceptron.src.net.Neuron import Neuron
 
 
 class NeuronPerceptron(Neuron):

@@ -1,4 +1,4 @@
-from ada_boost.entity import WeakClassifier, Data
+from dayan3847.ada_boost.entity import WeakClassifier, Data
 
 
 class AdaBoostMain:

@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List
 
-from ada_boost.entity.Data import Data
+from dayan3847.ada_boost.entity import Data
 
 
 class WeakClassifier:

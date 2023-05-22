@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from ada_boost.entity import Data, WeakClassifier
+from dayan3847.ada_boost.entity import Data, WeakClassifier
 
 
 class Plotter:

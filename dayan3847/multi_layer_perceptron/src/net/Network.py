@@ -4,10 +4,10 @@ from networkx import DiGraph
 from matplotlib import pyplot as plt
 from typing import List
 
-from multi_layer_perceptron.src.net.Neuron import Neuron
-from multi_layer_perceptron.src.net.NeuronInput import NeuronInput
-from multi_layer_perceptron.src.net.NeuronOutput import NeuronOutput
-from multi_layer_perceptron.src.net.NeuronPerceptron import NeuronPerceptron
+from dayan3847.multi_layer_perceptron.src.net.Neuron import Neuron
+from dayan3847.multi_layer_perceptron.src.net.NeuronInput import NeuronInput
+from dayan3847.multi_layer_perceptron.src.net.NeuronOutput import NeuronOutput
+from dayan3847.multi_layer_perceptron.src.net.NeuronPerceptron import NeuronPerceptron
 
 
 class Network:

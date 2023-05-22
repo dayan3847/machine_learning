@@ -1,6 +1,6 @@
 from typing import List
 
-from ada_boost.entity.WeakClassifier import WeakClassifier
+from dayan3847.ada_boost.entity import WeakClassifier
 from ada_boost.main import AdaBoostMain
 from ada_boost.tools import Plotter
 
