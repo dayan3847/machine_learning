@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List
 
-from src.net.Network import Network
+from dayan3847.multi_layer_perceptron.src.net.Network import Network
 
 if __name__ == '__main__':
     np.random.seed(123)

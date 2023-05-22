@@ -1,5 +1,7 @@
 import networkx as nx
 from networkx import Graph, DiGraph
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
 graph: Graph = DiGraph()
 graph.add_node(1, pos=(0, -1))
@@ -26,7 +28,6 @@ graph.add_edge(1, 3, weight=7, capacity=15, length=342.7)
 # graph.add_edge(3, 13)
 
 # graficar
-import matplotlib.pyplot as plt
 
 plt.subplot(111)
 plt.title("Grafo dirigido")
@@ -43,7 +44,6 @@ plt.show()
 
 # graficar con plotly
 
-import plotly.graph_objects as go
 
 fig = go.Figure(
     data=[
@@ -103,7 +103,6 @@ fig.show()
 # ])
 #
 # app.run_server()
-import plotly.graph_objs as go
 
 fig = go.Figure()
 
@@ -115,7 +114,6 @@ fig.add_trace(go.Scatter(x=[2], y=[2], mode="markers+text", name="My Point2",
 fig.show()
 
 
-import plotly.graph_objs as go
 
 # Define los nodos
 nodes = go.Scatter(x=[0, 1, 2, 3], y=[0, 1, 2, 3], mode='markers',

@@ -4,6 +4,10 @@ from typing import List
 class DataSet:
 
     @staticmethod
+    def data0() -> List[int]:
+        return [1, 4, 7, 8, 10, -1, -4, -7, -8, -10]
+
+    @staticmethod
     def data1() -> List[float]:
         return [
             0.14699916,

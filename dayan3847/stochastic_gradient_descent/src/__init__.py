@@ -1,1 +1,2 @@
-from dayan3847.stochastic_gradient_descent.src import StochasticGradientDescent, TrainingDataGenerator
+import dayan3847.stochastic_gradient_descent.src.StochasticGradientDescent
+import dayan3847.stochastic_gradient_descent.src.TrainingDataGenerator
