@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="reportStochasticGradientDescentSinusoidal2" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+  <configuration default="false" name="reportStochasticGradientDescentSinusoidal" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
     <texify>
       <compiler>PDFLATEX</compiler>
       <compiler-path />
@@ -8,9 +8,9 @@
       <viewer-command />
       <compiler-arguments />
       <envs />
-      <main-file>$PROJECT_DIR$/stochastic_gradient_descent/doc/reportStochasticGradientDescentSinusoidal2.tex</main-file>
-      <output-path>$PROJECT_DIR$/stochastic_gradient_descent/reports/out</output-path>
-      <auxil-path>$PROJECT_DIR$/stochastic_gradient_descent/reports/auxil</auxil-path>
+      <main-file>$PROJECT_DIR$/stochastic_gradient_descent/doc/reportStochasticGradientDescentSinusoidal.tex</main-file>
+      <output-path>$PROJECT_DIR$/stochastic_gradient_descent/doc/out</output-path>
+      <auxil-path>$PROJECT_DIR$/stochastic_gradient_descent/doc/auxil</auxil-path>
       <compile-twice>false</compile-twice>
       <output-format>PDF</output-format>
       <latex-distribution>MIKTEX</latex-distribution>

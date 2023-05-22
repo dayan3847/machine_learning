@@ -3,35 +3,7 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="/stochastic_gradient_descent/colab/history.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/stochastic_gradient_descent/colab/reports/20230514124543943655/data_points.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/stochastic_gradient_descent/colab/reports/20230514124543943655/history.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/stochastic_gradient_descent/data_points.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/stochastic_gradient_descent/history.csv">
+        <entry key="/stochastic_gradient_descent/colab/reports/20230514144011475656/data_points.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
