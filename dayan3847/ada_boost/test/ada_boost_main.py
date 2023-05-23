@@ -5,7 +5,7 @@ from dayan3847.ada_boost.src.AdaBoost import AdaBoost
 from dayan3847.ada_boost.src.Plotter import Plotter
 
 if __name__ == '__main__':
-    data_t: np.ndarray = np.loadtxt('./../colab/dataCircle_fix.txt', delimiter=' ')
+    data_t: np.ndarray = np.loadtxt('../data/dataCircle_fix.txt', delimiter=' ')
     ada_boost = AdaBoost(data_t.T)
     print(ada_boost.data)
 
