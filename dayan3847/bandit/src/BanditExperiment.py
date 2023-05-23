@@ -1,7 +1,7 @@
 import numpy as np
 
-from bandit.entity.BanditMachine import BanditMachine
-from bandit.entity.BanditMachinePlayer import BanditMachinePlayerEpsilonGreedy
+from dayan3847.bandit.src.BanditMachine import BanditMachine
+from dayan3847.bandit.src.BanditMachinePlayer import BanditMachinePlayerEpsilonGreedy
 
 
 class BanditExperiment:

@@ -1,9 +1,8 @@
 import numpy as np
-
-from bandit.entity.BanditMachine import BanditMachine, BanditMachineAction
 import matplotlib.pyplot as plt
 
-from bandit.entity.BanditMachinePlayer import BanditMachinePlayerEpsilonGreedy
+from dayan3847.bandit.src.BanditMachine import BanditMachine, BanditMachineAction
+from dayan3847.bandit.src.BanditMachinePlayer import BanditMachinePlayerEpsilonGreedy
 
 if __name__ == '__main__':
     print('experiment1')
@@ -63,6 +62,3 @@ if __name__ == '__main__':
 
     # print count optimal action equals to 1
     print('optimal_actions: ', sum(optimal_actions))
-
-
-

@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List
-from bandit.entity.BanditMachine import BanditMachine
+from dayan3847.bandit.src.BanditMachine import BanditMachine
 
 
 class BanditMachinePlayerEpsilonGreedy:

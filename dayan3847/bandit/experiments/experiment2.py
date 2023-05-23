@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from bandit.entity.BanditExperiment import BanditExperiment
+from dayan3847.bandit.src.BanditExperiment import BanditExperiment
 
 if __name__ == '__main__':
     bandit_experiment1 = BanditExperiment(
@@ -30,7 +30,6 @@ if __name__ == '__main__':
     #     q1=0.0,
     #     epsilon=0.2,
     # )
-
 
     # result 1
     r1 = bandit_experiment1.run()

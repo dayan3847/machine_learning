@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from bandit.entity.BanditExperiment import BanditExperiment
+from dayan3847.bandit.src.BanditExperiment import BanditExperiment
 
 if __name__ == '__main__':
     bandit_experiment1 = BanditExperiment(
