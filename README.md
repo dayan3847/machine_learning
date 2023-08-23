@@ -121,3 +121,15 @@ https://github.com/dayan3847/machine_learning/tree/master/dayan3847/bandit
 ## Experiment 3
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/dayan3847/bandit/colab/bandit_experiment3.ipynb)
+
+# Practice: Basis Functions
+
+## GitHub
+
+https://github.com/dayan3847/machine_learning/tree/master/dayan3847/basis_functions
+
+https://github.com/dayan3847/machine_learning/blob/master/dayan3847/basis_functions/basis_functions.ipynb
+
+## Colab
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/dayan3847/basis_functions/basis_functions.ipynb)
