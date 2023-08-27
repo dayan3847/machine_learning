@@ -133,3 +133,15 @@ https://github.com/dayan3847/machine_learning/blob/master/dayan3847/basis_functi
 ## Colab
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/dayan3847/basis_functions/basis_functions.ipynb)
+
+# Practice: Gradient Descent: Polynomial **Gaussian** Sigmoidal
+
+## GitHub
+
+https://github.com/dayan3847/machine_learning/tree/master/dayan3847/stochastic_gradient_descent_gaussian
+
+https://github.com/dayan3847/machine_learning/blob/master/dayan3847/stochastic_gradient_descent_gaussian/gaussian.ipynb
+
+## Colab
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/dayan3847/stochastic_gradient_descent_gaussian/gaussian.ipynb)
