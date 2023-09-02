@@ -10,8 +10,20 @@
 
 # Practice: Basis Functions
 
+## GitHub: [dayan3847/machine_learning/basis_functions](https://github.com/dayan3847/machine_learning/blob/master/dayan3847/basis_functions/README.md)
+
 ## Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/bayes_estimator/blob/master/dayan3847/basis_functions/basis_functions.ipynb)
 
 ## Preview
 
+### Polynomial
+
 <img src="./img/p.png" alt="preview">
+
+### Gaussian
+
+<img src="./img/g.png" alt="preview">
+
+### Sigmoid
+
+<img src="./img/s.png" alt="preview">
