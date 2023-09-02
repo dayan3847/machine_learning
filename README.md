@@ -1,12 +1,12 @@
-# Universidad Autónoma de Yucatán
+# Machine Learning
 
-## Facultad de Matemáticas
+<img src="https://uady.mx/assets/img/logo_uady.svg" width="15%" alt="uady">
 
-### Machine Learning
+### <font color='orange'>Universidad Autónoma de Yucatán</font> _Facultad de Matemáticas_
 
-**Teacher:** Dr. Victor Uc Cetina
+**Teacher:** Dr. Victor Uc Cetina <[victoruccetina@gmail.com](mailto:victoruccetina@gmail.com)>
 
-**Student:** Dayan Bravo Fraga
+**Student:** Ing. Dayan Bravo Fraga <[dayan3847@gmail.com](mailto:dayan3847@gmail.com)>
 
 # GitHub Repository
 
