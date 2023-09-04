@@ -17,3 +17,9 @@
 ## Preview
 
 <img src="./dayan3847/basis_functions/img/g.png" alt="preview">
+
+# Practice: Stochastic Gradient Descent _Gaussian_
+
+## GitHub: [dayan3847/machine_learning/stochastic_gradient_descent_gaussian](https://github.com/dayan3847/machine_learning/blob/master/dayan3847/stochastic_gradient_descent_gaussian/gaussian.ipynb)
+
+## Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/bayes_estimator/blob/master/dayan3847/stochastic_gradient_descent_gaussian/gaussian.ipynb)
