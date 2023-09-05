@@ -10,7 +10,7 @@
 
 **Student:** Ing. Dayan Bravo Fraga <[dayan3847@gmail.com](mailto:dayan3847@gmail.com)>
 
-# [Basis Functions 2D](https://github.com/dayan3847/machine_learning/blob/master/dayan3847/basis_functions/basis_functions.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/bayes_estimator/blob/master/dayan3847/basis_functions/basis_functions.ipynb)
+# [Basis Functions 2D](https://github.com/dayan3847/machine_learning/blob/master/dayan3847/basis_functions/basis_functions.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/dayan3847/basis_functions/basis_functions.ipynb)
 
 ## Preview
 
