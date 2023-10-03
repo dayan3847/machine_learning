@@ -18,7 +18,7 @@ class AQLearning(ADynamic):
             else np.zeros((env.MAX[0], self.actions_count))
         self.alpha = .1
         self.gamma = 1
-        self.epsilon = .1
+        self.epsilon = .01
 
     # reward
     def get_reward(self, action: np.array) -> float:
