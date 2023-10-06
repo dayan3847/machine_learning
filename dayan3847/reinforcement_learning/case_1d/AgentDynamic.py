@@ -8,8 +8,8 @@ class AgentDynamic(Agent):
     def run_callback(self):
         while self.running:
             time.sleep(self.env.TIME_STEP)
-            action: np.array = self.get_action()
+            action: np.array = self.get_action()[0]
             self.env.apply_action(self, action)
 
-    def get_action(self) -> np.array:
+    def get_action(self) -> (np.array, int):
         pass

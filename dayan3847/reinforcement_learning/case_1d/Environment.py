@@ -8,6 +8,7 @@ from dayan3847.reinforcement_learning.case_1d import Agent
 class Environment:
     MAX: np.array = np.array([10, 1])
     TIME_STEP: float = .001
+
     # TIME_STEP: float = .3
 
     def __init__(self):
@@ -48,7 +49,8 @@ class Environment:
             if np.all(target.point == ag.point):
                 ag.point = ag.init_point
                 return target.reward
-        ag.point[0] = np.clip(ag.point[0], -1 * self.MAX[0] + 1, self.MAX[0] - 1)
+        ag.point[0] = np.clip(ag.point[0], 0, self.MAX[0] - 1)
+        # ag.point[0] = np.clip(ag.point[0], -1 * self.MAX[0] + 1, self.MAX[0] - 1)
         return -1
 
     def get_agent_by_name(self, name: str):
@@ -112,6 +114,8 @@ class Environment:
     @staticmethod
     def abs(values):
         values = np.abs(values)
-        # values = values / np.max(values)
-        values = values / np.sum(values)
+        # den = np.max(values)
+        den = np.sum(values)
+        if den != 0:
+            values = values / den
         return values
