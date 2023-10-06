@@ -15,6 +15,7 @@ if __name__ == '__main__':
     a_random: AgentRandom = AgentRandom(env, 'random')
     a_random.color = (255, 0, 0)
 
-    # a_q_learning: AgentQLearning = AgentQLearning(env)
+    a_q_learning: AgentQLearning = AgentQLearning(env, 'q_learning')
+    a_q_learning.color = (255, 255, 0)
 
     env.run()

@@ -7,8 +7,8 @@ from dayan3847.reinforcement_learning.case_1d import Agent
 
 class Environment:
     MAX: np.array = np.array([10, 1])
-    # TIME_STEP: float = .001
-    TIME_STEP: float = .03
+    TIME_STEP: float = .001
+    # TIME_STEP: float = .3
 
     def __init__(self):
         self.agents: list[Agent] = []
@@ -80,7 +80,8 @@ class Environment:
         for i in range(self.count_statuses):
             values: np.array = self.abs(self.a_ql.Q[i])
             self.q_statuses_bars[i] = self.ax[0][i].bar(actions, values, label='Action')
-            self.ax[0][i].set_ylim(.32, .34)
+            # self.ax[0][i].set_ylim(.32, .34)
+            self.ax[0][i].set_ylim(0, 1)
             self.ax[0][i].set_title(f'Status {i}')
 
             self.ax[1][i].imshow(self.a_ql.Q[i].reshape(1, -1), cmap='viridis', interpolation='nearest')
