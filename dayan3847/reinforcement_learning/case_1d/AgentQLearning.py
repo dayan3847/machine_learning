@@ -9,8 +9,9 @@ class AgentQLearning(AgentDynamic):
 
     def __init__(self, env: Environment, name: str):
         super().__init__(env, name)
-        self._path_q = 'q.txt'
-        self.Q: np.array = np.loadtxt(self._path_q) if os.path.isfile(self._path_q) else np.zeros((env.MAX[0], 3))
+        self._path_q = 'q'
+        self.Q: np.array = np.load(self._path_q) if os.path.isfile(self._path_q) \
+            else np.zeros((env.MAX[0], env.MAX[1], 4))
         self.alpha = .1
         self.gamma = 1
         self.epsilon = .1
@@ -38,16 +39,16 @@ class AgentQLearning(AgentDynamic):
             self.fix_q(last_state, a, fixed_q)
 
     def get_q(self, status: np.array, action: int) -> float:
-        return self.Q[status[0], action]
+        return self.Q[status[0], status[1], action]
 
     def get_q_max(self, status: np.array) -> (int, float):
-        return np.argmax(self.Q[status[0]]), np.max(self.Q[status[0]])
+        return np.argmax(self.Q[status[0], status[1]]), np.max(self.Q[status[0], status[1]])
 
     def fix_q(self, status: np.array, action: int, q: float):
-        self.Q[status[0], action] = q
+        self.Q[status[0], status[1], action] = q
 
     def save_q(self):
-        np.savetxt(self._path_q, self.Q)
+        np.save(self._path_q, self.Q)
 
     def stop(self):
         self.save_q()
