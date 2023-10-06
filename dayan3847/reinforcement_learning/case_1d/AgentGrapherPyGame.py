@@ -1,5 +1,4 @@
 import pygame
-
 from dayan3847.reinforcement_learning.case_1d import Environment, Agent
 
 
@@ -8,6 +7,7 @@ class AgentGrapherPyGame(Agent):
 
     def __init__(self, env: Environment):
         super().__init__(env)
+        self.plot = False
         self.window = None
         self.window_size = (600, 600)
 
@@ -23,7 +23,7 @@ class AgentGrapherPyGame(Agent):
                 AgentGrapherPyGame.R,
             )
         for agent in self.env.agents:
-            if not isinstance(agent, Agent):
+            if not agent.plot:
                 continue
             pygame.draw.circle(
                 self.window,

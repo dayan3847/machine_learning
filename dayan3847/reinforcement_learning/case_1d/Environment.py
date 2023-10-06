@@ -8,7 +8,7 @@ from dayan3847.reinforcement_learning.case_1d import Agent
 class Environment:
     MAX: np.array = np.array([10, 1])
     # TIME_STEP: float = .001
-    TIME_STEP: float = .3
+    TIME_STEP: float = .03
 
     def __init__(self):
         self.agents: list[Agent] = []
@@ -20,16 +20,36 @@ class Environment:
         self.count_actions: int = 0
         self.q_actions_bars = None
         self.q_statuses_bars = None
+        self.targets: list[Agent] = []
 
     def run(self):
         for agent in self.agents:
             agent.run()
-        self.plot()
-        self.stop()
+        plotted: bool = self.plot()
+        if plotted:
+            self.stop()
 
     def stop(self):
         for agent in self.agents:
             agent.stop()
+
+    def get_actions_available(self, ag: Agent) -> np.ndarray:
+        actions: np.ndarray = np.array([np.array([_x, 0]) for _x in range(-1, 2)])
+        # if ag.point[0] == (-1 * self.MAX[0] + 1):
+        #     actions = actions[1:]
+        # elif ag.point[0] == (self.MAX[0] - 1):
+        #     actions = actions[:-1]
+
+        return actions
+
+    def apply_action(self, ag: Agent, action: np.array) -> int:
+        ag.point = ag.point + action
+        for target in self.targets:
+            if np.all(target.point == ag.point):
+                ag.point = ag.init_point
+                return target.reward
+        ag.point[0] = np.clip(ag.point[0], -1 * self.MAX[0] + 1, self.MAX[0] - 1)
+        return -1
 
     def get_agent_by_name(self, name: str):
         for agent in self.agents:
@@ -37,10 +57,10 @@ class Environment:
                 return agent
         return None
 
-    def plot(self):
+    def plot(self) -> bool:
         self.a_ql = self.get_agent_by_name('q_learning')
         if self.a_ql is None:
-            return
+            return False
         self.count_statuses = self.a_ql.Q.shape[0]
         self.count_actions = self.a_ql.Q.shape[1]
 
@@ -73,6 +93,8 @@ class Environment:
 
         plt.tight_layout()
         plt.show()
+
+        return True
 
     def plot_callback(self, frame):
         # for i in range(self.count_actions):

@@ -1,6 +1,5 @@
 import os
 import numpy as np
-
 from dayan3847.reinforcement_learning.case_1d import Environment, Agent, AgentDynamic
 
 
