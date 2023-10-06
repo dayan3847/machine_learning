@@ -15,5 +15,5 @@ def plot_data_3d(_data: np.array):
 
 
 if __name__ == '__main__':
-    data: np.array = np.loadtxt('data_3d.csv', delimiter=',')
+    data: np.array = np.loadtxt('data_3d.csv', delimiter=',').T
     plot_data_3d(data)
