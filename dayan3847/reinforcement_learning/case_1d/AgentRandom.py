@@ -1,9 +1,9 @@
 import numpy as np
 
-from dayan3847.reinforcement_learning.case_1d import Environment, ADynamic
+from dayan3847.reinforcement_learning.case_1d import Environment, AgentDynamic
 
 
-class ARandom(ADynamic):
+class AgentRandom(AgentDynamic):
 
     def __init__(self, env: Environment):
         super().__init__(env)

@@ -1,19 +1,24 @@
 import threading
-from abc import ABC
+
+import numpy as np
 
 from dayan3847.reinforcement_learning.case_1d import Environment
 
 
-class Agent(ABC):
+class Agent:
     name: str
     env: Environment
     running: bool
+    point: np.array
+    color: tuple[int, int, int]
 
     def __init__(self, env: Environment, name: str = 'Agent'):
         self.env = env
         self.name = name
         self.env.agents.append(self)
         self.running = False
+        self.point = np.array([0, 0])
+        self.color = (0, 0, 0)
 
     def run(self):
         self.running = True

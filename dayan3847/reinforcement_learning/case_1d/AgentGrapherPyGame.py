@@ -1,9 +1,9 @@
 import pygame
 
-from dayan3847.reinforcement_learning.case_1d import Agent, Environment, AgentPhysical
+from dayan3847.reinforcement_learning.case_1d import Environment, Agent
 
 
-class GrapherPyGame(Agent):
+class AgentGrapherPyGame(Agent):
     R = 20
 
     def __init__(self, env: Environment):
@@ -20,16 +20,16 @@ class GrapherPyGame(Agent):
                 self.window,
                 (200, 200, 200),
                 self.convert_point((_x, 0)),
-                GrapherPyGame.R,
+                AgentGrapherPyGame.R,
             )
         for agent in self.env.agents:
-            if not isinstance(agent, AgentPhysical):
+            if not isinstance(agent, Agent):
                 continue
             pygame.draw.circle(
                 self.window,
                 agent.color,
                 self.convert_point(agent.point),
-                GrapherPyGame.R,
+                AgentGrapherPyGame.R,
             )
         pygame.display.update()
 

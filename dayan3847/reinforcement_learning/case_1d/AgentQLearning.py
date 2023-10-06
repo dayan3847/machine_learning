@@ -1,17 +1,17 @@
 import os
 import numpy as np
 
-from dayan3847.reinforcement_learning.case_1d import Environment, ADynamic, AgentPhysical, Agent
+from dayan3847.reinforcement_learning.case_1d import Environment, Agent, AgentDynamic
 
 
 # Q-Learning Agent
-class AQLearning(ADynamic):
+class AgentQLearning(AgentDynamic):
 
     def __init__(self, env: Environment):
         super().__init__(env)
         self.name = 'q_learning'
         a_target: Agent = env.get_agent_by_name('target')
-        self.target: np.array = a_target.point if isinstance(a_target, AgentPhysical) else np.array([0, 0])
+        self.target: np.array = a_target.point if isinstance(a_target, Agent) else np.array([0, 0])
         self.color = (255, 255, 0)
         self._path_q = 'q.txt'
         self.Q: np.array = np.loadtxt(self._path_q) if os.path.isfile(self._path_q) \

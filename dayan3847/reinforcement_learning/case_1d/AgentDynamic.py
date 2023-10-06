@@ -1,12 +1,10 @@
 import time
-from abc import ABC, abstractmethod
-
 import numpy as np
 
-from dayan3847.reinforcement_learning.case_1d import Environment, AgentPhysical
+from dayan3847.reinforcement_learning.case_1d import Environment, Agent
 
 
-class ADynamic(AgentPhysical, ABC):
+class AgentDynamic(Agent):
 
     def __init__(self, env: Environment):
         super().__init__(env)
@@ -21,7 +19,6 @@ class ADynamic(AgentPhysical, ABC):
             action: np.array = self.get_action()
             self.apply_action(action)
 
-    @abstractmethod
     def get_action(self) -> int:
         pass
 
