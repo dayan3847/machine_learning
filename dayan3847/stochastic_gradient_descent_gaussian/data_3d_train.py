@@ -39,11 +39,6 @@ class Model2D:
         self.error_history: np.array = np.array([])  # Error history
 
         self.thread: threading.Thread = threading.Thread(target=self.train_callback)
-        self.queue_error: multiprocessing.Queue = multiprocessing.Queue()
-        self.process: multiprocessing.Process = multiprocessing.Process(
-            target=self.train_callback,
-            args=(self.queue_error,),
-        )
 
         # Check shapes
         ShapeChecker.check_shape(self.w_vfr, (1, self.f,))
@@ -101,18 +96,19 @@ class Model2D:
         print('Model: {}'.format(self.__class__.__name__))
         print('Error: {}'.format(round(self.e(), 2)))
 
-    def train_callback(self, queue_error: multiprocessing.Queue):
-        self.queue_error = queue_error
+    def train_callback(self):
         for _ep in range(self.epochs):
             print('epoch: {} error: {}'.format(_ep, self.e()))
-            self.save()
             self.train_step()
 
-    def train(self):
-        # self.thread.start()
-        self.process.start()
-
     def train_step(self):
+        self.update_error()
+        self.update_w()
+
+    def train(self):
+        self.thread.start()
+
+    def update_w(self):
         for _x_1d, _y in zip(self.data_x.T, self.data_y):
             _x = _x_1d[:, np.newaxis]
             _g: float = self.gi(_x)
@@ -123,10 +119,19 @@ class Model2D:
             _dw_vfc: np.array = _a_diff * _bf_vfr
             self.w_vfr -= _dw_vfc.T
 
-    def save(self):
+    def update_error(self):
         _error: float = self.e()
         self.error_history = np.append(self.error_history, _error)
-        self.queue_error.put(_error)
+
+    def get_status(self):
+        return {
+            'w_vfr': self.w_vfr,
+            'error_history': self.error_history,
+        }
+
+    def load_status(self, status: dict):
+        self.w_vfr = status['w_vfr']
+        self.error_history = status['error_history']
 
 
 class Model2DGaussian(Model2D):
@@ -167,14 +172,14 @@ class Model2DGaussian(Model2D):
 
 
 class Plotter:
-    def __init__(self, model: Model2D):
+    def __init__(self, model: Model2D, queue_model: multiprocessing.Queue):
         self.model: Model2D = model
         # Plot
         self.fig: Figure = plt.figure(figsize=(15, 5))
 
         self.ax_error = self.fig.add_subplot(244)
         self.ax_line_error: Line2D = self.ax_error.plot([], [], label='Error', c='r')[0]
-        self.queue_error = self.model.queue_error
+        self.queue_model = queue_model
 
         self.ax_points = self.fig.add_subplot(248, projection='3d')
 
@@ -219,60 +224,59 @@ class Plotter:
             blit=True,
             interval=1000  # for 60 fps use interval=17
         )
-
         plt.tight_layout()
         plt.show()
 
     def plot_callback(self, frame):
+        if self.queue_model.empty():
+            return self.ax_line_error,
+        current_status: dict = self.queue_model.get()
+        while not self.queue_model.empty():
+            current_status = self.queue_model.get()
+
+        self.model.load_status(current_status)
+
         return self.plot_callback_error(),
 
     def plot_callback_error(self):
 
-        _new_data: np.array = np.array([])
-        while not self.queue_error.empty():
-            error = self.queue_error.get()
-            print(error)
-            _new_data = np.append(_new_data, error)
+        _xdata: np.array = np.arange(self.model.error_history.shape[0]) + 1
+        self.ax_line_error.set_xdata(_xdata)
+        self.ax_line_error.set_ydata(self.model.error_history)
 
-        if _new_data.shape[0] > 0:
-            self.model.error_history = np.append(self.model.error_history, _new_data)
-            _xdata: np.array = np.arange(self.model.error_history.shape[0]) + 1
-            self.ax_line_error.set_xdata(_xdata)
-            self.ax_line_error.set_ydata(self.model.error_history)
-
-            self.ax_error.relim()
-            self.ax_error.autoscale_view()
-            self.fig.canvas.draw()
+        self.ax_error.relim()
+        self.ax_error.autoscale_view()
+        self.fig.canvas.draw()
 
         return self.ax_line_error
-    # def plot_callback_error(self):
-    #     _new_ydata: np.array = np.array([])
-    #     while not self.queue_error.empty():
-    #         error = self.queue_error.get()
-    #         print(error)
-    #         _new_ydata = np.append(_new_ydata, error)
-    #
-    #     if _new_ydata.shape[0] > 0:
-    #         _ydata: np.array = self.ax_line_error.get_ydata()
-    #         _ydata = np.append(_ydata, _new_ydata)
-    #         _xdata: np.array = np.arange(_ydata.shape[0]) + 1
-    #         self.ax_line_error.set_xdata(_xdata)
-    #         self.ax_line_error.set_ydata(_ydata)
-    #
-    #         self.ax_error.relim()
-    #         self.ax_error.autoscale_view()
-    #         self.fig.canvas.draw()
-    #
-    #     return self.ax_line_error
+
+
+def train_callback(model_: Model2D, queue_model_: multiprocessing.Queue, queue_stop_: multiprocessing.Queue):
+    for _ep in range(model_.epochs):
+        if not queue_stop_.empty():
+            queue_stop_.get()
+            break
+        print('epoch: {} error: {}'.format(_ep, model_.e()))
+        model_.train_step()
+        queue_model_.put(model_.get_status())
 
 
 if __name__ == '__main__':
     model_g: Model2D = Model2DGaussian(factors_x_dim=5, epochs=50, a=0.1, _s2=0.1)
     model_g.summary()
 
-    # model_g.train_callback()
-    model_g.train()
+    queue_model: multiprocessing.Queue = multiprocessing.Queue()
+    queue_stop: multiprocessing.Queue = multiprocessing.Queue()
+    process: multiprocessing.Process = multiprocessing.Process(
+        target=train_callback,
+        args=(model_g, queue_model, queue_stop),
+    )
+    process.start()
 
-    plotter: Plotter = Plotter(model_g)
+    # model_g.train_callback()
+    # model_g.train()
+
+    plotter: Plotter = Plotter(model_g, queue_model)
     plotter.plot()
-    plotter.model.process.join()
+    queue_stop.put(True)
+    process.join()
