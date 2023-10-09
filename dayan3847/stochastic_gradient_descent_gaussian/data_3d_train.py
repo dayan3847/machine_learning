@@ -1,7 +1,12 @@
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import threading
-from matplotlib import animation
+import multiprocessing
+
+from matplotlib.animation import FuncAnimation
+from matplotlib.figure import Figure
+from matplotlib.lines import Line2D
 
 from dayan3847.basis_functions import gaussian_multivariate_2d
 from dayan3847.tools import ShapeChecker, PlotterData
@@ -32,7 +37,13 @@ class Model2D:
         # self.w_vfr[0, self.f // 2] = 5
 
         self.error_history: np.array = np.array([])  # Error history
+
         self.thread: threading.Thread = threading.Thread(target=self.train_callback)
+        self.queue_error: multiprocessing.Queue = multiprocessing.Queue()
+        self.process: multiprocessing.Process = multiprocessing.Process(
+            target=self.train_callback,
+            args=(self.queue_error,),
+        )
 
         # Check shapes
         ShapeChecker.check_shape(self.w_vfr, (1, self.f,))
@@ -90,15 +101,16 @@ class Model2D:
         print('Model: {}'.format(self.__class__.__name__))
         print('Error: {}'.format(round(self.e(), 2)))
 
-    def train_callback(self, verbose: bool = True):
+    def train_callback(self, queue_error: multiprocessing.Queue):
+        self.queue_error = queue_error
         for _ep in range(self.epochs):
-            if verbose:
-                print('epoch: {} error: {}'.format(_ep, self.e()))
+            print('epoch: {} error: {}'.format(_ep, self.e()))
             self.save()
             self.train_step()
 
     def train(self):
-        self.thread.start()
+        # self.thread.start()
+        self.process.start()
 
     def train_step(self):
         for _x_1d, _y in zip(self.data_x.T, self.data_y):
@@ -112,7 +124,9 @@ class Model2D:
             self.w_vfr -= _dw_vfc.T
 
     def save(self):
-        self.error_history = np.append(self.error_history, self.e())
+        _error: float = self.e()
+        self.error_history = np.append(self.error_history, _error)
+        self.queue_error.put(_error)
 
 
 class Model2DGaussian(Model2D):
@@ -156,20 +170,20 @@ class Plotter:
     def __init__(self, model: Model2D):
         self.model: Model2D = model
         # Plot
-        self.fig = plt.figure(figsize=(10, 5))
-        self.fig.suptitle('Gaussian Model')
+        self.fig: Figure = plt.figure(figsize=(15, 5))
 
-        self.ax_error = None
-        self.ax_error_data = None
-        self.ax_points = None
-        self.ax_model = None
+        self.ax_error = self.fig.add_subplot(244)
+        self.ax_line_error: Line2D = self.ax_error.plot([], [], label='Error', c='r')[0]
+        self.queue_error = self.model.queue_error
+
+        self.ax_points = self.fig.add_subplot(248, projection='3d')
+
+        self.ax_model = self.fig.add_subplot(121, projection='3d')
         self.ax_model_data = None
 
     def plot(self):
-        # plt.cla()
-        # plt.clf()
+        self.fig.suptitle('Gaussian Model')
 
-        self.ax_points = self.fig.add_subplot(248, projection='3d')
         self.ax_points.scatter(self.model.data_x[0], self.model.data_x[1], self.model.data_y, label='Data')
         self.ax_points.set_title('Data')
         self.ax_points.set_xlabel('x_0')
@@ -177,16 +191,11 @@ class Plotter:
         self.ax_points.set_zlabel('y')
         self.ax_points.legend()
 
-        self.ax_error = self.fig.add_subplot(244)
-        self.ax_error_data = self.ax_error.plot(self.model.error_history, label='Error', c='r')
         self.ax_error.set_title('Error')
         self.ax_error.set_xlabel('Epoch')
         self.ax_error.set_ylabel('Error')
-        self.ax_error.set_xlim(left=0)
-        self.ax_error.set_ylim(bottom=0)
         self.ax_error.legend()
 
-        self.ax_model = self.fig.add_subplot(121, projection='3d')
         self.ax_model.scatter(self.model.data_x[0], self.model.data_x[1], self.model.data_y, label='Data')
 
         _x_set_plot: np.array = PlotterData.get_x_plot_2d()
@@ -198,60 +207,72 @@ class Plotter:
         self.ax_model.set_xlabel('x_0')
         self.ax_model.set_ylabel('x_1')
         self.ax_model.set_zlabel('y')
-        self.ax_model.set_xlim(self.model.data_limits[0], self.model.data_limits[1])
-        self.ax_model.set_ylim(self.model.data_limits[0], self.model.data_limits[1])
+        # self.ax_model.set_xlim(self.model.data_limits[0], self.model.data_limits[1])
+        # self.ax_model.set_ylim(self.model.data_limits[0], self.model.data_limits[1])
         # self.ax_model.set_zlim(-2, 2)
         self.ax_model.legend()
-        #
-        # # create animation using the animate() function
-        # _ani = animation.FuncAnimation(self.fig, self.plot_callback, interval=17)  # 60 fps
+
+        # create animation using the animate() function
+        _ani = FuncAnimation(
+            self.fig,
+            self.plot_callback,
+            blit=True,
+            interval=1000  # for 60 fps use interval=17
+        )
 
         plt.tight_layout()
         plt.show()
 
     def plot_callback(self, frame):
-        # self.ax_error_data[0].set_ydata(self.model.error_history)
-        self.ax_error_data[0].set_ydata([frame])
-        self.ax_error.relim()
-        self.ax_error.autoscale_view()
-        self.fig.tight_layout()
+        return self.plot_callback_error(),
 
+    def plot_callback_error(self):
 
-# def plot_model_2d_in_3d(model_: Model2D) -> None:
-#     fig = plt.figure(figsize=(10, 10))
-#     ax = fig.add_subplot(111, projection='3d')
-#     ax.set_xlim(model_.data_limits[0], model_.data_limits[1])
-#     ax.set_ylim(model_.data_limits[0], model_.data_limits[1])
-#     ax.set_zlim(-2, 2)
-#
-#     ax.set_title('Model')
-#
-#     _data: np.ndarray = model_.data
-#
-#     ax.scatter(_data[0, _data[2, :] == 0], _data[1, _data[2, :] == 0], _data[2, _data[2, :] == 0], c='red', marker='o')
-#     ax.scatter(_data[0, _data[2, :] == 1], _data[1, _data[2, :] == 1], _data[2, _data[2, :] == 1], c='green',
-#                marker='o')
-#
-#     _x0 = np.linspace(model_.data_limits[0], model_.data_limits[1], 100)
-#     _x1 = np.linspace(model_.data_limits[0], model_.data_limits[1], 100)
-#     _x0, _x1 = np.meshgrid(_x0, _x1)
-#     _x0 = _x0.flatten()
-#     _x1 = _x1.flatten()
-#     _y = model_.g(np.array([_x0, _x1]).T)
-#     _x0 = _x0.reshape((100, 100))
-#     _x1 = _x1.reshape((100, 100))
-#     _y = _y.reshape((100, 100))
-#     ax.plot_surface(_x0, _x1, _y, alpha=0.5)
-#
-#     plt.show()
+        _new_data: np.array = np.array([])
+        while not self.queue_error.empty():
+            error = self.queue_error.get()
+            print(error)
+            _new_data = np.append(_new_data, error)
+
+        if _new_data.shape[0] > 0:
+            self.model.error_history = np.append(self.model.error_history, _new_data)
+            _xdata: np.array = np.arange(self.model.error_history.shape[0]) + 1
+            self.ax_line_error.set_xdata(_xdata)
+            self.ax_line_error.set_ydata(self.model.error_history)
+
+            self.ax_error.relim()
+            self.ax_error.autoscale_view()
+            self.fig.canvas.draw()
+
+        return self.ax_line_error
+    # def plot_callback_error(self):
+    #     _new_ydata: np.array = np.array([])
+    #     while not self.queue_error.empty():
+    #         error = self.queue_error.get()
+    #         print(error)
+    #         _new_ydata = np.append(_new_ydata, error)
+    #
+    #     if _new_ydata.shape[0] > 0:
+    #         _ydata: np.array = self.ax_line_error.get_ydata()
+    #         _ydata = np.append(_ydata, _new_ydata)
+    #         _xdata: np.array = np.arange(_ydata.shape[0]) + 1
+    #         self.ax_line_error.set_xdata(_xdata)
+    #         self.ax_line_error.set_ydata(_ydata)
+    #
+    #         self.ax_error.relim()
+    #         self.ax_error.autoscale_view()
+    #         self.fig.canvas.draw()
+    #
+    #     return self.ax_line_error
 
 
 if __name__ == '__main__':
     model_g: Model2D = Model2DGaussian(factors_x_dim=5, epochs=50, a=0.1, _s2=0.1)
     model_g.summary()
 
-    model_g.train_callback()
+    # model_g.train_callback()
     model_g.train()
 
     plotter: Plotter = Plotter(model_g)
     plotter.plot()
+    plotter.model.process.join()
