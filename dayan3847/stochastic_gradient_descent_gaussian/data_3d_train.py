@@ -1,124 +1,109 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import sympy as sp
 import threading
-from scipy.stats import multivariate_normal
-from abc import ABC, abstractmethod
-
 from matplotlib import animation
 
-
-class ShapeChecker:
-
-    @staticmethod
-    def check_shape(_array: np.array, _expected_shape: tuple):
-        if _array.shape != _expected_shape:
-            raise Exception('Expected shape: {}, actual shape: {}'.format(_expected_shape, _array.shape))
-
-    @staticmethod
-    def check_shape_data(_data: np.array):
-        if len(_data.shape) != 2 or _data.shape[0] != 3:
-            raise Exception('Expected shape: (3, N), actual shape: {}'.format(_data.shape))
+from dayan3847.basis_functions import gaussian_multivariate_2d
+from dayan3847.tools import ShapeChecker, PlotterData
 
 
-class Model2D(ABC):
-    def __init__(self, cxd: int = 3, epochs: int = 1, a: float = 0.1):
+class Model2D:
+    def __init__(self, factors_x_dim: int = 3, epochs: int = 1, a: float = 0.1):
         self.a: float = a  # Learning rate
-        self.cxd: int = cxd  # Number of basis functions for dimensions
+        self.factors_x_dim: int = factors_x_dim  # Number of factors per dimension
         self.epochs: int = epochs  # Number of epochs
 
-        # example shape(3,1000,)
-        # 1000 cantidad de ejemplos
-        # de los 3, el ultimo de Y y los anteriores forman el vector X
+        # the data would be in a 3xN matrix
+        # where 3 is the dimension of the data and N is the number of data
+        # de los 3, el ultimo es de Y y los anteriores forman el vector X
         self.data: np.array = np.loadtxt('data_3d.csv', delimiter=',').T  # Load Data
+        ShapeChecker.check_shape_point_set(self.data, 3)
+        self.data_x: np.array = self.data[0:2]
+        self.data_y: np.array = self.data[2]
+
         self.n: int = self.data.shape[1]  # Examples count
         # dimensions of x
-        self.dim_x: int = self.data.shape[0] - 1  # Dimensions count
         self.data_limits: tuple = (0, 1)
 
-        self.f: int = self.cxd ** 2  # Number of factors
-        # Weights Ex: shape(25,)
-        self.w__: np.array = np.random.rand(self.f) - .5  # Weights
+        self.f: int = self.factors_x_dim ** 2  # Number of factors
+        # Weights: Factors Row Vector Ex. shape(1,25,)
+        self.w_vfr: np.array = np.random.rand(self.f)[np.newaxis, :] - .5  # Weights
         # aumentar el peso del medio
-        self.w__[self.f // 2] = 5
-        self.a__: np.array = np.full(self.f, self.a)  # Learning rate for each weight
+        # self.w_vfr[0, self.f // 2] = 5
+        # Factors Column Vector Ex. shape(25,1,)
+        self.a_vfc: np.array = np.full(self.f, self.a)[:, np.newaxis]  # Learning rate for each weight
 
         self.error_history: np.array = np.array([])  # Error history
         self.thread: threading.Thread = threading.Thread(target=self.train_callback)
 
         # Check shapes
-        ShapeChecker.check_shape_data(self.data)
-        ShapeChecker.check_shape(self.w__, (self.f,))
-        ShapeChecker.check_shape(self.a__, (self.f,))
-
-    @abstractmethod
-    def equation_basis_function(self) -> sp.Expr:
-        pass
-
-    # @abstractmethod
-    # def equation(self) -> sp.Expr:
-    #     pass
+        ShapeChecker.check_shape(self.w_vfr, (1, self.f,))
+        ShapeChecker.check_shape(self.a_vfc, (self.f, 1,))
 
     # Calculate the basis function a partir de un valor X
-    # retorna un vector de shape(25,)
+    # retorna un vector de shape(25,1,)
     # cada valor del vector es el resultado de aplicar la funcion base que se multiplica por cada peso
-    # entrada esperada: Ex: shape(25,2) donde 25 es la cantidad de funciones base y 2 es la cantidad de dimensiones de X
-    def basis_function__(self, _x_i: np.array) -> np.array:
-        ShapeChecker.check_shape(_x_i, (self.dim_x,))
+    # entrada esperada es un punto X (2,1) donde 2 es la cantidad de dimensiones de X
+    def basis_function__(self, x_: np.array) -> np.array:
+        ShapeChecker.check_shape(x_, (2, 1))
 
     # Calculate the model value for a simple value
 
     # entrada esperada: Ex: shape(2,) donde 2 es la cantidad de dimensiones de X
     # Expected shape: (x_dim,)
-    def hi(self, xi: np.array) -> float:
+    def hi(self, x_: np.array) -> float:
         # Check shapes
-        ShapeChecker.check_shape(xi, (self.dim_x,))
-        bf: np.array = self.basis_function__(xi)
+        ShapeChecker.check_shape(x_, (2, 1))
+        bfi: np.array = self.basis_function__(x_)
         # Check shapes
-        ShapeChecker.check_shape(bf, (self.f,))
-        return np.dot(self.w__, bf)
+        ShapeChecker.check_shape(bfi, (self.f, 1))
+        _r = self.w_vfr @ bfi
+        return float(_r[0, 0])
 
     def activate(self, h: float) -> float:
         # return 1 / (1 + np.exp(-h))
         return h
 
     # Expected shape: (x_dim,)
-    def gi(self, xi: np.array) -> float:
+    def gi(self, x_: np.array) -> float:
         # Check shapes
-        ShapeChecker.check_shape(xi, (self.dim_x,))
-        return self.activate(self.hi(xi))
+        ShapeChecker.check_shape(x_, (2, 1))
+        return self.activate(self.hi(x_))
 
-    # Expected shape: (N, x_dim,)
-    def g(self, x: np.array) -> np.array:
+    # Expected shape: (x_dim,N )
+    def g(self, x_set_: np.array) -> np.array:
         # Check shapes
-        # ShapeChecker.check_shape(x, (self.n, self.dim_x))
-        return np.array([self.gi(_xi) for _xi in x])
-
-    # def classify_i(self, x: float, y: float) -> int:
-    #     return int(round(self.gi(x, y)))
-    #
-    # def classify(self, x: np.array, y: np.array) -> np.array:
-    #     return np.array([self.classify_i(xi, yi) for xi, yi in zip(x, y)])
+        ShapeChecker.check_shape_point_set(x_set_, 2)
+        _r_set: np.array = np.array([])
+        for _x_i in x_set_.T:
+            _x_i_c = _x_i[:, np.newaxis]
+            _r_i = self.gi(_x_i_c)
+            _r_set = np.append(_r_set, _r_i)
+        ShapeChecker.check_shape(_r_set, (x_set_.shape[1],))
+        return _r_set
 
     def e(self) -> float:
-        return np.sum((self.g(self.data[0:-1].T) - self.data[-1]) ** 2) / 2
-
-    # def accuracy(self) -> float:
-    #     return np.sum(self.classify(self.data[0], self.data[1]) == self.data[2]) / self.data.shape[1]
+        _g_set: np.array = self.g(self.data_x)
+        _y_set: np.array = self.data_y
+        _diff_set: np.array = _g_set - _y_set
+        _e: float = np.sum(_diff_set ** 2) / 2
+        return _e
 
     def summary(self):
         print('Model: {}'.format(self.__class__.__name__))
         print('Error: {}'.format(round(self.e(), 2)))
-        # print('Accuracy: {}'.format(round(self.accuracy(), 2)))
 
-    def train_callback(self):
+    def train_callback(self, verbose: bool = False):
         for _ in range(self.epochs):
+            if verbose:
+                print(f'error: {round(self.e(), 2)}')
             self.save()
             self.train_step()
 
     def train(self):
         self.thread.start()
 
+    # TODO
     def train_step(self):
         xx_: np.array = self.data[0:-1].T
         y_: np.array = self.data[-1]
@@ -128,11 +113,11 @@ class Model2D(ABC):
             g_i: float = self.gi(x_i)
             g_i__: np.array = np.full(self.f, g_i)
             y_i__: np.array = np.full(self.f, y_i)
-            dw__: np.array = self.a__ * (g_i__ - y_i__) * b__
+            dw__: np.array = self.a_vfc * (g_i__ - y_i__) * b__
             # Verify shapes
             ShapeChecker.check_shape(dw__, (self.f,))
             print(dw__)
-            self.w__ -= dw__
+            self.w_vfr -= dw__
 
     def save(self):
         self.error_history = np.append(self.error_history, self.e())
@@ -140,61 +125,49 @@ class Model2D(ABC):
 
 class Model2DGaussian(Model2D):
 
-    def __init__(self, cxd: int = 3, epochs: int = 10, a: float = 0.1):
-        super().__init__(cxd, epochs, a)
-        _possible_m: np.array = np.linspace(self.data_limits[0], self.data_limits[1], self.cxd)
-        _d: int = self.dim_x
-        self.mm__: np.array = np.array(np.meshgrid(*[_possible_m] * _d)).T.reshape(-1, _d)
-        _s: float = 10.
+    def __init__(self, factors_x_dim: int = 3, epochs: int = 10, a: float = 0.1):
+        super().__init__(factors_x_dim, epochs, a)
+        self.mm__: list[np.array] = self.get_mu_list()
+        _s: float = .01
         # covariance matrix identity
-        self.cov: np.array = np.identity(self.dim_x) * _s
+        self.cov: np.array = np.identity(2) * _s
         self.cov_inv: np.array = np.linalg.inv(self.cov)
         # Verify shapes
-        ShapeChecker.check_shape(self.mm__, (self.f, self.dim_x))
-        ShapeChecker.check_shape(self.cov, (self.dim_x, self.dim_x))
+        ShapeChecker.check_shape(self.mm__[0], (2, 1))
+        ShapeChecker.check_shape(self.cov, (2, 2))
 
-    def equation_basis_function(self) -> sp.Expr:
-        _X: sp.Symbol = sp.MatrixSymbol('X', self.dim_x, 1)
-        # mu mayuscula
-        _M: sp.MatrixSymbol = sp.MatrixSymbol('mu', self.dim_x, 1)
-        # sigma mayuscula
-        _C: sp.MatrixSymbol = sp.MatrixSymbol('sigma', self.dim_x, self.dim_x)
-        return sp.exp(-.5 * (_X - _M).T * _C.I * (_X - _M))
+    # Lista de vectores mu, cada vector mu es un vector columna de shape (2,1)
+    def get_mu_list(self) -> list[np.array]:
+        _r: list[np.array] = []
+        _possible_m: np.array = np.linspace(self.data_limits[0], self.data_limits[1], self.factors_x_dim)
+        _x0, _x1 = np.meshgrid(_possible_m, _possible_m)
+        _x0 = _x0.flatten()
+        _x1 = _x1.flatten()
+        for _x0_i, _x1_i in zip(_x0, _x1):
+            _r_i = np.array([_x0_i, _x1_i])[:, np.newaxis]
+            _r.append(_r_i)
 
-    # def equation(self) -> sp.Expr:
-    #     r: sp.Symbol = 0
-    #     for w, m1, m2, s in zip(self.w, self.m1, self.m2, self.s):
-    #         w_: float = round(w, 2)
-    #         r += w_ * self.equation_basis_function().subs({'m1': round(m1, 2), 'm2': round(m2, 2), 's': s})
-    #     return r
+        return _r
 
-    def basis_function__(self, _x_i: np.array) -> np.array:
-        super().basis_function__(_x_i)
-
-        _R: np.array = np.zeros(self.f)
-        # Convert to column vector
-        # _Xic: np.array = _x_i.reshape((self.dim_x, 1))
-        for i in range(self.f):
-            _mu: np.array = self.mm__[i]
-            _rv = multivariate_normal(_mu, self.cov)
-            _R[i] = _rv.pdf(_x_i)
-            # _M: np.array = self.mm__[i].reshape((self.dim_x, 1))
-            # _X_M = _Xic - _M
-            # _X_MT_Ci = np.dot(_X_M.T, _Ci)
-            # _X_MT_Ci_X_M = np.dot(_X_MT_Ci, _X_M)
-            # x_m_t_ci_x_m = _X_MT_Ci_X_M[0][0]
-            # r = np.exp(-.5 * x_m_t_ci_x_m)
-            # _R[i] = r
-
-        return _R
+    def basis_function__(self, x_: np.array) -> np.array:
+        super().basis_function__(x_)
+        fb: np.array = np.array([])
+        for _mu_i in self.mm__:
+            _r_i = gaussian_multivariate_2d(x_, _mu_i, self.cov_inv)
+            fb = np.append(fb, _r_i)
+        fb = fb[:, np.newaxis]
+        # Verify shapes
+        ShapeChecker.check_shape(fb, (self.f, 1))
+        return fb
 
 
 class Plotter:
     def __init__(self, model: Model2D):
         self.model: Model2D = model
         # Plot
-        self.fig, _ = plt.subplots(nrows=2, ncols=4, figsize=(20, 10))
+        self.fig = plt.figure(figsize=(10, 5))
         self.fig.suptitle('Gaussian Model')
+
         self.ax_error = None
         self.ax_error_data = None
         self.ax_points = None
@@ -202,18 +175,18 @@ class Plotter:
         self.ax_model_data = None
 
     def plot(self):
-        plt.cla()
-        plt.clf()
+        # plt.cla()
+        # plt.clf()
 
-        self.ax_points = plt.subplot(248, projection='3d')
-        self.ax_points.scatter(self.model.data[0], self.model.data[1], self.model.data[2], label='Data')
+        self.ax_points = self.fig.add_subplot(248, projection='3d')
+        self.ax_points.scatter(self.model.data_x[0], self.model.data_x[1], self.model.data_y, label='Data')
         self.ax_points.set_title('Data')
         self.ax_points.set_xlabel('x_0')
         self.ax_points.set_ylabel('x_1')
         self.ax_points.set_zlabel('y')
         self.ax_points.legend()
 
-        self.ax_error = plt.subplot(244)
+        self.ax_error = self.fig.add_subplot(244)
         self.ax_error_data = self.ax_error.plot(self.model.error_history, label='Error', c='r')
         self.ax_error.set_title('Error')
         self.ax_error.set_xlabel('Epoch')
@@ -222,20 +195,13 @@ class Plotter:
         self.ax_error.set_ylim(bottom=0)
         self.ax_error.legend()
 
-        self.ax_model = plt.subplot(121, projection='3d')
-        self.ax_model.scatter(self.model.data[0], self.model.data[1], self.model.data[2], label='Data')
+        self.ax_model = self.fig.add_subplot(121, projection='3d')
+        self.ax_model.scatter(self.model.data_x[0], self.model.data_x[1], self.model.data_y, label='Data')
 
-        _num = 20
-        _x0 = np.linspace(self.model.data_limits[0], self.model.data_limits[1], _num)
-        _x1 = np.linspace(self.model.data_limits[0], self.model.data_limits[1], _num)
-        _x0, _x1 = np.meshgrid(_x0, _x1)
-        _x0 = _x0.flatten()
-        _x1 = _x1.flatten()
-        _y = self.model.g(np.array([_x0, _x1]).T)
-        _x0 = _x0.reshape((_num, _num))
-        _x1 = _x1.reshape((_num, _num))
-        _y = _y.reshape((_num, _num))
-        self.ax_model.plot_surface(_x0, _x1, _y, alpha=0.5, label='Model')
+        _x_set_plot: np.array = PlotterData.get_x_plot_2d()
+        _y_set_plot: np.array = self.model.g(_x_set_plot)
+
+        self.ax_model.plot_trisurf(_x_set_plot[0], _x_set_plot[1], _y_set_plot, cmap='viridis', edgecolor='none')
 
         self.ax_model.set_title('Model')
         self.ax_model.set_xlabel('x_0')
@@ -244,10 +210,10 @@ class Plotter:
         self.ax_model.set_xlim(self.model.data_limits[0], self.model.data_limits[1])
         self.ax_model.set_ylim(self.model.data_limits[0], self.model.data_limits[1])
         # self.ax_model.set_zlim(-2, 2)
-        # self.ax_model.legend()
-
-        # create animation using the animate() function
-        _ani = animation.FuncAnimation(self.fig, self.plot_callback, interval=17)  # 60 fps
+        self.ax_model.legend()
+        #
+        # # create animation using the animate() function
+        # _ani = animation.FuncAnimation(self.fig, self.plot_callback, interval=17)  # 60 fps
 
         plt.tight_layout()
         plt.show()
@@ -292,8 +258,8 @@ class Plotter:
 if __name__ == '__main__':
     model_g: Model2D = Model2DGaussian()
     model_g.summary()
-    print(model_g.equation_basis_function())
 
+    model_g.train_callback(True)
     # model_g.train()
 
     plotter: Plotter = Plotter(model_g)
