@@ -172,50 +172,45 @@ class Model2DGaussian(Model2D):
 
 
 class Plotter:
-    def __init__(self, model: Model2D, queue_model: multiprocessing.Queue):
+    def __init__(self, model: Model2D, queue_model_: multiprocessing.Queue):
         self.model: Model2D = model
         # Plot
         self.fig: Figure = plt.figure(figsize=(15, 5))
 
-        self.ax_error = self.fig.add_subplot(244)
+        self.ax_error = self.fig.add_subplot(133)
         self.ax_line_error: Line2D = self.ax_error.plot([], [], label='Error', c='r')[0]
-        self.queue_model = queue_model
+        self.queue_model = queue_model_
 
-        self.ax_points = self.fig.add_subplot(248, projection='3d')
-
-        self.ax_model = self.fig.add_subplot(121, projection='3d')
-        self.ax_model_data = None
+        self.ax_model = self.fig.add_subplot(132, projection='3d')
+        self.ax_model_initial = self.fig.add_subplot(131, projection='3d')
 
     def plot(self):
         self.fig.suptitle('Gaussian Model')
 
-        self.ax_points.scatter(self.model.data_x[0], self.model.data_x[1], self.model.data_y, label='Data')
-        self.ax_points.set_title('Data')
-        self.ax_points.set_xlabel('x_0')
-        self.ax_points.set_ylabel('x_1')
-        self.ax_points.set_zlabel('y')
-        self.ax_points.legend()
+        # self.ax_points.scatter(self.model.data_x[0], self.model.data_x[1], self.model.data_y, label='Data')
+        # self.ax_points.set_title('Data')
+        # self.ax_points.set_xlabel('x_0')
+        # self.ax_points.set_ylabel('x_1')
+        # self.ax_points.set_zlabel('y')
+        # self.ax_points.legend()
 
         self.ax_error.set_title('Error')
         self.ax_error.set_xlabel('Epoch')
         self.ax_error.set_ylabel('Error')
         self.ax_error.legend()
 
-        self.ax_model.scatter(self.model.data_x[0], self.model.data_x[1], self.model.data_y, label='Data')
-
+        self.ax_model_initial.scatter(self.model.data_x[0], self.model.data_x[1], self.model.data_y, label='Data')
         _x_set_plot: np.array = PlotterData.get_x_plot_2d()
         _y_set_plot: np.array = self.model.g(_x_set_plot)
+        self.ax_model_initial.plot_trisurf(_x_set_plot[0], _x_set_plot[1], _y_set_plot, cmap='viridis',
+                                           edgecolor='none')
+        self.ax_model_initial.set_title('Initial Model')
+        self.ax_model_initial.set_xlabel('x_0')
+        self.ax_model_initial.set_ylabel('x_1')
+        self.ax_model_initial.set_zlabel('y')
+        self.ax_model_initial.legend()
 
-        self.ax_model.plot_trisurf(_x_set_plot[0], _x_set_plot[1], _y_set_plot, cmap='viridis', edgecolor='none')
-
-        self.ax_model.set_title('Model')
-        self.ax_model.set_xlabel('x_0')
-        self.ax_model.set_ylabel('x_1')
-        self.ax_model.set_zlabel('y')
-        # self.ax_model.set_xlim(self.model.data_limits[0], self.model.data_limits[1])
-        # self.ax_model.set_ylim(self.model.data_limits[0], self.model.data_limits[1])
-        # self.ax_model.set_zlim(-2, 2)
-        self.ax_model.legend()
+        self.plot_callback_model()
 
         # create animation using the animate() function
         _ani = FuncAnimation(
@@ -233,14 +228,18 @@ class Plotter:
         current_status: dict = self.queue_model.get()
         while not self.queue_model.empty():
             current_status = self.queue_model.get()
-
         self.model.load_status(current_status)
 
+        self.plot_callback_model()
         return self.plot_callback_error(),
 
     def plot_callback_error(self):
+        _count: int = self.model.error_history.shape[0]
+        _xdata: np.array = np.arange(_count) + 1
+        if _count > 10:
+            self.model.error_history = self.model.error_history[5:]
+            _xdata = _xdata[5:]
 
-        _xdata: np.array = np.arange(self.model.error_history.shape[0]) + 1
         self.ax_line_error.set_xdata(_xdata)
         self.ax_line_error.set_ydata(self.model.error_history)
 
@@ -249,6 +248,18 @@ class Plotter:
         self.fig.canvas.draw()
 
         return self.ax_line_error
+
+    def plot_callback_model(self):
+        self.ax_model.clear()
+        self.ax_model.scatter(self.model.data_x[0], self.model.data_x[1], self.model.data_y, label='Data')
+        _x_set_plot: np.array = PlotterData.get_x_plot_2d()
+        _y_set_plot: np.array = self.model.g(_x_set_plot)
+        self.ax_model.plot_trisurf(_x_set_plot[0], _x_set_plot[1], _y_set_plot, cmap='viridis', edgecolor='none')
+        self.ax_model.set_title('Model')
+        self.ax_model.set_xlabel('x_0')
+        self.ax_model.set_ylabel('x_1')
+        self.ax_model.set_zlabel('y')
+        self.ax_model.legend()
 
 
 def train_callback(model_: Model2D, queue_model_: multiprocessing.Queue, queue_stop_: multiprocessing.Queue):
@@ -262,7 +273,7 @@ def train_callback(model_: Model2D, queue_model_: multiprocessing.Queue, queue_s
 
 
 if __name__ == '__main__':
-    model_g: Model2D = Model2DGaussian(factors_x_dim=5, epochs=50, a=0.1, _s2=0.1)
+    model_g: Model2D = Model2DGaussian(factors_x_dim=7, epochs=50, a=0.1, _s2=0.1)
     model_g.summary()
 
     queue_model: multiprocessing.Queue = multiprocessing.Queue()
