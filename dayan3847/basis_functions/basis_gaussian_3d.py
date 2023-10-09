@@ -4,13 +4,31 @@ from scipy.stats import multivariate_normal
 
 from dayan3847.tools import ShapeChecker, PlotterData
 
-np.random.seed(0)
+
+def gaussian_multivariate_2d(
+        x_i_: np.array,  # point (2, 1)
+        mu_: np.array,  # mean shape (2, 1)
+        cov_inv_: np.array,  # inverse of covariance matrix shape (2, 2)
+) -> float:
+    ShapeChecker.check_shape(x_i_, (2, 1))
+    ShapeChecker.check_shape(mu_, (2, 1))
+    ShapeChecker.check_shape(cov_inv_, (2, 2))
+    # x - mu_
+    _x_mu = x_i_ - mu_
+    # (x - mu_)T
+    _x_mu_t = _x_mu.T
+    # inv(cov)
+    _x_mu_t_cov_inv_x_mu = _x_mu_t @ cov_inv_ @ _x_mu
+    ShapeChecker.check_shape(_x_mu_t_cov_inv_x_mu, (1, 1))
+    _val = float(_x_mu_t_cov_inv_x_mu[0, 0])
+    _r_i: np.array = np.exp(-.5 * _val)
+    return _r_i
 
 
 class BasisFunction3d:
 
     def basis_function(self, x_: np.array) -> np.array:
-        ShapeChecker.check_shape_point(x_)
+        ShapeChecker.check_shape_point_set(x_)
 
     @staticmethod
     def activation_function(y: np.array) -> np.array:
@@ -25,10 +43,11 @@ class BasisGaussian3d(BasisFunction3d):
         ShapeChecker.check_shape(cov, (2, 2,))
         self.mu: np.array = mu
         self.cov: np.array = cov
+        self.cov_inv: np.array = np.linalg.inv(self.cov)
 
     def plot(self, fig_: plt.figure, pos: int, pos_act: int, w_: float = 1.) -> plt.axes:
         _s = 3
-        _x_plot: np.array = PlotterData.get_x_plot_2d()
+        _x_plot: np.array = PlotterData.get_x_plot_2d((-_s, _s))
         _y_plot: np.array = self.basis_function(_x_plot)
         _y_plot_h: np.array = w_ * _y_plot
         _y_plot_g: np.array = self.activation_function(_y_plot_h)
@@ -66,23 +85,13 @@ class BasisGaussian3dMultivariateNormal(BasisGaussian3d):
 
 
 class BasisGaussian3dVictorUc(BasisGaussian3d):
-    def basis_function_x_i(self, x_i_: np.array) -> np.array:
-        ShapeChecker.check_shape(x_i_, (2, 1))
-        # x - mu_
-        _x_mu = x_i_ - self.mu
-        # (x - mu_)T
-        _x_mu_t = _x_mu.T
-        # inv(cov)
-        _cov_inv = np.linalg.inv(self.cov)
-        _r_i: np.array = np.exp(-.5 * _x_mu_t @ _cov_inv @ _x_mu)
-        return _r_i
 
     def basis_function(self, x_: np.array) -> np.array:
         super().basis_function(x_)
         _r: np.array = np.array([])
         for _x_i in x_.T:
             _x_i_c = _x_i[:, np.newaxis]
-            _r_i = self.basis_function_x_i(_x_i_c)
+            _r_i = gaussian_multivariate_2d(_x_i_c, self.mu, self.cov_inv)
             _r = np.append(_r, _r_i)
         return _r
 
@@ -99,12 +108,13 @@ class BasisGaussian3dDayanBravo(BasisGaussian3d):
 
 
 if '__main__' == __name__:
+    np.random.seed(0)
     fig = plt.figure(figsize=(25, 10))
 
     g1 = BasisGaussian3dMultivariateNormal()
-    g1.plot(fig, 231, 234, 6)
+    g1.plot(fig, 231, 234, 1)
 
-    g2 = BasisGaussian3dVictorUc()
+    g2 = BasisGaussian3dVictorUc(cov=np.identity(2)*.01)
     g2.plot(fig, 232, 235, 1)
 
     g3 = BasisGaussian3dDayanBravo()

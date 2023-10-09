@@ -8,7 +8,7 @@ from dayan3847.tools import ShapeChecker, PlotterData
 
 
 class Model2D:
-    def __init__(self, factors_x_dim: int = 3, epochs: int = 1, a: float = 0.1):
+    def __init__(self, factors_x_dim: int, epochs: int, a: float):
         self.a: float = a  # Learning rate
         self.factors_x_dim: int = factors_x_dim  # Number of factors per dimension
         self.epochs: int = epochs  # Number of epochs
@@ -30,15 +30,12 @@ class Model2D:
         self.w_vfr: np.array = np.random.rand(self.f)[np.newaxis, :] - .5  # Weights
         # aumentar el peso del medio
         # self.w_vfr[0, self.f // 2] = 5
-        # Factors Column Vector Ex. shape(25,1,)
-        self.a_vfc: np.array = np.full(self.f, self.a)[:, np.newaxis]  # Learning rate for each weight
 
         self.error_history: np.array = np.array([])  # Error history
         self.thread: threading.Thread = threading.Thread(target=self.train_callback)
 
         # Check shapes
         ShapeChecker.check_shape(self.w_vfr, (1, self.f,))
-        ShapeChecker.check_shape(self.a_vfc, (self.f, 1,))
 
     # Calculate the basis function a partir de un valor X
     # retorna un vector de shape(25,1,)
@@ -75,9 +72,9 @@ class Model2D:
         # Check shapes
         ShapeChecker.check_shape_point_set(x_set_, 2)
         _r_set: np.array = np.array([])
-        for _x_i in x_set_.T:
-            _x_i_c = _x_i[:, np.newaxis]
-            _r_i = self.gi(_x_i_c)
+        for _x_1d in x_set_.T:
+            _x = _x_1d[:, np.newaxis]
+            _r_i = self.gi(_x)
             _r_set = np.append(_r_set, _r_i)
         ShapeChecker.check_shape(_r_set, (x_set_.shape[1],))
         return _r_set
@@ -93,31 +90,26 @@ class Model2D:
         print('Model: {}'.format(self.__class__.__name__))
         print('Error: {}'.format(round(self.e(), 2)))
 
-    def train_callback(self, verbose: bool = False):
-        for _ in range(self.epochs):
+    def train_callback(self, verbose: bool = True):
+        for _ep in range(self.epochs):
             if verbose:
-                print(f'error: {round(self.e(), 2)}')
+                print('epoch: {} error: {}'.format(_ep, self.e()))
             self.save()
             self.train_step()
 
     def train(self):
         self.thread.start()
 
-    # TODO
     def train_step(self):
-        xx_: np.array = self.data[0:-1].T
-        y_: np.array = self.data[-1]
-
-        for x_i, y_i in zip(xx_, y_):
-            b__: np.array = self.basis_function__(x_i)
-            g_i: float = self.gi(x_i)
-            g_i__: np.array = np.full(self.f, g_i)
-            y_i__: np.array = np.full(self.f, y_i)
-            dw__: np.array = self.a_vfc * (g_i__ - y_i__) * b__
-            # Verify shapes
-            ShapeChecker.check_shape(dw__, (self.f,))
-            print(dw__)
-            self.w_vfr -= dw__
+        for _x_1d, _y in zip(self.data_x.T, self.data_y):
+            _x = _x_1d[:, np.newaxis]
+            _g: float = self.gi(_x)
+            _diff: float = _g - _y
+            _a_diff: float = self.a * _diff
+            _bf_vfr: np.array = self.basis_function__(_x)
+            ShapeChecker.check_shape(_bf_vfr, (self.f, 1))
+            _dw_vfc: np.array = _a_diff * _bf_vfr
+            self.w_vfr -= _dw_vfc.T
 
     def save(self):
         self.error_history = np.append(self.error_history, self.e())
@@ -125,12 +117,11 @@ class Model2D:
 
 class Model2DGaussian(Model2D):
 
-    def __init__(self, factors_x_dim: int = 3, epochs: int = 10, a: float = 0.1):
+    def __init__(self, factors_x_dim: int, epochs: int, a: float, _s2: float):
         super().__init__(factors_x_dim, epochs, a)
         self.mm__: list[np.array] = self.get_mu_list()
-        _s: float = .01
         # covariance matrix identity
-        self.cov: np.array = np.identity(2) * _s
+        self.cov: np.array = np.identity(2) * _s2
         self.cov_inv: np.array = np.linalg.inv(self.cov)
         # Verify shapes
         ShapeChecker.check_shape(self.mm__[0], (2, 1))
@@ -256,11 +247,11 @@ class Plotter:
 
 
 if __name__ == '__main__':
-    model_g: Model2D = Model2DGaussian()
+    model_g: Model2D = Model2DGaussian(factors_x_dim=5, epochs=50, a=0.1, _s2=0.1)
     model_g.summary()
 
-    model_g.train_callback(True)
-    # model_g.train()
+    model_g.train_callback()
+    model_g.train()
 
     plotter: Plotter = Plotter(model_g)
     plotter.plot()
