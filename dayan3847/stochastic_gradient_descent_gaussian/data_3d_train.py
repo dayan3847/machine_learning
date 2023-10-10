@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
 import threading
 import multiprocessing
@@ -93,8 +92,7 @@ class Model2D:
         return _e
 
     def summary(self):
-        print('Model: {}'.format(self.__class__.__name__))
-        print('Error: {}'.format(round(self.e(), 2)))
+        print('Model: "{}" -> Error: {}'.format(self.__class__.__name__, self.e()))
 
     def train_callback(self):
         for _ep in range(self.epochs):
@@ -187,13 +185,6 @@ class Plotter:
     def plot(self):
         self.fig.suptitle('Gaussian Model')
 
-        # self.ax_points.scatter(self.model.data_x[0], self.model.data_x[1], self.model.data_y, label='Data')
-        # self.ax_points.set_title('Data')
-        # self.ax_points.set_xlabel('x_0')
-        # self.ax_points.set_ylabel('x_1')
-        # self.ax_points.set_zlabel('y')
-        # self.ax_points.legend()
-
         self.ax_error.set_title('Error')
         self.ax_error.set_xlabel('Epoch')
         self.ax_error.set_ylabel('Error')
@@ -273,7 +264,7 @@ def train_callback(model_: Model2D, queue_model_: multiprocessing.Queue, queue_s
 
 
 if __name__ == '__main__':
-    model_g: Model2D = Model2DGaussian(factors_x_dim=7, epochs=50, a=0.1, _s2=0.1)
+    model_g: Model2D = Model2DGaussian(factors_x_dim=7, epochs=100, a=.1, _s2=.01)
     model_g.summary()
 
     queue_model: multiprocessing.Queue = multiprocessing.Queue()

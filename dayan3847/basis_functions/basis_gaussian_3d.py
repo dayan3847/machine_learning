@@ -114,7 +114,7 @@ if '__main__' == __name__:
     g1 = BasisGaussian3dMultivariateNormal()
     g1.plot(fig, 231, 234, 1)
 
-    g2 = BasisGaussian3dVictorUc(cov=np.identity(2)*.01)
+    g2 = BasisGaussian3dVictorUc(cov=np.identity(2))
     g2.plot(fig, 232, 235, 1)
 
     g3 = BasisGaussian3dDayanBravo()
