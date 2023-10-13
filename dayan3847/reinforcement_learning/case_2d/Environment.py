@@ -6,11 +6,12 @@ from dayan3847.reinforcement_learning.case_1d import Agent
 
 
 class Environment:
-    MAX: np.array = np.array([5, 4])
+    MAX: np.array = np.array([12, 4])
     # TIME_STEP: float = .001
     TIME_STEP: float = .3
 
-    def __init__(self):
+    def __init__(self, board_size: tuple[int, int]):
+        self.board_size: tuple[int, int] = board_size
         self.agents: list[Agent] = []
         # Plot
         self.fig, self.ax = plt.subplots(nrows=4, ncols=5, figsize=(20, 5))
