@@ -95,3 +95,53 @@ class PlotterAx:
                 'y': [],
             }
         return current_data
+
+
+class PlotterAxImg:
+    def __init__(
+            self,
+            ax_: plt.Axes,
+            queue_: mp.Queue,
+            title: str,
+            label: str,
+            xlabel: str,
+            ylabel: str,
+    ):
+        self.ax: plt.Axes = ax_
+        self.queue = queue_
+        self.title = title
+        self.label = label
+        self.xlabel = xlabel
+        self.ylabel = ylabel
+
+        _current_data = self.get_current_data()
+        self.ax.set_title(_current_data['title'])
+        self.ax_line: Line2D = self.ax.plot(_current_data['x'], _current_data['y'], label=label, c='b')[0]
+
+    def plot(self):
+        self.ax.set_xlabel(self.xlabel)
+        self.ax.set_ylabel(self.ylabel)
+        self.ax.legend()
+
+    def plot_callback(self):
+        if not self.queue.empty():
+            current_data: np.array = self.get_current_data()
+            self.ax.set_title(current_data['title'])
+            self.ax_line.set_xdata(current_data['x'])
+            self.ax_line.set_ydata(current_data['y'])
+            self.ax.relim()
+            self.ax.autoscale_view()
+
+        return self.ax_line
+
+    def get_current_data(self) -> dict:
+        current_data = None
+        while not self.queue.empty():
+            current_data: np.array = self.queue.get()
+        if current_data is None:
+            current_data = {
+                'title': self.title,
+                'x': [],
+                'y': [],
+            }
+        return current_data
