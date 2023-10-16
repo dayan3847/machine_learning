@@ -2,54 +2,58 @@ import time
 import numpy as np
 import multiprocessing as mp
 
-from Plotter import Plotter, PlotterAx
+from Plotter import Plotter, PlotterAxImg, PlotterAxLine2D, PlotterAxMatrix
+
+np.random.seed(0)
 
 
 class Environment:
     def __init__(self):
-        self.limit: np.array = np.array([4, 12])
-        self.board: np.array = np.array([
-            np.full(12, -1),
-            np.full(12, -1),
-            np.full(12, -1),
-            np.array([-1, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, 100]),
-        ])
+        self.board_shape: tuple[int, int] = (4, 12)
+        # Add board
+        self.board: np.array = np.full(self.board_shape, -1)
+        # Add cliff
+        self.board[-1, 1:-1] = -100
+        # Add goal
+        self.board[-1, -1] = 100
         self.actions: list[np.array] = [
             np.array([-1, 0]),  # up
             np.array([1, 0]),  # down
             np.array([0, -1]),  # left
             np.array([0, 1]),  # right
         ]
-        self.init_pos: np.array = np.array([3, 0])
+        self.init_state: np.array = np.array([3, 0])
 
-    def get_actions_available(self, ag: 'Agent') -> np.ndarray:
+    # Get actions available by state
+    def get_actions_available(self, state: np.array) -> np.ndarray:
         actions = [0, 1, 2, 3]
-        if ag.pos[0] == 0:
+        if state[0] == 0:
             actions.remove(0)
-        elif ag.pos[0] == self.limit[0] - 1:
+        elif state[0] == self.board_shape[0] - 1:
             actions.remove(1)
-        if ag.pos[1] == 0:
+        if state[1] == 0:
             actions.remove(2)
-        elif ag.pos[1] == self.limit[1] - 1:
+        elif state[1] == self.board_shape[1] - 1:
             actions.remove(3)
         return np.array(actions)
 
     def apply_action(self, ag: 'Agent', action: int) -> (float, bool):
         episode_end: bool = False
         # Validate action
-        if action not in self.get_actions_available(ag):
+        actions_available = self.get_actions_available(ag.state)
+        if action not in actions_available:
             raise Exception('Invalid action')
         # Apply action
-        ag.pos = ag.pos + self.actions[action]
+        ag.state = ag.state + self.actions[action]
         # Get reward
         try:
-            reward: float = self.board[tuple(ag.pos)]
+            reward: float = self.board[tuple(ag.state)]
         except IndexError:
-            print(ag.pos)
+            print(ag.state)
             raise Exception('Invalid position')
         # Validate position
         if abs(reward) == 100:
-            ag.pos = self.init_pos
+            ag.state = self.init_state
             episode_end = True
 
         return reward, episode_end
@@ -58,84 +62,198 @@ class Environment:
 class Agent:
     def __init__(self, env_: Environment):
         self.env: Environment = env_
-        self.pos: np.array = self.env.init_pos
+        self.state: np.array = self.env.init_state
         self.running: bool = False
 
-    def get_action(self) -> int:
+    def decide_an_action(self, actions: np.array) -> int:
         pass
 
-    def train_action(self, reward: float):
+    def train_action(self, action: int, state: np.array, reward: float):
         pass
 
     def run_step(self):
-        action: int = self.get_action()
+        actions: np.array = self.env.get_actions_available(self.state)
+        if len(actions) == 0:
+            raise Exception('No actions available')
+        action: int = self.decide_an_action(actions)
+        before_state = self.state
         reward, episode_end = self.env.apply_action(self, action)
-        if not episode_end:
-            self.train_action(reward)
+        self.train_action(action, before_state, reward)
         return reward, episode_end
 
-
-class AgentRandom(Agent):
-    def get_action(self) -> int:
-        actions: np.array = self.env.get_actions_available(self)
+    @staticmethod
+    def decide_an_action_random(actions: np.array) -> int:
         index: int = np.random.randint(0, len(actions))
         return actions[index]
 
 
+class AgentRandom(Agent):
+    def decide_an_action(self, actions: np.array) -> int:
+        return self.decide_an_action_random(actions)
+
+
+class AgentQLearning(Agent):
+    def __init__(self, env_: Environment):
+        super().__init__(env_)
+        self.Q = self.init_q()
+        self.alpha = .1
+        self.gamma = 1
+        self.epsilon = .1
+
+    def init_q(self):
+        self.Q = np.zeros((4, 4, 12))
+        return self.Q
+
+    def decide_an_action(self, actions: np.array) -> int:
+        _action: int = self.decide_an_action_random(actions) if np.random.random() < self.epsilon \
+            else self.decide_an_action_best_q(actions)[0]
+        return _action
+
+    # Obtener el valor de Q para una accion
+    def get_q_value(self, action: int, state=None) -> float:
+        if state is None:
+            state = self.state
+        return float(self.Q[action, state[0], state[1]])
+
+    # Obtener los valores de Q para varias acciones
+    # result action -> q_value
+    def get_q_values(self, actions: np.array, state=None) -> np.array:
+        _r = [[action, self.get_q_value(action, state)] for action in actions]
+        return np.array(_r)
+
+    def decide_an_action_best_q(self, actions: np.array, state=None) -> (int, float):
+        best_actions = np.array([])
+        best_q_value = -np.inf
+        q_values_per_action = self.get_q_values(actions, state)
+        for av in q_values_per_action:
+            a = av[0]
+            v = av[1]
+            if v > best_q_value:
+                best_q_value = v
+                best_actions = np.array([a])
+            elif v == best_q_value:
+                best_actions = np.append(best_actions, a)
+        if 0 == len(best_actions):
+            raise Exception('Best action not found')
+        best_action = np.random.choice(best_actions)
+        return int(best_action), float(best_q_value)
+
+    def train_action(self, action: int, state: np.array, reward: float):
+        _q = self.get_q_value(action, state)
+        _q_as_max = self.decide_an_action_best_q(self.env.get_actions_available(state), self.state)[1]
+        _q_fixed: float = _q + self.alpha * (reward + self.gamma * (_q_as_max - _q))
+        self.Q[action, state[0], state[1]] = _q_fixed
+
+
 class Trainner:
     def __init__(self):
-        self.experiments_count: int = 100
-        self.episodes_count: int = 100
-        self.rewards: np.array = np.zeros(self.episodes_count)
-        env: Environment = Environment()
-        self.agent: Agent = AgentRandom(env)
+        self.experiments_status: tuple[int, int] = 0, 1  # Experiment 0 of 1
+        self.episodes_status: tuple[int, int] = 0, 500  # Episode 0 of 500
+        self.env: Environment = Environment()
+        self.agent: Agent = AgentQLearning(self.env)
+        # rewards promedio(de todos los experimentos) por episodio
+        self.rewards_sum: np.array = np.zeros(self.episodes_status[1])
+        self.success: np.array = np.zeros(self.episodes_status[1])
 
-    def train_callback(self, queue_rewards_: mp.Queue, queue_stop_: mp.Queue):
-        for i in range(self.experiments_count):
-            for j in range(self.episodes_count):
-                title = 'Experiment: {}/{} Episode: {}/{}'.format(
-                    i + 1,
-                    self.experiments_count,
-                    j + 1,
-                    self.episodes_count
-                )
-                while True:
+    @staticmethod
+    def int_to_color(value: int) -> tuple[int, int, int]:
+        if value == -1:
+            return (192, 192, 192)
+        elif value == -100:
+            return (128, 128, 128)
+        elif value == 100:
+            return (0, 255, 0)
+        else:
+            return (0, 0, 0)
+
+    def get_board_color(self):
+        _r = np.array([[self.int_to_color(val) for val in row] for row in self.env.board])
+        # init state
+        _r[tuple(self.env.init_state)] = (128, 128, 255)
+        # agent state
+        _r[tuple(self.agent.state)] = (255, 255, 0)
+        return _r
+
+    def get_title(self):
+        return 'Experiment: {}/{} Episode: {}/{}'.format(
+            self.experiments_status[0] + 1,
+            self.experiments_status[1],
+            self.episodes_status[0] + 1,
+            self.episodes_status[1]
+        )
+
+    def get_status(self) -> dict:
+        return {
+            'title': self.get_title(),
+            'experiments': self.experiments_status,
+            'episodes': self.episodes_status,
+            'board': self.get_board_color(),
+            'rewards_sum': self.rewards_sum,
+            'q': {
+                'up': np.array([
+                    [1, 3],
+                    [2, 4],
+                    [2, 4],
+                    [2, 4],
+                ]),
+            }
+        }
+
+    def train_callback(
+            self,
+            queue_status_: mp.Queue,
+            queue_stop_: mp.Queue,
+    ):
+        for i in range(self.experiments_status[1]):
+            self.experiments_status = i, self.experiments_status[1]
+            self.agent = AgentQLearning(self.env)
+            # agent: Agent = AgentRandom(env)
+            for j in range(self.episodes_status[1]):
+                self.episodes_status = j, self.episodes_status[1]
+                print(self.get_title())
+                episode_end: bool = False
+                while not episode_end:
+                    time.sleep(.03)
                     reward, episode_end = self.agent.run_step()
-                    self.rewards[j] += reward
-                    current_data = {
-                        'title': title,
-                        'x': np.arange(self.episodes_count),
-                        'y': self.rewards,
-                    }
-                    queue_rewards_.put(current_data)
-                    if episode_end:
-                        break
-                    if not queue_stop_.empty():
-                        queue_stop_.get()
-                        print('stop')
-                        return
+                    self.rewards_sum[j] += reward
+                    if episode_end and reward > 0:
+                        self.success[j] += 1
+                    # Enqueue status
+                    queue_status_.put(self.get_status())
+            if not queue_stop_.empty():
+                queue_stop_.get()
+                print('stop')
+                return
 
 
-def get_plot(
-        queue_rewards_: mp.Queue,
-):
-    _p: Plotter = Plotter()
-    _p.add_p_ax(PlotterAx(_p.get_ax(111), queue_rewards_))
+def get_plot(queue_status_: mp.Queue):
+    _p: Plotter = Plotter(queue_status_)
+    # _p.add_p_ax(PlotterAxImg(_p.get_ax(131)))
+    # _p.add_p_ax(PlotterAxMatrix(_p.get_ax(132), title='UP'))
+    _p.add_p_ax(PlotterAxLine2D(_p.get_ax(133),
+                                title='Rewards',
+                                label='Rewards',
+                                xlabel='Episode',
+                                ylabel='Sum of rewards'
+                                ))
     return _p
 
 
 if __name__ == '__main__':
-    queue_rewards: mp.Queue = mp.Queue()
+    queue_status: mp.Queue = mp.Queue()
     queue_stop: mp.Queue = mp.Queue()
     t = Trainner()
-
+    queue_status.put(t.get_status())
     process: mp.Process = mp.Process(
         target=t.train_callback,
-        args=(queue_rewards, queue_stop),
+        args=(
+            queue_status,
+            queue_stop,
+        ),
     )
     time.sleep(1)
     process.start()
-    p: Plotter = get_plot(queue_rewards)
+    p: Plotter = get_plot(queue_status)
     p.plot()
     queue_stop.put(1)
     process.join()
