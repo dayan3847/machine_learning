@@ -2,7 +2,7 @@ import time
 import numpy as np
 import multiprocessing as mp
 
-from Plotter import Plotter, PlotterAxImg, PlotterAxLine2D, PlotterAxMatrix
+from Plotter import Plotter
 
 np.random.seed(0)
 
@@ -135,7 +135,10 @@ class AgentQLearning(Agent):
                 best_actions = np.append(best_actions, a)
         if 0 == len(best_actions):
             raise Exception('Best action not found')
-        best_action = np.random.choice(best_actions)
+        # TODO la idea es que se elija una accion aleatoria entre las mejores
+        # best_action = np.random.choice(best_actions)
+        # TODO para estas pruebas se elige la primera accion
+        best_action = best_actions[0]
         return int(best_action), float(best_q_value)
 
     def train_action(self, action: int, state: np.array, reward: float):
@@ -150,7 +153,7 @@ class Trainner:
         self.experiments_status: tuple[int, int] = 0, 1  # Experiment 0 of 1
         self.episodes_status: tuple[int, int] = 0, 500  # Episode 0 of 500
         self.env: Environment = Environment()
-        self.agent: Agent = AgentQLearning(self.env)
+        self.agent: AgentQLearning = AgentQLearning(self.env)
         # rewards promedio(de todos los experimentos) por episodio
         self.rewards_sum: np.array = np.zeros(self.episodes_status[1])
         self.success: np.array = np.zeros(self.episodes_status[1])
@@ -183,6 +186,18 @@ class Trainner:
         )
 
     def get_status(self) -> dict:
+        q = self.agent.Q
+        # redondear a 2 decimales
+        q = np.round(q, 2)
+
+        q_best = np.ndarray((4, 12), dtype=int)
+        for i in range(4):
+            for j in range(12):
+                state = np.array([i, j])
+                actions: np.array = self.env.get_actions_available(state)
+                a = self.agent.decide_an_action_best_q(actions, state)
+                q_best[i, j] = a[0]
+
         return {
             'title': self.get_title(),
             'experiments': self.experiments_status,
@@ -190,12 +205,11 @@ class Trainner:
             'board': self.get_board_color(),
             'rewards_sum': self.rewards_sum,
             'q': {
-                'up': np.array([
-                    [1, 3],
-                    [2, 4],
-                    [2, 4],
-                    [2, 4],
-                ]),
+                'up': q[0],
+                'down': q[1],
+                'left': q[2],
+                'right': q[3],
+                'best': q_best,
             }
         }
 
@@ -213,7 +227,7 @@ class Trainner:
                 print(self.get_title())
                 episode_end: bool = False
                 while not episode_end:
-                    time.sleep(.03)
+                    time.sleep(.3)
                     reward, episode_end = self.agent.run_step()
                     self.rewards_sum[j] += reward
                     if episode_end and reward > 0:
@@ -228,14 +242,6 @@ class Trainner:
 
 def get_plot(queue_status_: mp.Queue):
     _p: Plotter = Plotter(queue_status_)
-    # _p.add_p_ax(PlotterAxImg(_p.get_ax(131)))
-    # _p.add_p_ax(PlotterAxMatrix(_p.get_ax(132), title='UP'))
-    _p.add_p_ax(PlotterAxLine2D(_p.get_ax(133),
-                                title='Rewards',
-                                label='Rewards',
-                                xlabel='Episode',
-                                ylabel='Sum of rewards'
-                                ))
     return _p
 
 

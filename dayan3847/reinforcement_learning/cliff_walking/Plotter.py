@@ -4,7 +4,6 @@ import multiprocessing as mp
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.figure import Figure
-from matplotlib.lines import Line2D
 
 
 class Plotter:
@@ -18,6 +17,30 @@ class Plotter:
         self.title = title_
         self.p_axs: list[PlotterAx] = []
         self.fig: Figure = plt.figure(figsize=fig_size)
+
+        qdata = self.get_queue_data()
+
+        _ax = self.get_ax(241)
+        self.add_p_ax(PlotterAxImg(_ax, qdata))
+
+        _ax = self.get_ax(242)
+        self.add_p_ax(PlotterAxMatrix(_ax, qdata, title='best'))
+
+        _ax = self.get_ax(244)
+        self.add_p_ax(PlotterAxLine2D(_ax, qdata,
+                                      label='Rewards',
+                                      xlabel='Episode',
+                                      ylabel='Sum of rewards'
+                                      ))
+
+        _ax = self.get_ax(243)
+        self.add_p_ax(PlotterAxMatrix(_ax, qdata, title='up'))
+        _ax = self.get_ax(247)
+        self.add_p_ax(PlotterAxMatrix(_ax, qdata, title='down'))
+        _ax = self.get_ax(246)
+        self.add_p_ax(PlotterAxMatrix(_ax, qdata, title='left'))
+        _ax = self.get_ax(248)
+        self.add_p_ax(PlotterAxMatrix(_ax, qdata, title='right'))
 
     def get_ax(self, pos: int) -> plt.Axes:
         return self.fig.add_subplot(pos)
@@ -51,7 +74,11 @@ class Plotter:
 
     def plot_callback(self, frame) -> tuple:
         qdata = self.get_queue_data()
-        r_ = tuple(pax.plot_callback(qdata) for pax in self.p_axs)
+        r_ = []
+        for pax in self.p_axs:
+            r_ax = pax.plot_callback(qdata)
+            r_.extend(r_ax)
+        r_ = tuple(r_)
         self.fig.canvas.draw()
         return r_
 
@@ -64,7 +91,7 @@ class PlotterAx:
     def plot(self):
         pass
 
-    def plot_callback(self, qdata):
+    def plot_callback(self, qdata) -> list:
         pass
 
 
@@ -72,29 +99,30 @@ class PlotterAxLine2D(PlotterAx):
     def __init__(
             self,
             ax_: plt.Axes,
-            title: str,
+            qdata: dict,
             label: str,
             xlabel: str,
             ylabel: str,
     ):
         super().__init__(ax_)
-        self.title = title
         self.label = label
 
-        # _current_data = self.get_queue_data()
-        # self.ax.set_title(_current_data['title'])
-        # self.data: Line2D = self.ax.plot(_current_data['x'], _current_data['y'], label=label, c='b')[0]
-        self.data: Line2D = self.ax.plot([], [], label=label, c='b')[0]
+        self.ax.set_title(qdata['title'])
+        rewards_sum = qdata['rewards_sum']
+        self.data = self.ax.plot(
+            np.arange(len(rewards_sum)),
+            rewards_sum / (qdata['experiments'][0] + 1),
+            label=label, c='b')
         self.ax.set_xlabel(xlabel)
         self.ax.set_ylabel(ylabel)
         self.ax.legend()
 
-    def plot_callback(self, qdata):
+    def plot_callback(self, qdata) -> list:
         if qdata is not None:
             self.ax.set_title(qdata['title'])
             rewards_sum = qdata['rewards_sum']
-            self.data.set_xdata(np.arange(len(rewards_sum)))
-            self.data.set_ydata(rewards_sum / (qdata['experiments'][0] + 1))
+            self.data[0].set_xdata(np.arange(len(rewards_sum)))
+            self.data[0].set_ydata(rewards_sum / (qdata['experiments'][0] + 1))
             self.ax.relim()
             self.ax.autoscale_view()
 
@@ -105,63 +133,55 @@ class PlotterAxImg(PlotterAx):
     def __init__(
             self,
             ax_: plt.Axes,
-            title: str = '',
-            label: str = '',
+            qdata: dict,
     ):
         super().__init__(ax_)
-        self.title = title
-        self.label = label
-        # self.ax.set_title(title)
-
-        # _current_data = self.get_queue_data()
-        # self.data = self.ax.imshow()
-        # reiniciar la escala de los ejes
+        self.ax.set_title(qdata['title'])
+        self.data = self.ax.imshow(qdata['board'])
         self.ax.relim()
 
-    def plot_callback(self, qdata):
+    def plot_callback(self, qdata) -> list:
         if qdata is not None:
+            self.ax.set_title(qdata['title'])
             self.data.set_data(qdata['board'])
 
-        return self.data
+        return [self.data]
 
 
 class PlotterAxMatrix(PlotterAx):
     def __init__(
             self,
             ax_: plt.Axes,
-            title: str = '',
-            label: str = '',
-            xlabel: str = '',
-            ylabel: str = '',
+            qdata: dict,
+            title: str,
     ):
         super().__init__(ax_)
         self.title = title
-        self.label = label
-        self._plot()
+        self._plot(qdata)
 
         self.ax.set_title(title)
+
         # reiniciar la escala de los ejes
         self.ax.relim()
 
-    def _plot(self):
-        _current_data = self.get_queue_data()
-        matrix = _current_data['data']
+    def _plot(self, qdata: dict):
+        self.data = []
+        matrix = qdata['q'][self.title]
         m, n = matrix.shape
-        self.data = self.ax.matshow(matrix, cmap='Greys')
+        self.data = [self.ax.matshow(matrix, cmap='Greys')]
         for i in range(m):
             for j in range(n):
-                self.ax.text(j, i, str(matrix[i, j]), va='center', ha='center', color='red', fontsize=10)
+                cell = str(matrix[i, j])
+                if self.title == 'best':
+                    cell = '↑' if cell == '0' else cell
+                    cell = '↓' if cell == '1' else cell
+                    cell = '←' if cell == '2' else cell
+                    cell = '→' if cell == '3' else cell
+                _t = self.ax.text(j, i, cell, va='center', ha='center', color='red', fontsize=10)
+                self.data.append(_t)
 
-    def plot_callback(self):
-        self.data = self.ax.text(.2, .2, 'Heloo', va='center', ha='center', color='white')
-        if not self.queue.empty():
-            _current_data = self.get_queue_data()
-            matrix = _current_data['data']
-            m, n = matrix.shape
-            self.data = self.ax.text(1, 1, 'Heloo', va='center', ha='center', color='white')
-            # self.data = self.ax.matshow(matrix, cmap='viridis')
-            # for i in range(m):
-            #     for j in range(n):
-            #         self.ax.text(j, i, str(matrix[i, j]), va='center', ha='center', color='white')
+    def plot_callback(self, qdata) -> list:
+        if qdata is not None:
+            self._plot(qdata)
 
         return self.data
