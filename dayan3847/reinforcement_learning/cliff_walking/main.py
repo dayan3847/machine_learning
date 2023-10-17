@@ -142,15 +142,16 @@ class AgentQLearning(Agent):
         return int(best_action), float(best_q_value)
 
     def train_action(self, action: int, state: np.array, reward: float):
-        _q = self.get_q_value(action, state)
-        _q_as_max = self.decide_an_action_best_q(self.env.get_actions_available(state), self.state)[1]
-        _q_fixed: float = _q + self.alpha * (reward + self.gamma * (_q_as_max - _q))
+        # _q = self.get_q_value(action, state)
+        _q = self.Q[action, state[0], state[1]]
+        _q_as_max = self.decide_an_action_best_q(self.env.get_actions_available(self.state), self.state)[1]
+        _q_fixed: float = _q + self.alpha * (reward + self.gamma * _q_as_max - _q)
         self.Q[action, state[0], state[1]] = _q_fixed
 
 
 class Trainner:
     def __init__(self):
-        self.experiments_status: tuple[int, int] = 0, 1  # Experiment 0 of 1
+        self.experiments_status: tuple[int, int] = 0, 50  # Experiment 0 of 1
         self.episodes_status: tuple[int, int] = 0, 500  # Episode 0 of 500
         self.env: Environment = Environment()
         self.agent: AgentQLearning = AgentQLearning(self.env)
@@ -227,7 +228,7 @@ class Trainner:
                 print(self.get_title())
                 episode_end: bool = False
                 while not episode_end:
-                    time.sleep(.3)
+                    # time.sleep(1)
                     reward, episode_end = self.agent.run_step()
                     self.rewards_sum[j] += reward
                     if episode_end and reward > 0:
@@ -238,11 +239,6 @@ class Trainner:
                 queue_stop_.get()
                 print('stop')
                 return
-
-
-def get_plot(queue_status_: mp.Queue):
-    _p: Plotter = Plotter(queue_status_)
-    return _p
 
 
 if __name__ == '__main__':
@@ -259,7 +255,7 @@ if __name__ == '__main__':
     )
     time.sleep(1)
     process.start()
-    p: Plotter = get_plot(queue_status)
+    p: Plotter = Plotter(queue_status)
     p.plot()
     queue_stop.put(1)
     process.join()
