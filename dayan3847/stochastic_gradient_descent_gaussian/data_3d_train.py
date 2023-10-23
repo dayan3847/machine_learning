@@ -1,6 +1,6 @@
+import numpy as np
 from flask import Flask, jsonify
 from flask_cors import CORS
-import numpy as np
 
 from dayan3847.tools import Model, ModelGaussian, ModelTrainer
 

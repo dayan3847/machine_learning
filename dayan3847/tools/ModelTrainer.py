@@ -17,7 +17,6 @@ class ModelTrainer:
         self.n: int = data_.shape[1]  # Examples count
 
         self.error_history: np.array = np.array([])  # Error history
-        # self.error_history: np.array = np.array([self.e()])  # Error history
         self.thread: threading.Thread = threading.Thread(target=self.train_callback)
 
     def e(self) -> float:
