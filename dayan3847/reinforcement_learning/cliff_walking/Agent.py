@@ -189,11 +189,11 @@ class AgentQLearningTable(AgentQLearning):
 
     def save_knowledge(self):
         for i in range(self.env.actions_count):
-            np.savetxt('knowledge/q_table_{}.csv'.format(i), self.q_table_models[i].T, delimiter=',')
+            np.savetxt('knowledge/q_table_{}.csv'.format(i), self.q_table_models[i], delimiter=',')
 
     def load_knowledge(self):
         for i in range(self.env.actions_count):
-            self.q_table_models[i] = np.loadtxt('knowledge/q_table_{}.csv'.format(i), delimiter=',').T
+            self.q_table_models[i] = np.loadtxt('knowledge/q_table_{}.csv'.format(i), delimiter=',')
 
     # Leer para una accion y un estado el valor de Q
     def read_q_value(self, action: int, state=None) -> float:
@@ -209,13 +209,23 @@ class AgentQLearningTable(AgentQLearning):
 
 
 class AgentQLearningGaussian(AgentQLearning):
-    def __init__(self, env_: Environment):
+    def __init__(self, env_: Environment, a: float = .1, s2: float = .1, init_weights_random: bool = True):
         super().__init__(env_)
+        self.a = a  # learning rate
+        self.s2 = s2  # variance ^ 2
+        self.init_weights_random = init_weights_random
         self.q_gaussian_models: list[ModelGaussian] = self.reset_knowledge()
 
     def reset_knowledge(self):
-        self.q_gaussian_models = [ModelGaussian(.1, (4, 12), ((0, 4), (0, 12)), _s2=.1) for _ in
-                                  range(self.env.actions_count)]
+        self.q_gaussian_models = [
+            ModelGaussian(
+                self.a,
+                (4, 12),
+                ((0, 4), (0, 12)),
+                self.s2,
+                self.init_weights_random,
+            ) for _ in range(self.env.actions_count)
+        ]
         return self.q_gaussian_models
 
     def save_knowledge(self):

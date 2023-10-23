@@ -5,7 +5,7 @@ from dayan3847.tools import ShapeChecker
 
 
 class Model:
-    def __init__(self, a: float, factors_x_dim: tuple):
+    def __init__(self, a: float, factors_x_dim: tuple, init_weights_random: bool = True):
         self.a: float = a  # Learning rate
         self.factors_x_dim: tuple = factors_x_dim  # Number of factors per dimension, Ex. (5,5)
         self.dim: int = len(factors_x_dim)  # Number of dimensions, Ex. 2
@@ -22,7 +22,8 @@ class Model:
 
         # Weights: Factors Row Vector Ex. shape(1,25,)
         # este es el vector de todos los pesos, es un vector fila
-        self.weights_vfr: np.array = np.random.rand(self.f)[np.newaxis, :] - .5  # Weights
+        self.weights_vfr: np.array = np.random.rand(self.f)[np.newaxis, :] - .5 \
+            if init_weights_random else np.zeros(self.f)[np.newaxis, :]
 
         # Check shapes, expected shape: (1, f)
         ShapeChecker.check_shape(self.weights_vfr, (1, self.f,))
@@ -89,8 +90,9 @@ class Model:
 
 class ModelGaussian(Model):
 
-    def __init__(self, a: float, factors_x_dim: tuple, limits_x_dim: tuple, _s2: float):
-        super().__init__(a, factors_x_dim)
+    def __init__(self, a: float, factors_x_dim: tuple, limits_x_dim: tuple, _s2: float,
+                 init_weights_random: bool = True):
+        super().__init__(a, factors_x_dim, init_weights_random)
         self.limits_x_dim: tuple[tuple] = limits_x_dim
         if len(self.limits_x_dim) != self.dim:
             raise Exception('limits_x_dim must have the same number of elements as factors_x_dim')
