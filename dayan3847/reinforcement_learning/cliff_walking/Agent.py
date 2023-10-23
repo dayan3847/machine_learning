@@ -181,59 +181,60 @@ class AgentQLearning(Agent):
 class AgentQLearningTable(AgentQLearning):
     def __init__(self, env_: Environment):
         super().__init__(env_)
-        self.q_tables: list[np.array] = self.reset_knowledge()
+        self.q_table_models: list[np.array] = self.reset_knowledge()
 
     def reset_knowledge(self):
-        self.q_tables = [np.zeros(self.env.board_shape) for _ in range(self.env.actions_count)]
-        return self.q_tables
+        self.q_table_models = [np.zeros(self.env.board_shape) for _ in range(self.env.actions_count)]
+        return self.q_table_models
 
     def save_knowledge(self):
         for i in range(self.env.actions_count):
-            np.savetxt('q_table_{}.csv'.format(i), self.q_tables[i], delimiter=',')
+            np.savetxt('knowledge/q_table_{}.csv'.format(i), self.q_table_models[i].T, delimiter=',')
 
     def load_knowledge(self):
         for i in range(self.env.actions_count):
-            self.q_tables[i] = np.loadtxt('q_table_{}.csv'.format(i), delimiter=',')
+            self.q_table_models[i] = np.loadtxt('knowledge/q_table_{}.csv'.format(i), delimiter=',').T
 
     # Leer para una accion y un estado el valor de Q
     def read_q_value(self, action: int, state=None) -> float:
         if state is None:
             state = self.state
-        _t = self.q_tables[action]
+        _t = self.q_table_models[action]
         _r = _t[state[0], state[1]]
         return float(_r)
 
     # Actualizar para una accion y un estado el valor de Q
     def update_q_value(self, action: int, state: np.array, new_value: float):
-        self.q_tables[action][state[0], state[1]] = new_value
+        self.q_table_models[action][state[0], state[1]] = new_value
 
 
 class AgentQLearningGaussian(AgentQLearning):
     def __init__(self, env_: Environment):
         super().__init__(env_)
-        self.q_models: list[ModelGaussian] = self.reset_knowledge()
+        self.q_gaussian_models: list[ModelGaussian] = self.reset_knowledge()
 
     def reset_knowledge(self):
-        self.q_models = [ModelGaussian(.1, (4, 12), ((0, 4), (0, 12)), _s2=.1) for _ in range(self.env.actions_count)]
-        return self.q_models
+        self.q_gaussian_models = [ModelGaussian(.1, (4, 12), ((0, 4), (0, 12)), _s2=.1) for _ in
+                                  range(self.env.actions_count)]
+        return self.q_gaussian_models
 
     def save_knowledge(self):
         for i in range(self.env.actions_count):
-            np.savetxt('q_table_{}.csv'.format(i), self.q_models[i].weights_vfr, delimiter=',')
+            np.savetxt('knowledge/q_gaussian_{}.csv'.format(i), self.q_gaussian_models[i].weights_vfr.T, delimiter=',')
 
     def load_knowledge(self):
         for i in range(self.env.actions_count):
-            self.q_models[i].weights_vfr = np.loadtxt('q_table_{}.csv'.format(i), delimiter=',')
+            self.q_gaussian_models[i].weights_vfr = np.loadtxt('knowledge/q_gaussian_{}.csv'.format(i), delimiter=',').T
 
     # Obtener el valor de Q para una accion
     # Leer para una accion y un estado el valor de Q
     def read_q_value(self, action: int, state=None) -> float:
         if state is None:
             state = self.state
-        _m: ModelGaussian = self.q_models[action]
+        _m: ModelGaussian = self.q_gaussian_models[action]
         _r = _m.gi(state)
         return float(_r)
 
     # Actualizar para una accion y un estado el valor de Q
     def update_q_value(self, action: int, state: np.array, new_value: float):
-        self.q_models[action].update_w(state, new_value)
+        self.q_gaussian_models[action].update_w(state, new_value)

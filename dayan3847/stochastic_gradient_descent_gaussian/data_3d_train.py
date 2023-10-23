@@ -58,7 +58,7 @@ if __name__ == '__main__':
     def get_plot_model():
         global trainer
 
-        _x, _y, _z = trainer.model.data_to_plot()
+        _x, _y, _z = trainer.model.data_to_plot_plotly()
 
         return jsonify({
             'epoch': trainer.current_epoch,

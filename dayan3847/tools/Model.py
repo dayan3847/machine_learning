@@ -83,7 +83,7 @@ class Model:
         _dw_vfc: np.array = _a_diff * _bf_vfr
         self.weights_vfr -= _dw_vfc.T
 
-    def data_to_plot(self, num=20):
+    def data_to_plot_plotly(self, num=20):
         pass
 
 
@@ -130,7 +130,7 @@ class ModelGaussian(Model):
         ShapeChecker.check_shape(result, (self.f, 1))
         return result
 
-    def data_to_plot(self, num=20):
+    def data_to_plot_plotly(self, num=20):
         _x = np.linspace(self.limits_x_dim[0][0], self.limits_x_dim[0][1], num)
         _y = np.linspace(self.limits_x_dim[1][0], self.limits_x_dim[1][1], num)
         _z = np.empty((num, num))
@@ -142,7 +142,7 @@ class ModelGaussian(Model):
         ShapeChecker.check_shape(_z, (num, num))
         return _x, _y, _z
 
-    def data_to_plot_old(self, num=20):
+    def data_to_plot_matplotlib(self, num=20):
         _x_0 = np.linspace(self.limits_x_dim[0][0], self.limits_x_dim[0][1], num)
         _x_1 = np.linspace(self.limits_x_dim[1][0], self.limits_x_dim[1][1], num)
         _x_0, _x_1 = np.meshgrid(_x_0, _x_1)
