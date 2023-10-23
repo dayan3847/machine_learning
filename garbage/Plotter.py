@@ -174,10 +174,11 @@ class PlotterAxMatrix(PlotterAx):
             for j in range(n):
                 cell = str(matrix[i, j])
                 if self.title == 'best':
-                    cell = '↑' if cell == '0' else cell
-                    cell = '↓' if cell == '1' else cell
-                    cell = '←' if cell == '2' else cell
-                    cell = '→' if cell == '3' else cell
+                    cell = '↑' if cell == '0' \
+                        else '↓' if cell == '1' \
+                        else '←' if cell == '2' \
+                        else '→' if cell == '3' \
+                        else 'X'
                 _t = self.ax.text(j, i, cell, va='center', ha='center', color='red', fontsize=10)
                 self.data.append(_t)
 

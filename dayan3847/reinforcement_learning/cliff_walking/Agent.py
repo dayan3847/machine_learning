@@ -55,6 +55,7 @@ class Environment:
         except IndexError:
             print(ag.state)
             raise Exception('Invalid position')
+        self.board_incidence[tuple(ag.state)] += 1
         # Validate position
         if abs(reward) == 100:
             ag.state = self.init_state
@@ -63,8 +64,6 @@ class Environment:
                 self.count_win += 1
             else:
                 self.count_lose += 1
-        if not episode_end:
-            self.board_incidence[tuple(ag.state)] += 1
 
         return reward, episode_end
 
