@@ -120,9 +120,10 @@ class PlotterAxLine2D(PlotterAx):
     def plot_callback(self, qdata) -> list:
         if qdata is not None:
             self.ax.set_title(qdata['title'])
-            rewards_sum = qdata['rewards_sum']
-            self.data[0].set_xdata(np.arange(len(rewards_sum)))
-            self.data[0].set_ydata(rewards_sum / (qdata['experiments'][0] + 1))
+            rewards = qdata['rewards']
+            self.data[0].set_xdata(np.arange(len(rewards)))
+            self.data[0].set_ydata(rewards)
+            print(f"denominador: {qdata['experiments'][0] + 1}")
             self.ax.relim()
             self.ax.autoscale_view()
 

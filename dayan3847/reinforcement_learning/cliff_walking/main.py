@@ -1,7 +1,8 @@
 import time
 import numpy as np
 import multiprocessing as mp
-
+import threading
+from flask import Flask, jsonify
 from Plotter import Plotter
 
 np.random.seed(0)
@@ -149,10 +150,67 @@ class AgentQLearning(Agent):
         self.Q[action, state[0], state[1]] = _q_fixed
 
 
+class AgentQLearningGaussian(Agent):
+    def __init__(self, env_: Environment):
+        super().__init__(env_)
+        self.Q = self.init_q()
+        self.alpha = .1
+        self.gamma = 1
+        self.epsilon = .1
+
+    def init_q(self):
+        self.Q = np.zeros((4, 4, 12))
+        return self.Q
+
+    def decide_an_action(self, actions: np.array) -> int:
+        _action: int = self.decide_an_action_random(actions) if np.random.random() < self.epsilon \
+            else self.decide_an_action_best_q(actions)[0]
+        return _action
+
+    # Obtener el valor de Q para una accion
+    def get_q_value(self, action: int, state=None) -> float:
+        if state is None:
+            state = self.state
+        return float(self.Q[action, state[0], state[1]])
+
+    # Obtener los valores de Q para varias acciones
+    # result action -> q_value
+    def get_q_values(self, actions: np.array, state=None) -> np.array:
+        _r = [[action, self.get_q_value(action, state)] for action in actions]
+        return np.array(_r)
+
+    def decide_an_action_best_q(self, actions: np.array, state=None) -> (int, float):
+        best_actions = np.array([])
+        best_q_value = -np.inf
+        q_values_per_action = self.get_q_values(actions, state)
+        for av in q_values_per_action:
+            a = av[0]
+            v = av[1]
+            if v > best_q_value:
+                best_q_value = v
+                best_actions = np.array([a])
+            elif v == best_q_value:
+                best_actions = np.append(best_actions, a)
+        if 0 == len(best_actions):
+            raise Exception('Best action not found')
+        # TODO la idea es que se elija una accion aleatoria entre las mejores
+        # best_action = np.random.choice(best_actions)
+        # TODO para estas pruebas se elige la primera accion
+        best_action = best_actions[0]
+        return int(best_action), float(best_q_value)
+
+    def train_action(self, action: int, state: np.array, reward: float):
+        # _q = self.get_q_value(action, state)
+        _q = self.Q[action, state[0], state[1]]
+        _q_as_max = self.decide_an_action_best_q(self.env.get_actions_available(self.state), self.state)[1]
+        _q_fixed: float = _q + self.alpha * (reward + self.gamma * _q_as_max - _q)
+        self.Q[action, state[0], state[1]] = _q_fixed
+
+
 class Trainner:
     def __init__(self):
-        self.experiments_status: tuple[int, int] = 0, 50  # Experiment 0 of 1
-        self.episodes_status: tuple[int, int] = 0, 500  # Episode 0 of 500
+        self.experiments_status: tuple[int, int] = 0, 2  # Experiment 0 of 1
+        self.episodes_status: tuple[int, int] = 0, 100  # Episode 0 of 500
         self.env: Environment = Environment()
         self.agent: AgentQLearning = AgentQLearning(self.env)
         # rewards promedio(de todos los experimentos) por episodio
@@ -201,17 +259,18 @@ class Trainner:
 
         return {
             'title': self.get_title(),
-            'experiments': self.experiments_status,
-            'episodes': self.episodes_status,
-            'board': self.get_board_color(),
-            'rewards_sum': self.rewards_sum,
-            'q': {
-                'up': q[0],
-                'down': q[1],
-                'left': q[2],
-                'right': q[3],
-                'best': q_best,
-            }
+            # 'experiments': self.experiments_status,
+            # 'episodes': self.episodes_status,
+            # 'board': self.get_board_color(),
+            # 'rewards_sum': self.rewards_sum,
+            # 'rewards': self.rewards_sum / (self.experiments_status[0] + 1),
+            # 'q': {
+            #     'up': q[0],
+            #     'down': q[1],
+            #     'left': q[2],
+            #     'right': q[3],
+            #     'best': q_best,
+            # }
         }
 
     def train_callback(
@@ -228,7 +287,7 @@ class Trainner:
                 print(self.get_title())
                 episode_end: bool = False
                 while not episode_end:
-                    # time.sleep(1)
+                    time.sleep(1)
                     reward, episode_end = self.agent.run_step()
                     self.rewards_sum[j] += reward
                     if episode_end and reward > 0:
@@ -241,21 +300,42 @@ class Trainner:
                 return
 
 
+t = Trainner()
+
+app = Flask(__name__)
+
+
+@app.route('/', methods=['GET'])
+def hello():
+    return jsonify(
+        {
+            "message": "Hello, World!",
+            'status': t.get_status(),
+        }
+    )
+
+
 if __name__ == '__main__':
     queue_status: mp.Queue = mp.Queue()
     queue_stop: mp.Queue = mp.Queue()
-    t = Trainner()
+
     queue_status.put(t.get_status())
-    process: mp.Process = mp.Process(
-        target=t.train_callback,
-        args=(
-            queue_status,
-            queue_stop,
-        ),
+    server = threading.Thread(
+        target=app.run,
     )
-    time.sleep(1)
-    process.start()
+    server.start()
+    t.train_callback(queue_status, queue_stop)
+
+    # process: mp.Process = mp.Process(
+    #     target=t.train_callback,
+    #     args=(
+    #         queue_status,
+    #         queue_stop,
+    #     ),
+    # )
+    # time.sleep(1)
+    # process.start()
     p: Plotter = Plotter(queue_status)
     p.plot()
     queue_stop.put(1)
-    process.join()
+    # process.join()
