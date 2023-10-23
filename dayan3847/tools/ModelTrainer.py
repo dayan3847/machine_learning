@@ -33,9 +33,9 @@ class ModelTrainer:
             print('epoch: {} error: {}'.format(self.current_epoch, self.e()))
 
     def train_step(self):
-        self.current_epoch += 1
         self.update_w_for_all_dataset()
         self.save_current_error()
+        self.current_epoch += 1
 
     def train(self):
         self.thread.start()

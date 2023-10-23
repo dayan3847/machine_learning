@@ -4,6 +4,7 @@ import multiprocessing as mp
 import threading
 from flask import Flask, jsonify
 from Plotter import Plotter
+from dayan3847.tools import ModelGaussian
 
 np.random.seed(0)
 
@@ -23,7 +24,10 @@ class Environment:
             np.array([0, -1]),  # left
             np.array([0, 1]),  # right
         ]
+        self.actions_count: int = len(self.actions)
         self.init_state: np.array = np.array([3, 0])
+        self.count_win: int = 0
+        self.count_lose: int = 0
 
     # Get actions available by state
     def get_actions_available(self, state: np.array) -> np.ndarray:
@@ -56,6 +60,10 @@ class Environment:
         if abs(reward) == 100:
             ag.state = self.init_state
             episode_end = True
+            if reward > 0:
+                self.count_win += 1
+            else:
+                self.count_lose += 1
 
         return reward, episode_end
 
@@ -69,7 +77,7 @@ class Agent:
     def decide_an_action(self, actions: np.array) -> int:
         pass
 
-    def train_action(self, action: int, state: np.array, reward: float):
+    def train_action(self, action: int, state_prev: np.array, reward: float):
         pass
 
     def run_step(self):
@@ -77,9 +85,9 @@ class Agent:
         if len(actions) == 0:
             raise Exception('No actions available')
         action: int = self.decide_an_action(actions)
-        before_state = self.state
+        state_prev = self.state
         reward, episode_end = self.env.apply_action(self, action)
-        self.train_action(action, before_state, reward)
+        self.train_action(action, state_prev, reward)
         return reward, episode_end
 
     @staticmethod
@@ -96,36 +104,19 @@ class AgentRandom(Agent):
 class AgentQLearning(Agent):
     def __init__(self, env_: Environment):
         super().__init__(env_)
-        self.Q = self.init_q()
         self.alpha = .1
         self.gamma = 1
         self.epsilon = .1
-
-    def init_q(self):
-        self.Q = np.zeros((4, 4, 12))
-        return self.Q
 
     def decide_an_action(self, actions: np.array) -> int:
         _action: int = self.decide_an_action_random(actions) if np.random.random() < self.epsilon \
             else self.decide_an_action_best_q(actions)[0]
         return _action
 
-    # Obtener el valor de Q para una accion
-    def get_q_value(self, action: int, state=None) -> float:
-        if state is None:
-            state = self.state
-        return float(self.Q[action, state[0], state[1]])
-
-    # Obtener los valores de Q para varias acciones
-    # result action -> q_value
-    def get_q_values(self, actions: np.array, state=None) -> np.array:
-        _r = [[action, self.get_q_value(action, state)] for action in actions]
-        return np.array(_r)
-
     def decide_an_action_best_q(self, actions: np.array, state=None) -> (int, float):
         best_actions = np.array([])
         best_q_value = -np.inf
-        q_values_per_action = self.get_q_values(actions, state)
+        q_values_per_action = self.read_q_values_x_actions(actions, state)
         for av in q_values_per_action:
             a = av[0]
             v = av[1]
@@ -142,69 +133,63 @@ class AgentQLearning(Agent):
         best_action = best_actions[0]
         return int(best_action), float(best_q_value)
 
-    def train_action(self, action: int, state: np.array, reward: float):
-        # _q = self.get_q_value(action, state)
-        _q = self.Q[action, state[0], state[1]]
+    # Obtener los valores de Q para varias acciones
+    # result action -> q_value
+    def read_q_values_x_actions(self, actions: np.array, state=None) -> np.array:
+        _r = [[action, self.read_q_value(action, state)] for action in actions]
+        return np.array(_r)
+
+    def train_action(self, action: int, state_prev: np.array, reward: float):
+        _q = self.read_q_value(action, state_prev)
         _q_as_max = self.decide_an_action_best_q(self.env.get_actions_available(self.state), self.state)[1]
         _q_fixed: float = _q + self.alpha * (reward + self.gamma * _q_as_max - _q)
-        self.Q[action, state[0], state[1]] = _q_fixed
+        self.update_q_value(action, state_prev, _q_fixed)
+
+    # Leer para una accion y un estado el valor de Q
+    def read_q_value(self, action: int, state=None) -> float:
+        pass
+
+    # Actualizar para una accion y un estado el valor de Q
+    def update_q_value(self, action: int, state: np.array, new_value: float):
+        pass
 
 
-class AgentQLearningGaussian(Agent):
+class AgentQLearningTable(AgentQLearning):
     def __init__(self, env_: Environment):
         super().__init__(env_)
-        self.Q = self.init_q()
-        self.alpha = .1
-        self.gamma = 1
-        self.epsilon = .1
+        self.q_tables: list[np.array] = [np.zeros(self.env.board_shape) for _ in range(env_.actions_count)]
 
-    def init_q(self):
-        self.Q = np.zeros((4, 4, 12))
-        return self.Q
-
-    def decide_an_action(self, actions: np.array) -> int:
-        _action: int = self.decide_an_action_random(actions) if np.random.random() < self.epsilon \
-            else self.decide_an_action_best_q(actions)[0]
-        return _action
-
-    # Obtener el valor de Q para una accion
-    def get_q_value(self, action: int, state=None) -> float:
+    # Leer para una accion y un estado el valor de Q
+    def read_q_value(self, action: int, state=None) -> float:
         if state is None:
             state = self.state
-        return float(self.Q[action, state[0], state[1]])
+        _t = self.q_tables[action]
+        _r = _t[state[0], state[1]]
+        return float(_r)
 
-    # Obtener los valores de Q para varias acciones
-    # result action -> q_value
-    def get_q_values(self, actions: np.array, state=None) -> np.array:
-        _r = [[action, self.get_q_value(action, state)] for action in actions]
-        return np.array(_r)
+    # Actualizar para una accion y un estado el valor de Q
+    def update_q_value(self, action: int, state: np.array, new_value: float):
+        self.q_tables[action][state[0], state[1]] = new_value
 
-    def decide_an_action_best_q(self, actions: np.array, state=None) -> (int, float):
-        best_actions = np.array([])
-        best_q_value = -np.inf
-        q_values_per_action = self.get_q_values(actions, state)
-        for av in q_values_per_action:
-            a = av[0]
-            v = av[1]
-            if v > best_q_value:
-                best_q_value = v
-                best_actions = np.array([a])
-            elif v == best_q_value:
-                best_actions = np.append(best_actions, a)
-        if 0 == len(best_actions):
-            raise Exception('Best action not found')
-        # TODO la idea es que se elija una accion aleatoria entre las mejores
-        # best_action = np.random.choice(best_actions)
-        # TODO para estas pruebas se elige la primera accion
-        best_action = best_actions[0]
-        return int(best_action), float(best_q_value)
 
-    def train_action(self, action: int, state: np.array, reward: float):
-        # _q = self.get_q_value(action, state)
-        _q = self.Q[action, state[0], state[1]]
-        _q_as_max = self.decide_an_action_best_q(self.env.get_actions_available(self.state), self.state)[1]
-        _q_fixed: float = _q + self.alpha * (reward + self.gamma * _q_as_max - _q)
-        self.Q[action, state[0], state[1]] = _q_fixed
+class AgentQLearningGaussian(AgentQLearning):
+    def __init__(self, env_: Environment):
+        super().__init__(env_)
+        self.q_models: list[ModelGaussian] = \
+            [ModelGaussian(.1, (4, 12), ((0, 4), (0, 12)), _s2=.1) for _ in range(len(env_.actions))]
+
+    # Obtener el valor de Q para una accion
+    # Leer para una accion y un estado el valor de Q
+    def read_q_value(self, action: int, state=None) -> float:
+        if state is None:
+            state = self.state
+        _m: ModelGaussian = self.q_models[action]
+        _r = _m.gi(state)
+        return float(_r)
+
+    # Actualizar para una accion y un estado el valor de Q
+    def update_q_value(self, action: int, state: np.array, new_value: float):
+        self.q_models[action].update_w(state, new_value)
 
 
 class Trainner:

@@ -54,6 +54,8 @@ class Model:
 
     # Expected shape: (x_dim,1)
     def gi(self, x_: np.array) -> float:
+        if x_.shape == (self.dim,):
+            x_ = x_[:, np.newaxis]
         # Check shapes
         ShapeChecker.check_shape(x_, (self.dim, 1))
         return self.activate(self.hi(x_))
