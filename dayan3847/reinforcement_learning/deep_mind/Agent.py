@@ -1,5 +1,6 @@
 import numpy as np
 from tensorflow import keras
+from dm_control.rl.control import Environment
 
 
 class KnowledgeModel:
@@ -13,9 +14,9 @@ class KnowledgeModel:
             weights='imagenet',
             input_shape=frames_shape,
         )
-        status_encoded_shape = (frames_count, *self.model_encoder.output_shape[1:])
+        state_encoded_shape = (frames_count, *self.model_encoder.output_shape[1:])
 
-        self.model_learning = self.build_model_learning(count_actions, status_encoded_shape)
+        self.model_learning = self.build_model_learning(count_actions, state_encoded_shape)
         self.model_learning.compile(optimizer='adam', loss='mean_squared_error')
 
         # actions in one hot vector
@@ -24,33 +25,33 @@ class KnowledgeModel:
 
     # My Q NET
     @staticmethod
-    def build_model_learning(count_actions, status_encoded_shape) -> keras.models.Model:
-        status_input = keras.layers.Input(shape=status_encoded_shape, name='status_input')
-        status_flatten = keras.layers.Flatten(name='status_flatten')(status_input)
-        status_zip = keras.layers.Dense(20, name='status_zip')(status_flatten)
+    def build_model_learning(count_actions, state_encoded_shape) -> keras.models.Model:
+        state_input = keras.layers.Input(shape=state_encoded_shape, name='state_input')
+        state_flatten = keras.layers.Flatten(name='state_flatten')(state_input)
+        state_zip = keras.layers.Dense(5, name='state_zip')(state_flatten)
         action_input = keras.layers.Input(shape=(count_actions,), name='action_input')
-        action_zip = keras.layers.Dense(20, name='action_zip')(action_input)
-        action_status = keras.layers.Concatenate(name='concatenate_action_status')([status_zip, action_zip])
-        general_layer_output = keras.layers.Dense(1, name='q')(action_status)
+        action_zip = keras.layers.Dense(5, name='action_zip')(action_input)
+        action_state = keras.layers.Concatenate(name='concatenate_action_state')([state_zip, action_zip])
+        general_layer_output = keras.layers.Dense(1, name='q')(action_state)
 
         return keras.models.Model(
             name='MY_Q_NET',
-            inputs=[status_input, action_input],
+            inputs=[state_input, action_input],
             outputs=[general_layer_output],
         )
 
     def read_q_value(self,
                      a: int,  # action
-                     s: np.array,  # status
+                     s: np.array,  # state
                      ) -> float:
         _action = self.actions[a]
 
         # codificar el estado con el encoder (resnet50)
-        _status_encoded = self.model_encoder.predict(s)
+        _state_encoded = self.model_encoder.predict(s)
 
         # obtener el Q con la red neuronal usando el estado codificado y la accion
         _prediction = self.model_learning.predict([
-            np.expand_dims(_status_encoded, axis=0),
+            np.expand_dims(_state_encoded, axis=0),
             np.expand_dims(_action, axis=0)
         ])
         q = _prediction[0][0]
@@ -58,17 +59,17 @@ class KnowledgeModel:
 
     def update_q_value(self,
                        a,  # action
-                       s,  # status (normalmente seria el estado previo)
+                       s,  # state (normalmente seria el estado previo)
                        q,  # q_value
                        ):
         _action = self.actions[a]
         # codificar el estado con el encoder (resnet50)
-        _status_encoded = self.model_encoder.predict(s)
+        _state_encoded = self.model_encoder.predict(s)
         # entrenar la red neuronal con el estado codificado y la accion
         print('fit')
         self.model_learning.fit(
             x=[
-                np.expand_dims(_status_encoded, axis=0),
+                np.expand_dims(_state_encoded, axis=0),
                 np.expand_dims(_action, axis=0)
             ],
             y=np.array([q]),
@@ -85,12 +86,12 @@ class KnowledgeModel:
 
 class Agent:
     def __init__(self,
-                 env_,
+                 env_: Environment,
                  frames: list[np.array],
                  state_frames_count: int = 4,
                  action_count: int = 11,
                  ):
-        self.env = env_
+        self.env: Environment = env_
         spec = env_.action_spec()
         self.action_count: int = action_count
         self.action_values: np.array = np.linspace(spec.minimum, spec.maximum, action_count)
@@ -104,17 +105,18 @@ class Agent:
         if len(frames) < state_frames_count:
             raise Exception('Frames count is less than state_frames_count')
         self.frames: list[np.array] = frames
-        self.state = self.update_status()
+        self.state = self.update_state()
 
+        self.frames_shape = frames[0].shape
         self.knowledge_model = KnowledgeModel(
             count_actions=action_count,
-            frames_shape=frames[0].shape,
+            frames_shape=self.frames_shape,
             frames_count=self.state_frames_count,
         )
         # Cantidad de acciones que se han realizado
         self.step_count = 0
 
-    def update_status(self):
+    def update_state(self):
         self.state = np.array(self.frames[-self.state_frames_count:])
         return self.state
 
@@ -168,9 +170,9 @@ class Agent:
         _r = time_step_.reward
         print("Reward: ", _r)
         # Get new Frame
-        _f = self.env.physics.render(camera_id=0)
+        _f = self.env.physics.render(camera_id=0, height=self.frames_shape[0], width=self.frames_shape[1])
         self.frames.append(_f)
-        self.update_status()
+        self.update_state()
         return _r
 
     def train_action(self, a: int, state_prev: np.array, reward: float):

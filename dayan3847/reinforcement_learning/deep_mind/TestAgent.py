@@ -1,4 +1,3 @@
-import numpy as np
 from Agent import KnowledgeModel
 
 if __name__ == '__main__':
