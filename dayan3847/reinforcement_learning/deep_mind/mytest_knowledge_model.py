@@ -1,4 +1,4 @@
-from Agent import KnowledgeModel
+from agent import KnowledgeModel
 
 if __name__ == '__main__':
     f_shape = (240, 320, 3)

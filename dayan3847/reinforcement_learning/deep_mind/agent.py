@@ -1,6 +1,7 @@
 import numpy as np
 from tensorflow import keras
 from dm_control.rl.control import Environment
+from dm_env import StepType, TimeStep
 
 
 class KnowledgeModel:
@@ -86,13 +87,13 @@ class KnowledgeModel:
 
 class Agent:
     def __init__(self,
-                 env_: Environment,
-                 frames: list[np.array],
-                 state_frames_count: int = 4,
-                 action_count: int = 11,
+                 env: Environment,
+                 action_count: int,
+                 state_frames_count: int,
+                 frames_shape: tuple[int, int, int],
                  ):
-        self.env: Environment = env_
-        spec = env_.action_spec()
+        self.env: Environment = env
+        spec = env.action_spec()
         self.action_count: int = action_count
         self.action_values: np.array = np.linspace(spec.minimum, spec.maximum, action_count)
 
@@ -102,23 +103,20 @@ class Agent:
         self.epsilon = .1
 
         self.state_frames_count: int = state_frames_count
-        if len(frames) < state_frames_count:
-            raise Exception('Frames count is less than state_frames_count')
-        self.frames: list[np.array] = frames
-        self.state = self.update_state()
+        self.frames: list[np.array] = []
 
-        self.frames_shape = frames[0].shape
+        self.frames_shape: tuple[int, int, int] = frames_shape
         self.knowledge_model = KnowledgeModel(
             count_actions=action_count,
             frames_shape=self.frames_shape,
             frames_count=self.state_frames_count,
         )
-        # Cantidad de acciones que se han realizado
-        self.step_count = 0
 
-    def update_state(self):
-        self.state = np.array(self.frames[-self.state_frames_count:])
-        return self.state
+    def get_state_current(self) -> np.array:
+        return np.array(self.frames[-self.state_frames_count:])
+
+    def get_state_prev(self) -> np.array:
+        return np.array(self.frames[-self.state_frames_count - 1:-1])
 
     def select_an_action(self) -> int:
         # Realizara una accion aleatoria con probabilidad epsilon
@@ -132,7 +130,7 @@ class Agent:
                                 s=None,  # state (default self.state)
                                 ) -> tuple[int, float]:  # best_action, best_q_value
         if s is None:
-            s = self.state
+            s = self.get_state_current()
         # Obtener la lista de valores Q de todas las acciones para el estado "s"
         q_values_per_action = self.read_q_values_x_actions(s)
         # De la lista de valores Q, buscar el mejor
@@ -149,34 +147,47 @@ class Agent:
     def read_q_values_x_actions(self, s: np.array) -> list:
         return [(a, self.knowledge_model.read_q_value(a, s)) for a in range(self.action_count)]
 
-    def run_step(self) -> float:
+    def run_step(self) -> TimeStep:
         a: int = self.select_an_action()
-        state_prev = self.state
-        reward = self.apply_action(a)
-        self.train_action(a, state_prev, reward)
-        self.step_count += 1
-        # Guardar el conocimiento cada 100 pasos
-        if self.step_count % 10 == 0:
-            print('saving knowledge')
-            self.knowledge_model.save_knowledge()
-        return reward
+        time_step = self.apply_action(a)
+        self.train_action(a, time_step.reward)
+        return time_step
 
-    def apply_action(self, a: int):
+    def apply_action(self, a: int) -> TimeStep:
         action_value_: float = self.action_values[a]
-        time_step_ = self.env.step(action_value_)
+        time_step = self.env.step(action_value_)
+        self.frames.append(self.get_current_frame())
+        return time_step
 
-        print("Position: ", time_step_.observation['position'])
-        print("Velocity: ", time_step_.observation['velocity'])
-        _r = time_step_.reward
-        print("Reward: ", _r)
-        # Get new Frame
-        _f = self.env.physics.render(camera_id=0, height=self.frames_shape[0], width=self.frames_shape[1])
-        self.frames.append(_f)
-        self.update_state()
-        return _r
+    def get_current_frame(self):
+        return self.env.physics.render(camera_id=0, height=self.frames_shape[0], width=self.frames_shape[1])
 
-    def train_action(self, a: int, state_prev: np.array, reward: float):
+    def train_action(self, a: int, reward: float):
+        state_prev: np.array = self.get_state_prev()
         _q = self.knowledge_model.read_q_value(a, state_prev)
         _q_as_max = self.select_an_action_best_q()[1]
         _q_fixed: float = _q + self.alpha * (reward + self.gamma * _q_as_max - _q)
         self.knowledge_model.update_q_value(a, state_prev, _q_fixed)
+
+    def run_episode(self):
+        reward: list[float] = []
+        time_step = self.env.reset()
+        _f = self.get_current_frame()
+        self.frames = [_f for _ in range(self.state_frames_count)]
+        step: int = 0
+        while StepType.LAST != time_step.step_type:
+            step += 1
+            print("\033[92m{}\033[00m".format(step))
+            time_step = self.run_step()
+            _r: float = float(time_step.reward)
+            reward.append(_r)
+            print("Reward: ", _r)
+            # print("Position: ", time_step.observation['position'])
+            # print("Velocity: ", time_step.observation['velocity'])
+
+        print('saving knowledge')
+        self.knowledge_model.save_knowledge()
+        print('saving reward')
+        np.savetxt('reward.txt', reward)
+        print('saving frames')
+        np.save('frames.npy', self.frames)
