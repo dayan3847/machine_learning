@@ -79,7 +79,8 @@ class KnowledgeModel:
         )
 
     def save_knowledge(self):
-        self.model_learning.save(self.path_h5)
+        self.model_learning.save(f'{self.path_h5}_')
+        keras.models.save_model(self.model_learning, self.path_h5)
 
     def load_knowledge(self):
         self.model_learning = keras.models.load_model(self.path_h5)
@@ -154,7 +155,7 @@ class Agent:
         return time_step
 
     def apply_action(self, a: int) -> TimeStep:
-        action_value_: float = self.action_values[a]
+        action_value_: float = float(self.action_values[a])
         time_step = self.env.step(action_value_)
         self.frames.append(self.get_current_frame())
         return time_step
@@ -188,6 +189,6 @@ class Agent:
         print('saving knowledge')
         self.knowledge_model.save_knowledge()
         print('saving reward')
-        np.savetxt('reward.txt', reward)
+        np.savetxt('knowledge/reward.txt', reward)
         print('saving frames')
-        np.save('frames.npy', self.frames)
+        np.save('knowledge/frames.npy', self.frames)
