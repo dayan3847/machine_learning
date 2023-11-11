@@ -1,5 +1,5 @@
 import numpy as np
-from dayan3847.tools.Model import ModelGaussian
+from dayan3847.models.multivariate.Model import ModelGaussianMultivariate
 
 
 class Environment:
@@ -214,11 +214,11 @@ class AgentQLearningGaussian(AgentQLearning):
         self.a = a  # learning rate
         self.s2 = s2  # variance ^ 2
         self.init_weights_random = init_weights_random
-        self.q_gaussian_models: list[ModelGaussian] = self.reset_knowledge()
+        self.q_gaussian_models: list[ModelGaussianMultivariate] = self.reset_knowledge()
 
     def reset_knowledge(self):
         self.q_gaussian_models = [
-            ModelGaussian(
+            ModelGaussianMultivariate(
                 self.a,
                 (4, 12),
                 ((0, 4), (0, 12)),
@@ -241,7 +241,7 @@ class AgentQLearningGaussian(AgentQLearning):
     def read_q_value(self, action: int, state=None) -> float:
         if state is None:
             state = self.state
-        _m: ModelGaussian = self.q_gaussian_models[action]
+        _m: ModelGaussianMultivariate = self.q_gaussian_models[action]
         _r = _m.gi(state)
         return float(_r)
 

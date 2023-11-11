@@ -20,7 +20,7 @@ class Model2D:
         # the data would be in a 3xN matrix
         # where 3 is the dimension of the data and N is the number of data
         # de los 3, el ultimo es de Y y los anteriores forman el vector X
-        self.data: np.array = np.loadtxt('data_3d.csv', delimiter=',').T  # Load Data
+        self.data: np.array = np.loadtxt('../../2_1_gaussian_sigmoidal_basis_functions/data_3d.csv', delimiter=',').T  # Load Data
         ShapeChecker.check_shape_point_set(self.data, 3)
         self.data_x: np.array = self.data[0:2]
         self.data_y: np.array = self.data[2]

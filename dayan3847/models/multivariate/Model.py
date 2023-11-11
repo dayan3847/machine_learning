@@ -22,8 +22,8 @@ class Model:
 
         # Weights: Factors Row Vector Ex. shape(1,25,)
         # este es el vector de todos los pesos, es un vector fila
-        self.weights_vfr: np.array = np.random.rand(self.f)[np.newaxis, :] - .5 \
-            if init_weights_random else np.zeros(self.f)[np.newaxis, :]
+        self.weights_vfr: np.array = np.random.rand(self.f)[np.newaxis, :] - .5 if init_weights_random \
+            else np.zeros(self.f)[np.newaxis, :]
 
         # Check shapes, expected shape: (1, f)
         ShapeChecker.check_shape(self.weights_vfr, (1, self.f,))
@@ -88,7 +88,7 @@ class Model:
         pass
 
 
-class ModelGaussian(Model):
+class ModelGaussianMultivariate(Model):
 
     def __init__(self, a: float, factors_x_dim: tuple, limits_x_dim: tuple, _s2: float,
                  init_weights_random: bool = True):

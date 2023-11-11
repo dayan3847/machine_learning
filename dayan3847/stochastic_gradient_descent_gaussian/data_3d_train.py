@@ -2,14 +2,15 @@ import numpy as np
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-from dayan3847.tools import Model, ModelGaussian, ModelTrainer
+from dayan3847.models.multivariate.Model import Model, ModelGaussianMultivariate
+from dayan3847.models.ModelTrainer import ModelTrainer
 
 if __name__ == '__main__':
     # the data would be in a 3xN matrix
     # where 3 is the dimension of the data and N is the number of data
     # de los 3, el ultimo es de Y y los anteriores forman el vector X
-    data: np.array = np.loadtxt('data_3d.csv', delimiter=',').T  # Load Data
-    model: Model = ModelGaussian(.1, (7, 7), ((0, 1), (0, 1)), .01)
+    data: np.array = np.loadtxt('../../2_1_gaussian_sigmoidal_basis_functions/data_3d.csv', delimiter=',').T  # Load Data
+    model: Model = ModelGaussianMultivariate(.1, (7, 7), ((0, 1), (0, 1)), .01)
     trainer: ModelTrainer = ModelTrainer(model, data, 100)
 
     app = Flask(__name__)
