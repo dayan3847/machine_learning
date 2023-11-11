@@ -21,15 +21,34 @@ Implementation of linear regression and logistic regression algorithms with Gaus
     Gaussiana y sigmoidal.
 > * Experimentar con datos artificiales generados con Sin(2 pi x) y Cos(2 pi x).
 
-### Code: [dayan3847/machine_learning/2_1_gaussian_sigmoidal_basis_functions](https://github.com/dayan3847/machine_learning/blob/master/2_1_gaussian_sigmoidal_basis_functions/basis_functions/README.md)
+### Basic Function Analysis
 
-### Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/bayes_estimator/blob/master/2_1_gaussian_sigmoidal_basis_functions/basis_functions/basis_functions.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/2_1_gaussian_sigmoidal_basis_functions/basic_function_analysis.ipynb)
+![](./2_1_gaussian_sigmoidal_basis_functions/img/p.png)
+![](./2_1_gaussian_sigmoidal_basis_functions/img/g.png)
+![](./2_1_gaussian_sigmoidal_basis_functions/img/s.png)
 
-### Preview
+### Linear Regression
 
-<img src="./2_1_gaussian_sigmoidal_basis_functions/basis_functions/img/g.png" alt="preview">
+#### Generate Data
 
-## Stochastic Gradient Descent _Gaussian_
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/2_1_gaussian_sigmoidal_basis_functions/linear_regression/generate_data.ipynb)
+
+#### `sin(2*pi*x)`
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/2_1_gaussian_sigmoidal_basis_functions/linear_regression/data_sin_2_pi_x_linear_regression.ipynb)
+
+<img src="./2_1_gaussian_sigmoidal_basis_functions/img/output_linear_regression_models_sin.png" width="45%"/>
+
+<img src="./2_1_gaussian_sigmoidal_basis_functions/img/output_linear_regression_errors_sin.png" width="45%"/>
+
+#### `cos(2*pi*x)`
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/2_1_gaussian_sigmoidal_basis_functions/linear_regression/data_cos_2_pi_x_linear_regression.ipynb)
+
+<img src="./2_1_gaussian_sigmoidal_basis_functions/img/output_linear_regression_models_cos.png" width="45%"/>
+
+<img src="./2_1_gaussian_sigmoidal_basis_functions/img/output_linear_regression_errors_cos.png" width="45%"/>
 
 ### Code: [dayan3847/machine_learning/stochastic_gradient_descent_gaussian](https://github.com/dayan3847/machine_learning/blob/master/dayan3847/stochastic_gradient_descent_gaussian/gaussian.ipynb)
 
