@@ -1,1 +1,0 @@
-from dayan3847.basis_functions.basis_gaussian_3d import gaussian_multivariate_2d

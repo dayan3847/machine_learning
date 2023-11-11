@@ -8,17 +8,7 @@
 
 **Student:** Ing. Dayan Bravo Fraga <[dayan3847@gmail.com](mailto:dayan3847@gmail.com)>
 
-# GitHub Repository
-
-All tasks are in the repository:
-
-https://github.com/dayan3847/machine_learning
-
-## Readme
-
-https://github.com/dayan3847/machine_learning/blob/master/README.md
-
-# Practice 1: Stochastic Gradient Descent
+# Practice 1.1: Stochastic Gradient Descent
 
 ## GitHub
 

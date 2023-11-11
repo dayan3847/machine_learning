@@ -1,7 +1,7 @@
 import numpy as np
 
-from dayan3847.basis_functions import gaussian_multivariate_2d
-from dayan3847.tools import ShapeChecker
+from dayan3847.tools.gaussian import gaussian_multivariate_2d
+from dayan3847.tools.ShapeChecker import ShapeChecker
 
 
 class Model:
