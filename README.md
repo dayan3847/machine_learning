@@ -8,7 +8,7 @@
 
 **Student:** Ing. Dayan Bravo Fraga <[dayan3847@gmail.com](mailto:dayan3847@gmail.com)>
 
-# Course 1: Machine Learning
+# Course 1: [Machine Learning](README_course1.md)
 
 ## Practice 1.1: "Stochastic Gradient Descent"
 
@@ -112,7 +112,7 @@ https://github.com/dayan3847/machine_learning/tree/master/dayan3847/bandit
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/dayan3847/bandit/colab/bandit_experiment3.ipynb)
 
-# Course 2: Neural Network Programming in Python
+# Course 2: [Neural Network Programming in Python](README_course2.md)
 
 ## Practice 2.1: "Gaussian and Sigmoidal Basis Functions"
 
