@@ -50,10 +50,6 @@ Implementation of linear regression and logistic regression algorithms with Gaus
 
 <img src="./2_1_gaussian_sigmoidal_basis_functions/img/output_linear_regression_errors_cos.png" width="45%"/>
 
-### Code: [dayan3847/machine_learning/stochastic_gradient_descent_gaussian](https://github.com/dayan3847/machine_learning/blob/master/dayan3847/stochastic_gradient_descent_gaussian/gaussian.ipynb)
-
-### Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/bayes_estimator/blob/master/dayan3847/stochastic_gradient_descent_gaussian/gaussian.ipynb)
-
 ## Practice 2.2: "Analysis of Weights within a Neural Network"
 
 Analysis of how weights vary within a neural network when it is being trained
@@ -71,6 +67,10 @@ Analysis of how weights vary within a neural network when it is being trained
 > La función de activación de la última capa debe ser Softmax.
 >
 > Generar gráficas donde se observe como cambian los pesos durante el entrenamiento.
+
+### [Iris Analysis Weights](2_2_analysis_weights/iris_analysis_weights.ipynb)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/2_2_analysis_weights/iris_analysis_weights.ipynb)
 
 ## Practice 2.3: "Multivariate Gaussian"
 
