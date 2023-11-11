@@ -1,2 +1,0 @@
-import dayan3847.stochastic_gradient_descent.src.StochasticGradientDescent
-import dayan3847.stochastic_gradient_descent.src.TrainingDataGenerator
