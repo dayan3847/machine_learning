@@ -42,19 +42,14 @@ class QLearningAgent:
         self.epsilon = .1
         self.knowledge_model: KnowledgeModel = knowledge_model
 
-        (self.time_step, self.state_pre, self.state_current,
-         self.step, self.history_reward) \
-            = self.init_episode()
+        (self.time_step, self.state_pre, self.state_current, self.step) = self.init_episode()
 
     def init_episode(self):
         self.time_step: TimeStep = self.env.reset()
         self.state_current: np.array = self.update_current_state()
         self.state_pre: np.array = self.state_current
-
         self.step: int = 0
-        self.history_reward: list[float] = []
-        return (self.time_step, self.state_pre, self.state_current,
-                self.step, self.history_reward)
+        return self.time_step, self.state_pre, self.state_current, self.step
 
     def update_current_state(self) -> np.array:
         pass
@@ -95,28 +90,9 @@ class QLearningAgent:
         self.action_best_q, q_max = self.select_an_action_best_q()
         self.train_action(a, q_max, self.time_step.reward)
         r: float = float(self.time_step.reward)
-        self.history_reward.append(r)
         return r, a
 
     def train_action(self, a: int, q_max: float, reward: float):
         _q = self.knowledge_model.read_q_value(self.state_pre, a)
         _q_fixed: float = _q + self.alpha * (reward + self.gamma * q_max - _q)
         self.knowledge_model.update_q_value(self.state_pre, a, _q_fixed)
-
-    def get_current_frame(self) -> np.array:
-        return self.env.physics.render(camera_id=0)
-
-    def run_episode(self, name: str):
-        print(f'running episode {name}')
-        while StepType.LAST != self.time_step.step_type:
-            print('\033[92m{}\033[00m'.format(self.step))
-            _r, _a = self.run_step()
-            print("Reward: ", _r)
-            print("Action: ", _a)
-
-        print('saving knowledge')
-        self.knowledge_model.save_knowledge('knowledge.h5')
-        print('saving reward')
-        np.savetxt('reward.txt', self.history_reward)
-        # print('saving frames')
-        # np.save('frames.npy', self.history_frames)

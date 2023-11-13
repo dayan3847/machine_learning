@@ -26,7 +26,6 @@ class QLearningAgentPVTest(unittest.TestCase):
             env=env,
             action_count=11,
         )
-        ag.run_episode()
 
         self.assertEqual(True, True)
 
