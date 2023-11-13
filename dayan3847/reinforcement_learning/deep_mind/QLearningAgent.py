@@ -43,7 +43,7 @@ class QLearningAgent:
         self.knowledge_model: KnowledgeModel = knowledge_model
 
         (self.time_step, self.state_pre, self.state_current,
-         self.step, self.history_reward, self.history_frames) \
+         self.step, self.history_reward) \
             = self.init_episode()
 
     def init_episode(self):
@@ -53,9 +53,8 @@ class QLearningAgent:
 
         self.step: int = 0
         self.history_reward: list[float] = []
-        self.history_frames: list[np.array] = [self.get_current_frame()]
         return (self.time_step, self.state_pre, self.state_current,
-                self.step, self.history_reward, self.history_frames)
+                self.step, self.history_reward)
 
     def update_current_state(self) -> np.array:
         pass
@@ -85,7 +84,7 @@ class QLearningAgent:
     def read_q_values_x_actions(self) -> list[tuple[int, float]]:
         return [(a, self.knowledge_model.read_q_value(self.state_current, a)) for a in range(self.action_count)]
 
-    def run_step(self) -> float | None:
+    def run_step(self) -> tuple[float, int] | None:
         if StepType.LAST == self.time_step.step_type:
             return None
         self.step += 1
@@ -95,10 +94,9 @@ class QLearningAgent:
         self.state_current = self.update_current_state()
         self.action_best_q, q_max = self.select_an_action_best_q()
         self.train_action(a, q_max, self.time_step.reward)
-        self.history_frames.append(self.get_current_frame())
-        _r: float = float(self.time_step.reward)
-        self.history_reward.append(_r)
-        return _r
+        r: float = float(self.time_step.reward)
+        self.history_reward.append(r)
+        return r, a
 
     def train_action(self, a: int, q_max: float, reward: float):
         _q = self.knowledge_model.read_q_value(self.state_pre, a)
@@ -108,15 +106,17 @@ class QLearningAgent:
     def get_current_frame(self) -> np.array:
         return self.env.physics.render(camera_id=0)
 
-    def run_episode(self):
+    def run_episode(self, name: str):
+        print(f'running episode {name}')
         while StepType.LAST != self.time_step.step_type:
             print('\033[92m{}\033[00m'.format(self.step))
-            _r: float = self.run_step()
+            _r, _a = self.run_step()
             print("Reward: ", _r)
+            print("Action: ", _a)
 
         print('saving knowledge')
         self.knowledge_model.save_knowledge('knowledge.h5')
         print('saving reward')
         np.savetxt('reward.txt', self.history_reward)
-        print('saving frames')
-        np.save('frames.npy', self.history_frames)
+        # print('saving frames')
+        # np.save('frames.npy', self.history_frames)
