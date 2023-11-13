@@ -178,7 +178,7 @@ class Agent:
         step: int = 0
         while StepType.LAST != time_step.step_type:
             step += 1
-            print("\033[92m{}\033[00m".format(step))
+            print('\033[92m{}\033[00m'.format(step))
             time_step = self.run_step()
             _r: float = float(time_step.reward)
             reward.append(_r)
