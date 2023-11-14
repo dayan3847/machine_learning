@@ -54,10 +54,10 @@ class QLearningAgent:
     def update_current_state(self) -> np.array:
         pass
 
-    def select_an_action(self) -> int:
+    def select_an_action(self) -> tuple[int, bool]:  # action, is_random
         # Realizara una accion aleatoria con probabilidad epsilon
-        return self.select_an_action_random() if np.random.random() < self.epsilon \
-            else self.action_best_q
+        return (self.select_an_action_random(), True) if np.random.random() < self.epsilon \
+            else (self.action_best_q, False)
 
     def select_an_action_random(self) -> int:
         return np.random.randint(self.action_count)
@@ -79,18 +79,18 @@ class QLearningAgent:
     def read_q_values_x_actions(self) -> list[tuple[int, float]]:
         return [(a, self.knowledge_model.read_q_value(self.state_current, a)) for a in range(self.action_count)]
 
-    def run_step(self) -> tuple[float, int] | None:
+    def run_step(self) -> tuple[float, int, bool] | None:
         if StepType.LAST == self.time_step.step_type:
             return None
         self.step += 1
-        a: int = self.select_an_action()  # action
+        a, is_random = self.select_an_action()  # action
         self.state_pre = self.state_current
         self.time_step = self.env.step(float(self.action_values[a]))
         self.state_current = self.update_current_state()
         self.action_best_q, q_max = self.select_an_action_best_q()
         self.train_action(a, q_max, self.time_step.reward)
         r: float = float(self.time_step.reward)
-        return r, a
+        return r, a, is_random
 
     def train_action(self, a: int, q_max: float, reward: float):
         _q = self.knowledge_model.read_q_value(self.state_pre, a)

@@ -11,7 +11,8 @@ class KnowledgeModelPV(KnowledgeModel):
         self.size_state: int = size_state
         self.size_actions: int = size_actions
         self.model: keras.models.Model = self.build_model_learning()
-        self.model.compile(optimizer='adam', loss='mean_squared_error')
+        optimizer = keras.optimizers.Adam(learning_rate=0.2)
+        self.model.compile(optimizer=optimizer, loss='mean_squared_error')
         # actions in one hot vector
         self.actions: np.array = np.eye(size_actions)
 
