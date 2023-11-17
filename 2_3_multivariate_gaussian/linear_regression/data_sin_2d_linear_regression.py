@@ -2,14 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from dayan3847.models.Model import Model
-from dayan3847.models.multivariate.MultivariateGaussianModel import ModelGaussianMultivariate
+from dayan3847.models.multivariate.MultivariateGaussianModel import MultivariateGaussianModel
 from dayan3847.models.ModelTrainer import ModelTrainer
 
 if __name__ == '__main__':
     np.random.seed(0)
     data: np.array = np.loadtxt('data_sin_2d.csv', delimiter=',')
     print("data.shape: {}".format(data.shape))
-    model: Model = ModelGaussianMultivariate(a=.1,
+    model: Model = MultivariateGaussianModel(a=.1,
                                              factors_x_dim=[7, 7],
                                              limits_x_dim=[(0, 1), (0, 1)],
                                              _s2=.01

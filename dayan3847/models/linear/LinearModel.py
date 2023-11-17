@@ -48,3 +48,9 @@ class LinearModel(Model):
     def g(self, x):
         return self.g_set(x) if isinstance(x, np.ndarray) \
             else self.g_single(x)
+
+    def get_ww(self) -> np.array:
+        return self.ww
+
+    def set_ww(self, ww: np.array):
+        self.ww = ww

@@ -35,6 +35,7 @@ class KnowledgeModelPV(KnowledgeModel):
                      s: np.array,  # state
                      a: int,  # action
                      ) -> float:
+        print('read s', s)
         _prediction = self.model.predict([
             np.expand_dims(s, axis=0),
             np.expand_dims(self.actions[a], axis=0)
@@ -47,6 +48,7 @@ class KnowledgeModelPV(KnowledgeModel):
                        a: int,  # action
                        q: float,  # q_value
                        ):
+        print('fix s', s)
         self.model.fit(
             x=[
                 np.expand_dims(s, axis=0),

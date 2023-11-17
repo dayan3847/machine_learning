@@ -1,7 +1,7 @@
 import numpy as np
 
 from dayan3847.models.Model import Model
-from dayan3847.models.multivariate.MultivariateGaussianModel import ModelGaussianMultivariate
+from dayan3847.models.multivariate.MultivariateGaussianModel import MultivariateGaussianModel
 from dayan3847.models.ModelTrainer import ModelTrainer
 
 if __name__ == '__main__':
@@ -10,7 +10,7 @@ if __name__ == '__main__':
     # de los 3, el ultimo es de Y y los anteriores forman el vector X
     data: np.array = np.loadtxt('../../2_1_gaussian_sigmoidal_basis_functions/data_3d.csv',
                                 delimiter=',').T  # Load Data
-    model: Model = ModelGaussianMultivariate(.1, (7, 7), ((0, 1), (0, 1)), .01)
+    model: Model = MultivariateGaussianModel(.1, (7, 7), ((0, 1), (0, 1)), .01)
     trainer: ModelTrainer = ModelTrainer(model, data, 100)
 
     app = Flask(__name__)

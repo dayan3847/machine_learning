@@ -88,3 +88,9 @@ class MultivariateModel(Model):
         ShapeChecker.check_shape(_bf_vfr, (self.f, 1))
         _dw_vfc: np.array = _a_diff * _bf_vfr
         self.ww -= _dw_vfc.T
+
+    def get_ww(self) -> np.array:
+        return self.ww[0]
+
+    def set_ww(self, ww: np.array):
+        self.ww = ww[np.newaxis, :]

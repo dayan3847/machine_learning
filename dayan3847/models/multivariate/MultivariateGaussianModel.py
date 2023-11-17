@@ -5,7 +5,7 @@ from dayan3847.tools.ShapeChecker import ShapeChecker
 from dayan3847.models.multivariate.MultivariateModel import MultivariateModel
 
 
-class ModelGaussianMultivariate(MultivariateModel):
+class MultivariateGaussianModel(MultivariateModel):
 
     def __init__(self,
                  a: float,

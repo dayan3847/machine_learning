@@ -6,6 +6,9 @@ class Model:
     def g(self, x):
         pass
 
+    def gi(self, x_) -> float:
+        pass
+
     def update_w(self, x, y):
         return self.update_w_set(x, y) if isinstance(y, np.ndarray) \
             else self.update_w_single(x, y)
@@ -18,4 +21,10 @@ class Model:
         pass
 
     def data_to_plot_matplotlib(self, num=20) -> np.array:
+        pass
+
+    def get_ww(self) -> np.array:
+        pass
+
+    def set_ww(self, ww: np.array):
         pass

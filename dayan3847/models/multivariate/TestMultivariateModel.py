@@ -1,12 +1,12 @@
 import unittest
 
-from dayan3847.models.multivariate.MultivariateGaussianModel import ModelGaussianMultivariate
+from dayan3847.models.multivariate.MultivariateGaussianModel import MultivariateGaussianModel
 
 
 class TestMultivariateModel(unittest.TestCase):
 
     def test_gaussian_2d(self):
-        model = ModelGaussianMultivariate(
+        model = MultivariateGaussianModel(
             a=.1,
             factors_x_dim=[5, 5],
             limits_x_dim=[(0, 1), (0, 1)],
