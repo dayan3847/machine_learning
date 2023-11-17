@@ -11,5 +11,5 @@ class RandomAgent(Agent):
         super().__init__(env, action_count)
         (self.time_step, self.state_pre, self.state_current, self.step) = self.init_episode()
 
-    def select_an_action(self) -> tuple[int, bool]:  # action, is_random
-        return self.select_an_action_random(), True
+    def select_an_action(self) -> tuple[int, float, bool]:  # action, is_random
+        return self.select_an_action_random()

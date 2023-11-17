@@ -3,14 +3,11 @@ import numpy as np
 from dayan3847.tools.ShapeChecker import ShapeChecker
 
 
-def gaussian_multivariate_2d(
+def gaussian_multivariate(
         x_i_: np.array,  # point (2, 1)
         mu_: np.array,  # mean shape (2, 1)
         cov_inv_: np.array,  # inverse of covariance matrix shape (2, 2)
 ) -> float:
-    ShapeChecker.check_shape(x_i_, (2, 1))
-    ShapeChecker.check_shape(mu_, (2, 1))
-    ShapeChecker.check_shape(cov_inv_, (2, 2))
     # x - mu_
     _x_mu = x_i_ - mu_
     # (x - mu_)T

@@ -22,8 +22,8 @@ class KnowledgeModelGaussian(KnowledgeModel):
                      s: np.array,  # state
                      a: int,  # action
                      ) -> float:
-        print('read s', s)
         q = self.models[a].gi(s)
+        print('read: a:{} s:{} q:{}'.format(a, s, q))
         return float(q)
 
     def update_q_value(self,
@@ -31,8 +31,8 @@ class KnowledgeModelGaussian(KnowledgeModel):
                        a: int,  # action
                        q: float,  # q_value
                        ):
-        print('fix s', s)
         self.models[a].update_w(s, q)
+        print('fix: a:{} s:{} q:{}'.format(a, s, q))
 
     def save_knowledge(self, filepath: str):
         w_data: np.array = np.array([

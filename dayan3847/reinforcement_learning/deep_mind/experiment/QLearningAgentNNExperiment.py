@@ -28,7 +28,7 @@ if __name__ == '__main__':
                 print('\033[96m' + 'stop' + '\033[00m')
                 break
             print('\033[96m{}\033[00m'.format(ag.step))
-            _r, _a, _is_random = ag.run_step()
+            _r, _a, _q, _is_random = ag.run_step()
             history_reward.append(_r)
             # history_frames.append(ag.env.physics.render(camera_id=0))
             print("Action: ", '\033[91m' if _is_random else '\033[92m', _a, '\033[00m')

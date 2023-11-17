@@ -27,22 +27,22 @@ class Agent:
         self.state_current = np.concatenate((position, velocity))
         return self.state_current
 
-    def select_an_action(self) -> tuple[int, bool]:  # action, is_random
+    def select_an_action(self) -> tuple[int, float, bool]:  # action, is_random
         pass
 
-    def select_an_action_random(self) -> int:
-        return np.random.randint(self.action_count)
+    def select_an_action_random(self) -> tuple[int, float, bool]:  # action, q_value, is_random
+        return np.random.randint(self.action_count), 0, True
 
-    def run_step(self) -> tuple[float, int, bool] | None:
+    def run_step(self) -> tuple[float, int, float, bool] | None:
         if StepType.LAST == self.time_step.step_type:
             return None
         self.step += 1
-        a, is_random = self.select_an_action()  # action
+        a, q, is_random = self.select_an_action()  # action
         self.state_pre = self.state_current
         self.time_step = self.env.step(float(self.action_values[a]))
         self.state_current = self.update_current_state()
         r: float = float(self.time_step.reward)
-        return r, a, is_random
+        return r, a, q, is_random
 
     def save_knowledge(self, filepath: str):
         pass

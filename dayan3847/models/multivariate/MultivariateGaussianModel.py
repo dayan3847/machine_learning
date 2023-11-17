@@ -1,6 +1,6 @@
 import numpy as np
 
-from dayan3847.tools.gaussian import gaussian_multivariate_2d
+from dayan3847.tools.gaussian import gaussian_multivariate
 from dayan3847.tools.ShapeChecker import ShapeChecker
 from dayan3847.models.multivariate.MultivariateModel import MultivariateModel
 
@@ -45,7 +45,7 @@ class MultivariateGaussianModel(MultivariateModel):
         super().bb(x_)
         result: np.array = np.array([])
         for _mu_i in self.mm:
-            _r_i = gaussian_multivariate_2d(x_, _mu_i, self.cov_inv)
+            _r_i = gaussian_multivariate(x_, _mu_i, self.cov_inv)
             result = np.append(result, _r_i)
         result = result[:, np.newaxis]
         # Verify shapes
