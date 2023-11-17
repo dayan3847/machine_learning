@@ -1,7 +1,7 @@
 import numpy as np
 from dm_control.rl.control import Environment
 
-from dayan3847.reinforcement_learning.deep_mind.QLearningAgent import QLearningAgent, KnowledgeModel
+from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgent import QLearningAgent, KnowledgeModel
 from dayan3847.models.Model import Model
 from dayan3847.models.multivariate.MultivariateGaussianModel import MultivariateGaussianModel
 
@@ -12,8 +12,8 @@ class KnowledgeModelGaussian(KnowledgeModel):
         self.models: list[Model] = [
             MultivariateGaussianModel(
                 .1,
-                [5, 5, 5, 5, 5],
-                [(0, 1), (0, 1), (0, 1), (0, 1), (0, 1)],
+                [5, 3, 3, 5, 7],
+                [(-2, 2), (-1, 1), (-1, 1), (-2, 2), (-15, 15)],
                 .1,
             ) for _ in range(size_actions)
         ]

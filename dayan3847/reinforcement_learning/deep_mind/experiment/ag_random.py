@@ -1,17 +1,15 @@
 import numpy as np
 from dm_control import suite
 from dm_control.rl.control import Environment
-from agent import Agent
+
+from dayan3847.reinforcement_learning.deep_mind.agent.RandomAgent import RandomAgent
+from dayan3847.reinforcement_learning.deep_mind.deep_mind_experiment import deep_mind_experiment
 
 if __name__ == '__main__':
     random_state = np.random.RandomState(42)
     env: Environment = suite.load('cartpole', 'balance', task_kwargs={'random': random_state})
-
-    ag: Agent = Agent(
+    ag = RandomAgent(
         env=env,
-        action_count=11,
-        state_frames_count=4,
-        frames_shape=(100, 100, 3),
+        action_count=7,
     )
-    ag.epsilon = .99
-    ag.run_episode()
+    deep_mind_experiment(ag, 'random', 'csv')

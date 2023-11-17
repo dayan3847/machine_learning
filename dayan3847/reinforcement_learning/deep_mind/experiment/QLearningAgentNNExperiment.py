@@ -2,14 +2,15 @@ from datetime import datetime
 import numpy as np
 from dm_control import suite
 from dm_control.rl.control import Environment
-from QLearningAgentPV import QLearningAgentPV
 from dm_env import StepType
+
+from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgentNN import QLearningAgentNN
 
 if __name__ == '__main__':
     random_state = np.random.RandomState(42)
     env: Environment = suite.load('cartpole', 'balance', task_kwargs={'random': random_state})
 
-    ag: QLearningAgentPV = QLearningAgentPV(env=env, action_count=11)
+    ag: QLearningAgentNN = QLearningAgentNN(env=env, action_count=11)
     # ag.knowledge_model.load_knowledge('knowledge.h5')
     # ag.epsilon = .99
 
@@ -36,7 +37,7 @@ if __name__ == '__main__':
         print('saving knowledge')
         ag.knowledge_model.save_knowledge('knowledge.h5')
         print('saving reward')
-        np.savetxt('reward.txt', history_reward)
+        np.savetxt('../reward.txt', history_reward)
         np.savetxt(f'ep/{name}_reward.txt', history_reward)
         # print('saving frames')
         # np.save('frames.npy', history_frames)

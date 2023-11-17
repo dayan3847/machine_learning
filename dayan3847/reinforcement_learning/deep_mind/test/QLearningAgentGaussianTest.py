@@ -2,7 +2,8 @@ import unittest
 import numpy as np
 from dm_control import suite
 from dm_control.rl.control import Environment
-from QLearningAgentGaussian import KnowledgeModelGaussian
+
+from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgentGaussian import KnowledgeModelGaussian
 
 np.random.seed(0)
 

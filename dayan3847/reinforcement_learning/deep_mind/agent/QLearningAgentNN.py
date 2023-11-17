@@ -2,10 +2,10 @@ import numpy as np
 from dm_control.rl.control import Environment
 from tensorflow import keras
 
-from dayan3847.reinforcement_learning.deep_mind.QLearningAgent import QLearningAgent, KnowledgeModel
+from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgent import QLearningAgent, KnowledgeModel
 
 
-class KnowledgeModelPV(KnowledgeModel):
+class KnowledgeModelNN(KnowledgeModel):
 
     def __init__(self, size_state: int, size_actions: int):
         self.size_state: int = size_state
@@ -66,13 +66,13 @@ class KnowledgeModelPV(KnowledgeModel):
         self.model = keras.models.load_model(filepath)
 
 
-class QLearningAgentPV(QLearningAgent):
+class QLearningAgentNN(QLearningAgent):
 
     def __init__(self,
                  env: Environment,
                  action_count: int,
                  ):
-        self.knowledge_model: KnowledgeModelPV = KnowledgeModelPV(5, action_count)
+        self.knowledge_model: KnowledgeModelNN = KnowledgeModelNN(5, action_count)
         super().__init__(env, action_count, self.knowledge_model)
 
     def update_current_state(self) -> np.array:
