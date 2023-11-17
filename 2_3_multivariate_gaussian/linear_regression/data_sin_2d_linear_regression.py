@@ -28,10 +28,13 @@ if __name__ == '__main__':
     plt.show()
 
     trainer: ModelTrainer = ModelTrainer(model,
-                                         epochs_count=10,
+                                         epochs_count=5,
                                          data_x=data[:, :2],
                                          data_y=data[:, 2],
                                          )
+
+    print('error: {}'.format(trainer.e()))
+
     trainer.train()
 
     fig = plt.figure()
