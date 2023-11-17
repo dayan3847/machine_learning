@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+np.random.seed(0)
 N = 1000
 
 
@@ -16,7 +17,7 @@ def generate_data_3d():
 def plot_data_3d(_data: np.array):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(_data[0], _data[1], _data[2], label='data', c='r', marker='o')
+    ax.scatter(_data[:, 0], _data[:, 1], _data[:, 2], label='data', c='r', marker='o')
     ax.set_xlabel('x_0')
     ax.set_ylabel('x_1')
     ax.set_zlabel('y')
@@ -27,5 +28,5 @@ def plot_data_3d(_data: np.array):
 
 if __name__ == '__main__':
     data: np.array = generate_data_3d()
-    # np.savetxt('data.csv', data.T, delimiter=',')
+    np.savetxt('data_sin_2d.csv', data, delimiter=',')
     plot_data_3d(data)
