@@ -1,7 +1,5 @@
 # Machine Learning
 
-<img src="https://uady.mx/assets/img/logo_uady.svg" width="15%" alt="uady">
-
 ### <font color='orange'>Universidad Autónoma de Yucatán</font> _Facultad de Matemáticas_
 
 **Teacher:** Dr. Victor Uc Cetina <[victoruccetina@gmail.com](mailto:victoruccetina@gmail.com)>

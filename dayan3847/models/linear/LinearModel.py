@@ -45,14 +45,6 @@ class LinearModel(Model):
 
         self.ww += a * (yy - g) * bb
 
-    def update_w_set(self, x_set: np.array, y_set: np.array):
-        for x, y in zip(x_set, y_set):
-            self.update_w_single(x, y)
-
     def g(self, x):
         return self.g_set(x) if isinstance(x, np.ndarray) \
             else self.g_single(x)
-
-    def update_w(self, x, y):
-        return self.update_w_set(x, y) if isinstance(x, np.ndarray) \
-            else self.update_w_single(x, y)

@@ -11,5 +11,5 @@ class ShapeChecker:
     # point or point list
     @staticmethod
     def check_shape_point_set(_point: np.array, dim: int = 2):
-        if len(_point.shape) != 2 or _point.shape[0] != dim:
+        if len(_point.shape) != 2 or _point.shape[1] != dim:
             raise Exception('Expected shape: ({},point_count), actual shape: {}'.format(dim, _point.shape))
