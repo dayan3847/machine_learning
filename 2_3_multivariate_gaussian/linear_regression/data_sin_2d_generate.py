@@ -1,6 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+N = 1000
+
+
+def generate_data_3d():
+    global N
+    x_0 = np.random.uniform(0, 1, N)
+    x_1 = np.random.uniform(0, 1, N)
+    _e: np.array = np.random.rand(N) * .6 - .3
+    y = np.sin(2 * np.pi * x_0) / 2 + np.sin(2 * np.pi * x_1) / 2 + _e
+    return np.array([x_0, x_1, y]).T
+
 
 def plot_data_3d(_data: np.array):
     fig = plt.figure()
@@ -15,5 +26,6 @@ def plot_data_3d(_data: np.array):
 
 
 if __name__ == '__main__':
-    data: np.array = np.loadtxt('data.csv', delimiter=',').T
+    data: np.array = generate_data_3d()
+    # np.savetxt('data.csv', data.T, delimiter=',')
     plot_data_3d(data)
