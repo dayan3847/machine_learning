@@ -12,6 +12,6 @@ if __name__ == '__main__':
         env=env,
         action_count=7,
     )
-    # ag.epsilon = .99
+    ag.epsilon = .1
     ag.knowledge_model.load_knowledge('gaussian_knowledge.csv')
     deep_mind_experiment(ag, 'gaussian', 'csv')
