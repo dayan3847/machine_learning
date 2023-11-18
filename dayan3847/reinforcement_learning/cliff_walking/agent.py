@@ -247,4 +247,4 @@ class AgentQLearningGaussian(AgentQLearning):
 
     # Actualizar para una accion y un estado el valor de Q
     def update_q_value(self, action: int, state: np.array, new_value: float):
-        self.q_gaussian_models[action].update_w(state, new_value)
+        self.q_gaussian_models[action].train(state, new_value)

@@ -61,7 +61,7 @@ class QLearningAgent(Agent):
 
     def run_step(self) -> tuple[float, int, float, bool] | None:
         sp = super().run_step()
-        if None == sp:
+        if sp is None:
             return None
         r = sp[0]
         a = sp[1]
