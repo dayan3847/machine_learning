@@ -1,56 +1,19 @@
 import numpy as np
 
 from dayan3847.models.Model import Model
+from dayan3847.tools.functions import check_shape_len
 
 
 class LinearModel(Model):
-    def __init__(self,
-                 a: float,
-                 f: int,  # factors_count
-                 init_weights_random: bool = True,
-                 ):
-        self.a: float = a  # Learning rate
-        self.f: int = f
-        # Vector de pesos
-        self.ww: np.array = np.random.rand(self.f) - .5 if init_weights_random \
-            else np.zeros(self.f)
-
-    def bb(self, xx: np.array) -> np.array:
-        pass
-
-    # Calculate the model value for a simple value
-    def h(self, x: float) -> float:
-        xx: np.array = np.full(self.f, x)
-        bb: np.array = self.bb(xx)
-        return self.ww @ bb
-
-    @staticmethod
-    def activate(h: float) -> float:
-        # return 1 / (1 + np.exp(-h))
-        return h
-
-    def g_single(self, x: float) -> float:
-        return self.activate(self.h(x))
-
-    def g_set(self, x_set: np.array) -> np.array:
-        return np.array([self.g_single(x) for x in x_set])
-
-    def update_w_single(self, x: float, y: float):
-        xx: np.array = np.full(self.f, x)
-        yy: np.array = np.full(self.f, y)
-        bb: np.array = self.bb(xx)
-        h: float = self.ww @ bb
-        g: float = self.activate(h)
-        a: float = self.a
-
-        self.ww += a * (yy - g) * bb
 
     def g(self, x):
-        return self.g_set(x) if isinstance(x, np.ndarray) \
-            else self.g_single(x)
+        if isinstance(x, np.ndarray):
+            check_shape_len(x, 1)
+            return self.g_set(x)
+        else:
+            return self.g_single(x)
 
-    def get_ww(self) -> np.array:
-        return self.ww
-
-    def set_ww(self, ww: np.array):
-        self.ww = ww
+    def train_single(self, x: float, y: float, a: float):
+        if isinstance(x, np.ndarray) or isinstance(y, np.ndarray):
+            raise Exception('x or y is np.ndarray')
+        super().train_single(x, y, a)

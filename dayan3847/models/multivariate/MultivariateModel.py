@@ -1,96 +1,78 @@
 import numpy as np
 
 from dayan3847.models.Model import Model
-from dayan3847.tools.ShapeChecker import ShapeChecker
+from dayan3847.tools.functions import check_shape_vector, check_shape_vector_set
 
 
 class MultivariateModel(Model):
     def __init__(self,
-                 a: float,
-                 factors_x_dim: list[int],
-                 init_weights_random: bool = True):
-        self.a: float = a  # Learning rate
-        self.factors_x_dim: list[int] = factors_x_dim  # Number of factors per dimension, Ex. [5,5]
-        self.dim: int = len(factors_x_dim)  # Number of dimensions, Ex. 2
+                 factors_x_dim: list[int],  # Number of factors per dimension, Ex. [5,5]
+                 init_weights: float | None = None,  # None: random, float: init weights with this value
+                 ):
 
+        self.factors_x_dim: list[int] = factors_x_dim
+        self.dim: int = len(factors_x_dim)  # Number of dimensions, Ex. 2
         if self.dim == 0:
             raise Exception('factors_x_dim must have at least one element')
 
-        self.f: int = 1
+        f: int = 1
         for _f in self.factors_x_dim:
-            self.f *= _f
+            f *= _f
 
-        if self.f == 0:
-            raise Exception('factors_x_dim can not have zero elements')
-
-        # Weights: Factors Row Vector Ex. shape(1,25,)
-        # este es el vector de todos los pesos, es un vector fila
-        self.ww: np.array = np.random.rand(self.f)[np.newaxis, :] - .5 if init_weights_random \
-            else np.zeros(self.f)[np.newaxis, :]
-
-        # Check shapes, expected shape: (1, f)
-        ShapeChecker.check_shape(self.ww, (1, self.f,))
+        super().__init__(f, init_weights)
 
     # Calculate the basis function a partir de un valor X
-    # retorna un vector de shape(25,1,)
     # cada valor del vector es el resultado de aplicar la funcion base que se multiplica por cada peso
-    # entrada esperada es un punto X (2,1) donde 2 es la cantidad de dimensiones de X
     def bb(self, x_: np.array) -> np.array:
-        ShapeChecker.check_shape(x_, (self.dim, 1))
+        pass
 
     # Calculate the model value for a simple value
 
-    # entrada esperada: Ex: shape(2,1,) donde 2 es la cantidad de dimensiones de X
-    # Expected shape: (x_dim,)
-    def hi(self, x_: np.array) -> float:
+    def hi(self,
+           x: np.array  # Expected shape: (x_dim)
+           ) -> float:
         # Check shapes
-        ShapeChecker.check_shape(x_, (self.dim, 1))
-        bb: np.array = self.bb(x_)
+        check_shape_vector(x, self.dim)
+        bb: np.array = self.bb(x)
         # Check shapes
-        ShapeChecker.check_shape(bb, (self.f, 1))
+        check_shape_vector(bb, self.f)
         _r = self.ww @ bb
-        return float(_r[0, 0])
+        return _r
 
     @staticmethod
     def activate(h: float) -> float:
         # return 1 / (1 + np.exp(-h))
         return h
 
-    # Expected shape: (x_dim,1)
     def gi(self, x_: np.array) -> float:
-        x_ = np.array(x_)
-        if x_.shape == (self.dim,):
-            x_ = x_[:, np.newaxis]
-        # Check shapes
-        ShapeChecker.check_shape(x_, (self.dim, 1))
+        x_ = np.array(x_)  # Convert to numpy array
         return self.activate(self.hi(x_))
 
     # Expected shape: (x_dim,N )
-    def g(self, x_set_: np.array) -> np.array:
+    def g(self, x_set: np.array) -> np.array:
         # Check shapes
-        ShapeChecker.check_shape_point_set(x_set_, self.dim)
-        _r_set: np.array = np.array([])
-        for _x_1d in x_set_:
-            _x = _x_1d[:, np.newaxis]
-            _r_i = self.gi(_x)
-            _r_set = np.append(_r_set, _r_i)
-        ShapeChecker.check_shape(_r_set, (x_set_.shape[0],))
-        return _r_set
+        check_shape_vector_set(x_set, self.dim)
+        r_set: list[float] = []
+        for x in x_set:
+            r = self.gi(x)
+            r_set.append(r)
+        r_set_np = np.array(r_set)  # Convert to numpy array
+        check_shape_vector(r_set_np, x_set.shape[0])
+        return r_set_np
 
     # Entrenar con un solo punto
-    def update_w_single(self, x: np.array, y: float):
+    def train_single(self, x: np.array, y: float, a: float):
         x = np.array(x)
-        _x = x[:, np.newaxis]
-        _g: float = self.gi(_x)
-        _diff: float = _g - y
-        _a_diff: float = self.a * _diff
-        _bf_vfr: np.array = self.bb(_x)
-        ShapeChecker.check_shape(_bf_vfr, (self.f, 1))
-        _dw_vfc: np.array = _a_diff * _bf_vfr
-        self.ww -= _dw_vfc.T
+        g: float = self.gi(x)
+        a_g__y: float = a * (g - y)
+        bb: np.array = self.bb(x)
+        check_shape_vector(bb, self.f)
+        a_g__y_bb: np.array = a_g__y * bb
+        self.ww -= a_g__y_bb
 
     def get_ww(self) -> np.array:
-        return self.ww[0]
+        return self.ww
 
     def set_ww(self, ww: np.array):
-        self.ww = ww[np.newaxis, :]
+        check_shape_vector(ww, self.f)
+        self.ww = ww

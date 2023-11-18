@@ -38,7 +38,7 @@ class ModelTrainer:
         ))
 
     def update_w_for_all_dataset(self):
-        self.model.update_w(self.data_x, self.data_y)
+        self.model.train(self.data_x, self.data_y)
 
     def save_current_error(self):
         self.error_history = np.append(self.error_history, self.e())

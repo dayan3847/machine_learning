@@ -6,15 +6,19 @@ from dayan3847.models.linear.LinearModel import LinearModel
 class LinearGaussianModel(LinearModel):
 
     def __init__(self,
-                 a: float,
-                 f: int,
-                 mu_lim: tuple[float, float],  # mu_limits
-                 s: float,
-                 init_weights_random: bool = True,
+                 gaussian: tuple[
+                     float,  # min
+                     float,  # max
+                     int,  # number of sigmoidal
+                     float,  # s2
+                 ],
+                 init_weights: float | None = None,
                  ):
-        super().__init__(a, f, init_weights_random)
-        self.mm: np.array = np.linspace(mu_lim[0], mu_lim[1], self.f)
-        self.s2: float = s ** 2
+        f = gaussian[2]
+        super().__init__(f, init_weights)
+
+        self.mm: np.array = np.linspace(*gaussian[:3])
+        self.s2: float = gaussian[3]
 
     def bb(self, xx: np.array) -> np.array:
         mm: np.array = self.mm

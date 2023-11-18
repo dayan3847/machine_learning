@@ -9,15 +9,27 @@ class MultivariateGaussianModel(MultivariateModel):
 
     def __init__(self,
                  a: float,
-                 factors_x_dim: list[int],
-                 limits_x_dim: list[tuple[int, int]],
+                 gaussian_x_dim: list[
+                     tuple[
+                         float,  # min
+                         float,  # max
+                         int,  # number of gaussian
+                         float,  # s2
+                     ]
+                 ],
                  _s2: float,
                  init_weights_random: bool = True
                  ):
+        factors_x_dim: list[int] = [i[2] for i in gaussian_x_dim]
         super().__init__(a, factors_x_dim, init_weights_random)
-        self.limits_x_dim: list[tuple[int, int]] = limits_x_dim
-        if len(self.limits_x_dim) != self.dim:
-            raise Exception('limits_x_dim must have the same number of elements as factors_x_dim')
+        self.gaussian_x_dim: list[
+            tuple[
+                float,  # min
+                float,  # max
+                int,  # number of gaussian
+                float,  # s2
+            ]
+        ] = gaussian_x_dim
         # covariance matrix identity
         self.cov: np.array = np.identity(self.dim) * _s2
         self.cov_inv: np.array = np.linalg.inv(self.cov)
@@ -29,9 +41,7 @@ class MultivariateGaussianModel(MultivariateModel):
 
     def get_mu_list(self) -> list[np.array]:
         _r: list[np.array] = []
-        _m: list[np.array] = []
-        for _i_lxd, _i_fxd in zip(self.limits_x_dim, self.factors_x_dim):
-            _m.append(np.linspace(_i_lxd[0], _i_lxd[1], _i_fxd))
+        _m: list[np.array] = [np.linspace(*g) for g in self.gaussian_x_dim]
         _m = np.meshgrid(*_m)
         _m = [_mi.flatten() for _mi in _m]
         for _m_i in zip(*_m):

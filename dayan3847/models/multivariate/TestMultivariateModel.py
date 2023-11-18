@@ -21,7 +21,7 @@ class TestMultivariateModel(unittest.TestCase):
 
         g = model.gi([1, 1])
 
-        model.update_w([1, 1], 8)
+        model.train([1, 1], 8)
 
         self.assertTrue(True)
 

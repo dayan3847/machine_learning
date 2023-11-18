@@ -6,18 +6,21 @@ from dayan3847.models.linear.LinearModel import LinearModel
 class LinearSigmoidalModel(LinearModel):
 
     def __init__(self,
-                 a: float,
-                 f: int,
-                 mu_lim: tuple[float, float],  # mu_limits
-                 s: float,
-                 init_weights_random: bool = True,
+                 sigmoidal: tuple[
+                     float,  # min
+                     float,  # max
+                     int,  # number of sigmoidal
+                     float,  # s
+                 ],
+                 init_weights: float | None = None,
                  ):
-        super().__init__(a, f, init_weights_random)
-        self.mm: np.array = np.linspace(mu_lim[0], mu_lim[1], self.f)
-        self.s: float = s
+        f = sigmoidal[2]
+        super().__init__(f, init_weights)
+        self.mm: np.array = np.linspace(*sigmoidal[:3])
+        self.s: float = sigmoidal[3]
 
-    def bb(self, xx: np.array) -> np.array:
+    def bb(self, x: float) -> np.array:
         mm: np.array = self.mm
         s: float = self.s
-        mm_xx: np.array = mm - xx
+        mm_xx: np.array = mm - x
         return 1 / (1 + np.exp(mm_xx / s))
