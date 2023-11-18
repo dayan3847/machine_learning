@@ -1,6 +1,6 @@
 import numpy as np
 
-from dayan3847.tools.functions import check_shape_vector
+from dayan3847.tools.functions import check_vector_dim
 
 
 class Model:
@@ -28,7 +28,7 @@ class Model:
 
     def h(self, x) -> float:
         bb: np.array = self.bb(x)
-        check_shape_vector(bb, self.f)
+        check_vector_dim(bb, self.f)
         return self.ww @ bb
 
     def bb(self, x) -> np.array:
@@ -47,7 +47,8 @@ class Model:
         for x, y in zip(x_set, y_set):
             self.train_single(x, y, a)
 
-    def train_single(self, x, y, a: float):  # Learning rate
+    def train_single(self, x, y, a: float):
+        x = np.array(x)
         bb: np.array = self.bb(x)
         h: float = self.ww @ bb
         g: float = self.activate(h)
@@ -61,5 +62,5 @@ class Model:
         return self.ww
 
     def set_ww(self, ww: np.array):
-        check_shape_vector(ww, self.f)
+        check_vector_dim(ww, self.f)
         self.ww = ww

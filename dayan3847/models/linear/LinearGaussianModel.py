@@ -10,15 +10,15 @@ class LinearGaussianModel(LinearModel):
                      float,  # min
                      float,  # max
                      int,  # number of sigmoidal
-                     float,  # s2
                  ],
+                 s2: float,  # variance
                  init_weights: float | None = None,
                  ):
         f = gaussian[2]
         super().__init__(f, init_weights)
 
-        self.mm: np.array = np.linspace(*gaussian[:3])
-        self.s2: float = gaussian[3]
+        self.mm: np.array = np.linspace(*gaussian)
+        self.s2: float = s2
 
     def bb(self, xx: np.array) -> np.array:
         mm: np.array = self.mm

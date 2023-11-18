@@ -10,14 +10,14 @@ class LinearSigmoidalModel(LinearModel):
                      float,  # min
                      float,  # max
                      int,  # number of sigmoidal
-                     float,  # s
                  ],
+                 s: float,  # slope
                  init_weights: float | None = None,
                  ):
         f = sigmoidal[2]
         super().__init__(f, init_weights)
-        self.mm: np.array = np.linspace(*sigmoidal[:3])
-        self.s: float = sigmoidal[3]
+        self.mm: np.array = np.linspace(*sigmoidal)
+        self.s: float = s
 
     def bb(self, x: float) -> np.array:
         mm: np.array = self.mm

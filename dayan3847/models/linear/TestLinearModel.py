@@ -20,7 +20,8 @@ class TestLinearModel(unittest.TestCase):
 
     def test_gaussian(self):
         model = LinearGaussianModel(
-            (0, 1, 5, .1)
+            (0, 1, 5),
+            .1
         )
         self.assertEqual(5, model.f)
         self.assertEqual((5,), model.ww.shape)
@@ -33,7 +34,8 @@ class TestLinearModel(unittest.TestCase):
 
     def test_sigmoidal(self):
         model = LinearSigmoidalModel(
-            (0, 1, 5, .1)
+            (0, 1, 5),
+            .1
         )
         self.assertEqual(5, model.f)
         self.assertEqual((5,), model.ww.shape)

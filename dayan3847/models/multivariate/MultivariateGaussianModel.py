@@ -1,86 +1,61 @@
 import numpy as np
 
 from dayan3847.tools.gaussian import gaussian_multivariate
-from dayan3847.tools.ShapeChecker import ShapeChecker
 from dayan3847.models.multivariate.MultivariateModel import MultivariateModel
+from dayan3847.tools.functions import check_shape
 
 
 class MultivariateGaussianModel(MultivariateModel):
 
     def __init__(self,
-                 a: float,
                  gaussian_x_dim: list[
                      tuple[
                          float,  # min
                          float,  # max
                          int,  # number of gaussian
-                         float,  # s2
                      ]
                  ],
-                 _s2: float,
-                 init_weights_random: bool = True
+                 cov: np.array,  # covariance matrix
+                 init_weights: float | None = None,
                  ):
         factors_x_dim: list[int] = [i[2] for i in gaussian_x_dim]
-        super().__init__(a, factors_x_dim, init_weights_random)
+        super().__init__(factors_x_dim, init_weights)
         self.gaussian_x_dim: list[
             tuple[
                 float,  # min
                 float,  # max
                 int,  # number of gaussian
-                float,  # s2
             ]
         ] = gaussian_x_dim
-        # covariance matrix identity
-        self.cov: np.array = np.identity(self.dim) * _s2
-        self.cov_inv: np.array = np.linalg.inv(self.cov)
-        # Aqui almacenaremos todas las mu, cada mu es un vector columna de shape (self.dim,1)
-        self.mm: list[np.array] = self.get_mu_list()
-        # Verify shapes
-        ShapeChecker.check_shape(self.mm[0], (self.dim, 1))
-        ShapeChecker.check_shape(self.cov, (self.dim, self.dim))
+        self.mm: np.array = self.get_mu_list()
+        check_shape(self.mm, (self.f, self.dim))
+        # # covariance matrix
+        # cov: np.array = np.identity(self.dim)
+        # for i in range(self.dim):
+        #     cov[i, i] = gaussian_x_dim[i][3]
+        check_shape(cov, (self.dim, self.dim))
+        self.cov_inv: np.array = np.linalg.inv(cov)
 
-    def get_mu_list(self) -> list[np.array]:
-        _r: list[np.array] = []
-        _m: list[np.array] = [np.linspace(*g) for g in self.gaussian_x_dim]
-        _m = np.meshgrid(*_m)
-        _m = [_mi.flatten() for _mi in _m]
-        for _m_i in zip(*_m):
-            _r_i = np.array(_m_i)[:, np.newaxis]
-            _r.append(_r_i)
-
-        return _r
+    def get_mu_list(self) -> np.array:
+        _m_list: list[np.array] = [np.linspace(*gaussian[:3]) for gaussian in self.gaussian_x_dim]
+        _m_meshgrid = np.meshgrid(*_m_list)
+        _m_flatten = [_mi.flatten() for _mi in _m_meshgrid]
+        _m_flatten = np.array(_m_flatten).T
+        return _m_flatten
 
     def bb(self, x_: np.array) -> np.array:
         x_ = np.array(x_)
-        super().bb(x_)
-        result: np.array = np.array([])
-        for _mu_i in self.mm:
-            _r_i = gaussian_multivariate(x_, _mu_i, self.cov_inv)
-            result = np.append(result, _r_i)
-        result = result[:, np.newaxis]
-        # Verify shapes
-        ShapeChecker.check_shape(result, (self.f, 1))
-        return result
-
-    def data_to_plot_plotly(self, num=20):
-        if self.dim != 2:
-            raise Exception('plot only works for 2 dimensions')
-        _x = np.linspace(self.limits_x_dim[0][0], self.limits_x_dim[0][1], num)
-        _y = np.linspace(self.limits_x_dim[1][0], self.limits_x_dim[1][1], num)
-        _z = np.empty((num, num))
-        for _y_i in range(num):
-            for _x_i in range(num):
-                _x_vector = np.array([_x[_x_i], _y[_y_i]])[:, np.newaxis]
-                _z[_y_i, _x_i] = self.gi(_x_vector)
-
-        ShapeChecker.check_shape(_z, (num, num))
-        return _x, _y, _z
+        result_list: list[np.array] = []
+        for m in self.mm:
+            _r_i = gaussian_multivariate(x_, m, self.cov_inv)
+            result_list.append(_r_i)
+        return np.array(result_list)
 
     def data_to_plot_matplotlib(self, num=20) -> np.array:
         if self.dim != 2:
             raise Exception('plot only works for 2 dimensions')
-        _x_0 = np.linspace(self.limits_x_dim[0][0], self.limits_x_dim[0][1], num)
-        _x_1 = np.linspace(self.limits_x_dim[1][0], self.limits_x_dim[1][1], num)
+        _x_0 = np.linspace(self.gaussian_x_dim[0][0], self.gaussian_x_dim[0][1], num)
+        _x_1 = np.linspace(self.gaussian_x_dim[1][0], self.gaussian_x_dim[1][1], num)
         _x_0, _x_1 = np.meshgrid(_x_0, _x_1)
         _x_0, _x_1 = _x_0.flatten(), _x_1.flatten()
         _x: np.array = np.array([_x_0, _x_1]).T

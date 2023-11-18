@@ -12,11 +12,17 @@ if __name__ == '__main__':
         [.6, .6, -1],
     ])
     print("data.shape: {}".format(data.shape))
-    model: Model = MultivariateGaussianModel(a=.1,
-                                             factors_x_dim=[10, 10],
-                                             limits_x_dim=[(0, 1), (0, 1)],
-                                             _s2=.01,
-                                             )
+
+    model: Model = MultivariateGaussianModel(
+        [
+            (0, 1, 5),
+            (0, 1, 5),
+        ],
+        cov=np.array([
+            [.01, 0],
+            [0, .01],
+        ]),
+    )
     er = get_model_error(model, data[:, :2], data[:, 2])
 
     fig = plt.figure()
@@ -35,6 +41,7 @@ if __name__ == '__main__':
     error_history: list[float] = train_model(model,
                                              data_x=data[:, :2],
                                              data_y=data[:, 2],
+                                             a=.1,
                                              )
 
     fig = plt.figure()
@@ -53,6 +60,7 @@ if __name__ == '__main__':
     error_history = train_model(model,
                                 data_x=data[:, :2],
                                 data_y=data[:, 2],
+                                a=.1,
                                 epochs_count=100,
                                 error_threshold=1e-3,
                                 )
