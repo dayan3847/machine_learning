@@ -66,6 +66,6 @@ class KnowledgeModelGaussian(KnowledgeModel):
 
 class QLearningAgentGaussian(QLearningAgent):
 
-    def __init__(self, action_values: np.array, ):
-        self.knowledge_model: KnowledgeModelGaussian = KnowledgeModelGaussian(self.action_count)
-        super().__init__(action_values, self.knowledge_model)
+    def __init__(self, action_count: int):
+        self.knowledge_model: KnowledgeModelGaussian = KnowledgeModelGaussian(action_count)
+        super().__init__(action_count, self.knowledge_model)

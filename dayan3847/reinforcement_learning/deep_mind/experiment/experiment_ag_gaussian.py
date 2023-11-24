@@ -11,6 +11,7 @@ import pyautogui
 # joystick
 # import pygame
 
+from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import get_action_values, get_state
 from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgentGaussian import QLearningAgentGaussian
 
 random_state = np.random.RandomState(42)
@@ -21,30 +22,11 @@ env: Environment = suite.load(domain_name='cartpole',
                               },
                               visualize_reward=True)
 
-app = viewer.application.Application()
-
+app = viewer.application.Application(title='Q-Learning Agent Gaussian')
 action_count = 7
+action_values: np.array = get_action_values(env, action_count)
 
-ag = QLearningAgentGaussian(
-    env=env,
-    action_count=action_count,
-)
-
-f_name: str | None = None
-r: float | None = None
-counter: int | None = None
-h_reward: list[float] | None = None
-h_actions: list[int] | None = None
-
-
-def init_episode():
-    global ag, env, h_reward, h_actions, counter, f_name, r
-    ag.init_episode()
-    f_name = datetime.now().strftime('%Y%m%d%H%M%S')
-    counter = 0
-    r = 1
-    h_reward = []
-    h_actions = []
+ag = QLearningAgentGaussian(action_count)
 
 
 def action_from(x, _min, _max) -> np.array:
@@ -89,29 +71,18 @@ def action_from_mouse() -> np.array:
 
 
 def policy_agent(time_step: TimeStep):
-    global ag, env, h_reward, h_actions, counter, f_name, r
-    if time_step.first():
-        init_episode()
+    global ag, action_values
+    s = get_state(time_step)
+    if not time_step.first():
+        r = float(time_step.reward)
+        ag.train_action(s, r)
     else:
-        r = time_step.reward
-        h_reward.append(r)
-
-    counter += 1
-
-    a = action_from_mouse()
-    # a = action_from_joystick()
-    h_actions.append(a)
-    av = ag.action_values[a]
-    print('action: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))
+        r = 1
+    a = ag.select_an_action(s)
+    av = action_values[a]
 
     if r < .35:
         app._restart_runtime()
-
-    if counter == 1000:
-        print('saving')
-        np.savetxt(f'epc/{f_name}_actions.txt', h_actions)
-        np.savetxt(f'epc/{f_name}_reward.txt', h_reward)
-        np.savetxt('reward.txt', h_reward)
 
     return av
 

@@ -1,5 +1,4 @@
 import numpy as np
-from dm_env import TimeStep
 
 from dayan3847.reinforcement_learning.deep_mind.agent.Agent import Agent
 
@@ -29,20 +28,19 @@ class HistoryItem:
     def __init__(self,
                  state: np.array,
                  action: int,
-                 reward: float,
+                 q: float,
+                 random: bool,
                  ):
         self.state: np.array = state
         self.action: int = action
-        self.reward: float = reward
-        self.q: float | None = None
+        self.q: float = q
+        self.random: bool = random
+        self.reward: float | None = None
 
 
 class QLearningAgent(Agent):
-    def __init__(self,
-                 action_values: np.array,
-                 knowledge_model: KnowledgeModel,
-                 ):
-        super().__init__(action_values)
+    def __init__(self, action_count: int, knowledge_model: KnowledgeModel, ):
+        super().__init__(action_count)
         # self.action_best_q: int = 0  # best_action for current state
         # q-learning
         self.alpha = .1
@@ -53,12 +51,11 @@ class QLearningAgent(Agent):
         self.history: list[HistoryItem] = []
 
     def select_an_action(self,
-                         time_step: TimeStep,
+                         s: np.array,  # State
                          a: int | None = None  # if is not None, then is the action to apply per force
-                         ) -> tuple[int, float, bool]:
+                         ) -> int:
         q = None
         ran = False
-        s = self.get_state(time_step)  # current state
         if a is not None:
             q = self.knowledge_model.read_q_value(s, a)
         elif np.random.random() < self.epsilon:
@@ -68,19 +65,18 @@ class QLearningAgent(Agent):
         else:
             a, q, _ = self.select_an_action_best_q(s)
 
-        self.history.append(HistoryItem(s, a, 0))
+        self.history.append(HistoryItem(s, a, q, ran))
 
-        return a, q, ran
+        return a
 
-    def train_action(self, time_step: TimeStep):
-        if time_step.first():
-            return
-        r_prev = float(time_step.reward)
+    def train_action(self,
+                     s: np.array,  # State
+                     r_prev: float,  # reward prev
+                     ):
         self.history[-1].reward = r_prev
         q_prev: float = self.history[-1].q
         a_prev: int = self.history[-1].action
         s_prev: np.array = self.history[-1].state
-        s = self.get_state(time_step)
         q_max: float = self.select_an_action_best_q(s)[1]
 
         _q_fixed: float = q_prev + self.alpha * (r_prev + self.gamma * q_max - q_prev)

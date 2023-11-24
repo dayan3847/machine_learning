@@ -3,11 +3,18 @@ from datetime import datetime
 import numpy as np
 from dm_env import StepType
 from dm_control.rl.control import Environment
+from dm_env import TimeStep
 
 from dayan3847.reinforcement_learning.deep_mind.agent.Agent import Agent
 
 
-# TODO move to utils
+def get_state(time_step: TimeStep) -> np.array:
+    position: np.array = time_step.observation['position']
+    velocity: np.array = time_step.observation['velocity']
+    state = np.concatenate((position, velocity))
+    return state
+
+
 def get_action_values(env_: Environment, action_count_: int) -> np.array:
     _spec = env_.action_spec()
     # return np.linspace(_spec.minimum, _spec.maximum, action_count_)
