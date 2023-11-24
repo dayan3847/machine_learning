@@ -3,21 +3,25 @@ from dm_control.rl.control import Environment
 from dm_env import StepType, TimeStep
 
 
+def get_action_values(env_: Environment, action_count_: int) -> np.array:
+    _spec = env_.action_spec()
+    # return np.linspace(_spec.minimum, _spec.maximum, action_count_)
+    if action_count_ != 7:
+        raise Exception('for this momento only suport 7 actions')
+    return np.array([
+        -.6, -.3, -.1, 0, .1, .3, .6,
+    ], dtype=_spec.dtype)
+
+
 class Agent:
     def __init__(self,
                  env: Environment,
                  action_count: int,
                  ):
         self.env: Environment = env
-        spec = env.action_spec()
         # Action:
         self.action_count: int = action_count
-        # self.action_values: np.array = np.linspace(spec.minimum, spec.maximum, action_count)
-        self.action_values: np.array = np.array([
-            -.6, -.3, -.1, 0, .1, .3, .6,
-        ], dtype=spec.dtype, )
-        if action_count != 7:
-            raise Exception('for this momento only suport 7 actions')
+        self.action_values: np.array = get_action_values(env, action_count)
 
     def init_episode(self):
         self.time_step: TimeStep = self.env.reset()

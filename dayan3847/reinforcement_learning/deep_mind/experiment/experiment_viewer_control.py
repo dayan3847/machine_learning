@@ -21,6 +21,8 @@ env: Environment = suite.load(domain_name='cartpole',
                               },
                               visualize_reward=True)
 
+app = viewer.application.Application()
+
 action_count = 7
 
 ag = QLearningAgentGaussian(
@@ -40,7 +42,7 @@ def init_episode():
     ag.init_episode()
     f_name = datetime.now().strftime('%Y%m%d%H%M%S')
     counter = 0
-    r = 0
+    r = 1
     h_reward = []
     h_actions = []
 
@@ -102,6 +104,9 @@ def policy_agent(time_step: TimeStep):
     av = ag.action_values[a]
     print('action: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))
 
+    if r < .35:
+        app._restart_runtime()
+
     if counter == 1000:
         print('saving')
         np.savetxt(f'epc/{f_name}_actions.txt', h_actions)
@@ -112,4 +117,5 @@ def policy_agent(time_step: TimeStep):
 
 
 if __name__ == '__main__':
-    viewer.launch(env, policy=policy_agent)
+    # viewer.launch(env, policy=policy_agent)
+    app.launch(env, policy=policy_agent)
