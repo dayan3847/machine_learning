@@ -4,7 +4,7 @@ from dm_control.rl.control import Environment
 from dm_control import viewer
 from dm_env import TimeStep
 
-from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgentGaussian import QLearningAgentGaussian
+from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import get_action_values
 
 random_state = np.random.RandomState(42)
 env: Environment = suite.load(domain_name='cartpole',
@@ -14,30 +14,25 @@ env: Environment = suite.load(domain_name='cartpole',
                               },
                               visualize_reward=True)
 
-f_name: str = '20231123221923'
+f_name: str = '20231124021704'
+
 app = viewer.application.Application(title='Replay "{}"'.format(f_name))
-
 action_count = 7
+action_values: np.array = get_action_values(env, action_count)
 
-ag = QLearningAgentGaussian(
-    env=env,
-    action_count=action_count,
-)
-
-counter: int = 0
 h_actions = np.loadtxt(f'epc/{f_name}_actions.txt').astype(np.int32)
+counter: int = 0
 r = None
 
 
 def init_episode():
-    global ag, env, counter, r
-    ag.init_episode()
+    global counter, r
     counter = 0
     r = 1
 
 
 def policy_agent(time_step: TimeStep):
-    global ag, env, h_actions, counter, f_name, r
+    global h_actions, counter, r
     if time_step.first():
         init_episode()
     else:
@@ -46,7 +41,7 @@ def policy_agent(time_step: TimeStep):
     a = h_actions[counter]
     counter += 1
 
-    av = ag.action_values[a]
+    av = action_values[a]
     print('action: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))
 
     return av

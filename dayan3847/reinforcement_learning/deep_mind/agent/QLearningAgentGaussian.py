@@ -1,5 +1,4 @@
 import numpy as np
-from dm_control.rl.control import Environment
 
 from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgent import QLearningAgent, KnowledgeModel
 from dayan3847.models.Model import Model
@@ -67,15 +66,6 @@ class KnowledgeModelGaussian(KnowledgeModel):
 
 class QLearningAgentGaussian(QLearningAgent):
 
-    def __init__(self,
-                 env: Environment,
-                 action_count: int,
-                 ):
-        self.knowledge_model: KnowledgeModelGaussian = KnowledgeModelGaussian(action_count)
-        super().__init__(env, action_count, self.knowledge_model)
-
-    def update_current_state(self) -> np.array:
-        position: np.array = self.time_step.observation['position']
-        velocity: np.array = self.time_step.observation['velocity']
-        self.state_current = np.concatenate((position, velocity))
-        return self.state_current
+    def __init__(self, action_values: np.array, ):
+        self.knowledge_model: KnowledgeModelGaussian = KnowledgeModelGaussian(self.action_count)
+        super().__init__(action_values, self.knowledge_model)

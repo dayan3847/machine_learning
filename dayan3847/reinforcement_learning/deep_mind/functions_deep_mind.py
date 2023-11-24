@@ -2,8 +2,20 @@ import time
 from datetime import datetime
 import numpy as np
 from dm_env import StepType
+from dm_control.rl.control import Environment
 
 from dayan3847.reinforcement_learning.deep_mind.agent.Agent import Agent
+
+
+# TODO move to utils
+def get_action_values(env_: Environment, action_count_: int) -> np.array:
+    _spec = env_.action_spec()
+    # return np.linspace(_spec.minimum, _spec.maximum, action_count_)
+    if action_count_ != 7:
+        raise Exception('for this momento only suport 7 actions')
+    return np.array([
+        -.6, -.3, -.1, 0, .1, .3, .6,
+    ], dtype=_spec.dtype)
 
 
 def deep_mind_experiment(ag: Agent, model_name: str, knowledge_extension: str = 'csv'):
@@ -26,6 +38,20 @@ def deep_mind_experiment(ag: Agent, model_name: str, knowledge_extension: str = 
                 break
             print('\033[96m{}\033[00m'.format(ag.step))
             _r, _a, _q, _is_random = ag.run_step()
+
+            #         if time_step_prev is None:
+            #     if self.time_step_prev
+            #
+            # if self.time_step.last():
+            #     return None
+            # self.step += 1
+            # a, q, is_random = self.select_an_action()  # action
+            # self.state_pre = self.state_current
+            # self.time_step = self.env.step(float(self.action_values[a]))
+            # self.state_current = self.update_current_state()
+            # r: float = float(self.time_step.reward)
+            # return r, a, q, is_random
+
             history_reward.append(_r)
             # history_frames.append(ag.env.physics.render(camera_id=0))
             history_position.append(ag.time_step.observation['position'])
