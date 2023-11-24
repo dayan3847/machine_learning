@@ -12,7 +12,12 @@ class Agent:
         spec = env.action_spec()
         # Action:
         self.action_count: int = action_count
-        self.action_values: np.array = np.linspace(spec.minimum, spec.maximum, action_count)
+        # self.action_values: np.array = np.linspace(spec.minimum, spec.maximum, action_count)
+        self.action_values: np.array = np.array([
+            -.6, -.3, -.1, 0, .1, .3, .6,
+        ], dtype=spec.dtype, )
+        if action_count != 7:
+            raise Exception('for this momento only suport 7 actions')
 
     def init_episode(self):
         self.time_step: TimeStep = self.env.reset()
