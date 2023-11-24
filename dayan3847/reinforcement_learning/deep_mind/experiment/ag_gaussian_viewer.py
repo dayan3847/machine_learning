@@ -5,7 +5,11 @@ from dm_control import suite
 from dm_control.rl.control import Environment
 from dm_control import viewer
 from dm_env import TimeStep
+
+# mouse
 import pyautogui
+# joystick
+# import pygame
 
 from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgentGaussian import QLearningAgentGaussian
 
@@ -41,19 +45,45 @@ def init_episode():
     h_actions = []
 
 
-def action_to_mouse_position() -> np.array:
+def action_from(x, _min, _max) -> np.array:
     global action_count
-
-    _min = 765
-    _max = 1795
-    x, y = pyautogui.position()
-    # print(f'La posición del cursor del mouse es: ({x}, {y})')
     x = np.clip(x, _min, _max)
     a = (x - _min) / (_max - _min)
     a *= (action_count - 1)
     a = int(round(a))
 
     return a
+
+
+def action_from_mouse() -> np.array:
+    _min = 765
+    _max = 1795
+    x, y = pyautogui.position()
+    # print(f'La posición del cursor del mouse es: ({x}, {y})')
+
+    return action_from(x, _min, _max)
+
+
+# pygame.init()
+# pygame.joystick.init()
+#
+# joystick = None
+# if pygame.joystick.get_count() > 0:
+#     joystick = pygame.joystick.Joystick(0)
+#     joystick.init()
+# else:
+#     raise Exception('no joystick found')
+
+
+# def action_from_joystick() -> np.array:
+#     global joystick
+#     _min = -.69
+#     _max = .78
+#     x = joystick.get_axis(0)
+#     # y = joystick.get_axis(1)
+#     # print(f'La posición del joystick es: ({x}, {y})')
+#
+#     return action_from(x, _min, _max)
 
 
 def policy_agent(time_step: TimeStep):
@@ -66,7 +96,8 @@ def policy_agent(time_step: TimeStep):
 
     counter += 1
 
-    a = action_to_mouse_position()
+    a = action_from_mouse()
+    # a = action_from_joystick()
     h_actions.append(a)
     av = ag.action_values[a]
     print('action: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))
