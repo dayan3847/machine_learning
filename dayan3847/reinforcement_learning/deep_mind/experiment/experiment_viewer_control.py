@@ -11,7 +11,7 @@ import pyautogui
 # joystick
 # import pygame
 
-from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgentGaussian import QLearningAgentGaussian
+from dayan3847.reinforcement_learning.deep_mind.agent.Agent import get_action_values
 
 random_state = np.random.RandomState(42)
 env: Environment = suite.load(domain_name='cartpole',
@@ -25,10 +25,7 @@ app = viewer.application.Application()
 
 action_count = 7
 
-ag = QLearningAgentGaussian(
-    env=env,
-    action_count=action_count,
-)
+action_values: np.array = get_action_values(env, action_count)
 
 f_name: str | None = None
 r: float | None = None
@@ -38,8 +35,7 @@ h_actions: list[int] | None = None
 
 
 def init_episode():
-    global ag, env, h_reward, h_actions, counter, f_name, r
-    ag.init_episode()
+    global env, h_reward, h_actions, counter, f_name, r
     f_name = datetime.now().strftime('%Y%m%d%H%M%S')
     counter = 0
     r = 1
@@ -89,7 +85,7 @@ def action_from_mouse() -> np.array:
 
 
 def policy_agent(time_step: TimeStep):
-    global ag, env, h_reward, h_actions, counter, f_name, r
+    global env, h_reward, h_actions, counter, f_name, r
     if time_step.first():
         init_episode()
     else:
@@ -101,7 +97,7 @@ def policy_agent(time_step: TimeStep):
     a = action_from_mouse()
     # a = action_from_joystick()
     h_actions.append(a)
-    av = ag.action_values[a]
+    av = action_values[a]
     print('action: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))
 
     if r < .35:

@@ -14,7 +14,8 @@ env: Environment = suite.load(domain_name='cartpole',
                               },
                               visualize_reward=True)
 
-app = viewer.application.Application()
+f_name: str = '20231123221923'
+app = viewer.application.Application(title='Replay "{}"'.format(f_name))
 
 action_count = 7
 
@@ -23,9 +24,8 @@ ag = QLearningAgentGaussian(
     action_count=action_count,
 )
 
-f_name: str = '20231123221923'
 counter: int = 0
-h_actions = np.loadtxt(f'epc/{f_name}_actions.txt', dtype=np.int32)
+h_actions = np.loadtxt(f'epc/{f_name}_actions.txt').astype(np.int32)
 r = None
 
 
