@@ -22,7 +22,7 @@ action_count = 7
 action_values: np.array = get_action_values(env, action_count)
 
 ag = QLearningAgentGaussian(action_count)
-ag.knowledge_model.save_knowledge('epc/{}_knowledge.csv'.format(f_name))
+ag.knowledge_model.load_knowledge('epc/{}_knowledge.csv'.format(f_name))
 
 h_actions = np.loadtxt(f'epc/{f_name}_actions.txt').astype(np.int32)
 counter: int = 0
@@ -53,7 +53,8 @@ def policy_agent(time_step: TimeStep):
     if r < .35:
         app._restart_runtime()
 
-    if counter == 1000:
+    if counter % 10 == 0:
+        print('saving knowledge')
         ag.knowledge_model.save_knowledge('epc/{}_knowledge.csv'.format(f_name))
 
     print('action: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))

@@ -47,7 +47,7 @@ class KnowledgeModelGaussian(KnowledgeModel):
                     data_y=q,
                     a=.1,
                     epochs_count=100,
-                    error_threshold=1e-2,
+                    error_threshold=1e-5,
                     )
 
         print('fix: a:{} s:{} q:{}'.format(a, s, q))
