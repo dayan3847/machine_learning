@@ -3,6 +3,7 @@ from dm_control import suite
 from dm_control.rl.control import Environment
 from dm_control import viewer
 from dm_env import TimeStep
+import imageio
 
 from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import get_action_values
 
@@ -40,6 +41,9 @@ def policy_agent(time_step: TimeStep):
 
     a = h_actions[counter]
     counter += 1
+    frame = env.physics.render(camera_id=0)
+    # save
+    imageio.imwrite(f'frames/f{counter}.png', frame)
 
     av = action_values[a]
     print('action12: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))

@@ -253,7 +253,7 @@ Implementation of the Q-learning algorithm storing knowledge in a neural network
 
 ### Péndulo Invertido
 
-![pendulum](./dayan3847/reinforcement_learning/deep_mind/img/bala.png "Pendulum")
+![pendulum](./dayan3847/reinforcement_learning/deep_mind/img/output.gif "Pendulum")
 
 * Se realizó la implementación de un agente que usa Reinforcement Learning en el entorno de Deep Mind para resolver el
   problema de “péndulo invertido”.
@@ -281,3 +281,5 @@ Implementation of the Q-learning algorithm storing knowledge in a neural network
 * El la version 1 del modelo "Gaussian" presento problemas de rendimiento y no se pudo entrenar.
     * Se recomienda analizar la cantidad de pesos que contiene el modelo.
     * Analizar la matriz de covarianza para evitar interferencias entre las gausianas.
+
+![pendulum](./dayan3847/reinforcement_learning/deep_mind/img/bala.png "Pendulum")
