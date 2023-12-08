@@ -30,10 +30,10 @@ class KnowledgeModelTable(KnowledgeModel):
         self.table[_pos] = q
 
     def save_knowledge(self):
-        np.save(FILE_PATH, self.table, allow_pickle=True)
+        np.save(FILE_PATH, self.table)
 
     def load_knowledge(self):
-        self.table = np.load(FILE_PATH, allow_pickle=True)
+        self.table = np.load(FILE_PATH)
 
     def reset_knowledge(self):
         self.table = np.zeros_like(self.table)
