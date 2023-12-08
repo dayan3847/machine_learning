@@ -215,19 +215,69 @@ Implementation of the Q-learning algorithm storing knowledge in Gaussian base fu
 > Implementar el algoritmo Q-learning para estados continuos y acciones discretas, usando un aproximador de funciones de
 > base Gaussiana para almacenar la función Q.
 
-## **Practice 2.6:** "Q-Learning and Sarsa  with Neural Network" _Final Project_
+## **Practice 2.6:** "Q-Learning and Sarsa in Deep Mind" _Final Project_
 
 Implementation of the Q-learning algorithm storing knowledge in a neural network.
 
 ### Project Instructions
 
-> * Implementar un agente que use Reinforcement Learning en el entorno de Deep Mind para resolver el problema de “péndulo invertido”
+> * Implementar algoritmos de Q-Learning y Sarsa
+> * Implementar un agente que use Reinforcement Learning en el entorno de Deep Mind para resolver el problema de
+    “péndulo invertido”
 > * Utilizar un modelo gaussiano para almacenar la “policy function” tomando como estado la posición y velocidad.
 > * Las acciones serán discretas.
-> * Implementar algoritmos de  Q-Learning y Sarsa
-> * Consideraciones: graficar curvas de recompensas para poder comparar diferentes variantes del algoritmo.
 > * Q-learning con entradas contínuas en forma de vector de variables
-> * Q-learning con entradas contínuas en forma de frames. Para esta opción consideramos el uso de Autoencoders al estilo
-    world models.
-> * Consideraciones: graficar curvas de recompensas para poder comparar diferentes variantes del algoritmo
+> * Consideraciones: graficar curvas de recompensas para poder comparar diferentes variantes del algoritmo.
 
+### Q-Learning y Sarsa
+
+* Se realizó la implementación de los algoritmos Q-Learning y Sarsa para el problema "Cliff Walking".
+* Se realizaron experimentos variando los parámetros de los algoritmos (epsilon).
+* Se graficaron las curvas de recompensa para poder comparar diferentes variantes de los algoritmos.
+* Se concluyó un simulador para el problema "Cliff Walking" compatible con Deep Mind para hacer experimentos en segundo
+  plano
+
+#### Notebook:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dayan3847/machine_learning/blob/master/dayan3847/reinforcement_learning/cliff_walking/experiments.ipynb)
+
+#### Q-Learning vs Sarsa (epsilon=0.1)
+
+![q_learning_vs_sarsa_epsilon_0_1](./dayan3847/reinforcement_learning/cliff_walking/img/ql-ss-r-e01.png "Q-Learning vs Sarsa (epsilon=0.1)")
+![q_learning_vs_sarsa_epsilon_0_1](./dayan3847/reinforcement_learning/cliff_walking/img/ql-ss-w-e01.png "Q-Learning vs Sarsa (epsilon=0.1)")
+
+#### Q-Learning vs Sarsa (epsilon=00.1)
+
+![q_learning_vs_sarsa_epsilon_0_1](./dayan3847/reinforcement_learning/cliff_walking/img/ql-ss-r-e001.png "Q-Learning vs Sarsa (epsilon=0.1)")
+![q_learning_vs_sarsa_epsilon_0_1](./dayan3847/reinforcement_learning/cliff_walking/img/ql-ss-w-e001.png "Q-Learning vs Sarsa (epsilon=0.1)")
+
+### Péndulo Invertido
+
+![pendulum](./dayan3847/reinforcement_learning/deep_mind/img/bala.png "Pendulum")
+
+* Se realizó la implementación de un agente que usa Reinforcement Learning en el entorno de Deep Mind para resolver el
+  problema de “péndulo invertido”.
+* Se utilizó un agente "Random" para generar datos del "state" y "reward" y asi obtener los minimos y maximos de cada
+  variable.
+* Se creo un mecanismo para discretizar el "state"
+* Se implementó en el entorno de Deep Mind visual un mecanismo para realizar entrenamientos semi-supervisados.
+* Se realizó la implementación y entrenamiento de un modelo de tablas utilizando Q-Learning
+* Se realizaron entrenamientos variando los parámetros de los algoritmos (epsilon).
+* Se realizaron entrenamientos semi-supervisados.
+* Se definieron 5 acciones de forma discreta con los siguientes valores: [-.3, -.1, 0, .1, .3]
+* Se implementó una primera version del modelo "Gaussian" para almacenar la "policy function" tomando como estado la
+  posición y velocidad.
+
+#### Resultados
+
+* Los rangos de valores para el estado son los siguientes:
+    * `[-.5, .63]`
+    * `[.2, 1]`
+    * `[-1, 1]`
+    * `[-1, 1]`
+    * `[-5, 5]`
+* Se logró entrenar el modelo de tablas utilizando Q-Learning
+    * Inicialmente se utilizó un epsilon de 0.2
+* El la version 1 del modelo "Gaussian" presento problemas de rendimiento y no se pudo entrenar.
+    * Se recomienda analizar la cantidad de pesos que contiene el modelo.
+    * Analizar la matriz de covarianza para evitar interferencias entre las gausianas.
