@@ -6,8 +6,8 @@ from dm_control.rl.control import Environment
 from dm_control import viewer
 from dm_env import TimeStep
 
-from dayan3847.reinforcement_learning.deep_mind.experiment.agests import balance_example_5_11111
-from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import get_action_values, get_state
+from dayan3847.reinforcement_learning.deep_mind.experiment.agests import balance_qlearning_gaussian_5_11111
+from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import get_action_values
 
 random_state = np.random.RandomState(42)
 env: Environment = suite.load(domain_name='cartpole',
@@ -19,7 +19,7 @@ env: Environment = suite.load(domain_name='cartpole',
 
 app = viewer.application.Application(title='Q-Learning Agent Gaussian')
 
-ag = balance_example_5_11111()
+ag, get_state = balance_qlearning_gaussian_5_11111()
 # ag.knowledge_model.load_knowledge('knowledge.csv')
 
 action_count = ag.action_count

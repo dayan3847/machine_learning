@@ -1,12 +1,41 @@
 import numpy as np
 
+from dm_env import TimeStep
+
 from dayan3847.models.Model import Model
 from dayan3847.models.multivariate.MultivariateGaussianModel import MultivariateGaussianModel
 from dayan3847.reinforcement_learning.agent.TemporalDifferenceLearningAgent import TemporalDifferenceLearningAgent
 from dayan3847.reinforcement_learning.agent.TemporalDifferenceLearningAgentGaussian import QLearningAgentGaussian
+from dayan3847.reinforcement_learning.agent.TemporalDifferenceLearningAgentTable import QLearningAgentTable
 
 
-def balance_example_5_11111() -> TemporalDifferenceLearningAgent:
+def get_state(time_step: TimeStep) -> np.array:
+    position: np.array = time_step.observation['position']
+    velocity: np.array = time_step.observation['velocity']
+    state = np.concatenate((position, velocity))
+    return state
+
+
+LIMITS = [
+    np.linspace(-.5, .63, 10),
+    np.linspace(.2, 1, 10),
+    np.linspace(-1, 1, 20),
+    np.linspace(-1, 1, 20),
+    np.linspace(-5, 5, 20),
+]
+
+
+def get_state_pos(time_step: TimeStep) -> np.array:
+    state = get_state(time_step)
+    for i in range(len(state)):
+        state[i] = np.digitize(state[i], LIMITS[i])
+        if state[i] != 0:
+            state[i] -= 1
+
+    return state
+
+
+def balance_qlearning_gaussian_5_11111() -> tuple[TemporalDifferenceLearningAgent, callable]:
     action_count = 5
     models: list[Model] = [
         MultivariateGaussianModel(
@@ -28,7 +57,20 @@ def balance_example_5_11111() -> TemporalDifferenceLearningAgent:
         ) for _ in range(action_count)
     ]
 
-    return QLearningAgentGaussian(
-        action_count=action_count,
-        models=models,
+    return (
+        QLearningAgentGaussian(
+            action_count=action_count,
+            models=models,
+        ),
+        get_state
     )
+
+
+def balance_qlearning_table_5() -> tuple[TemporalDifferenceLearningAgent, callable]:
+    action_count = 5
+    ag = QLearningAgentTable(
+        action_count=action_count,
+        state_shape=(10, 10, 20, 20, 20),
+    )
+    ag.epsilon = .01
+    return ag, get_state_pos

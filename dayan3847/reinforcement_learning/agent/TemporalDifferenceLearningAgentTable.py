@@ -15,7 +15,8 @@ class KnowledgeModelTable(KnowledgeModel):
                      s: np.array,  # state
                      a: int,  # action
                      ) -> float:
-        q = self.table[(a, *tuple(s))]
+        _pos = (a, *tuple(np.array(s, dtype=np.int64)))
+        q = self.table[_pos]
         return float(q)
 
     def update_q_value(self,
@@ -23,7 +24,8 @@ class KnowledgeModelTable(KnowledgeModel):
                        a: int,  # action
                        q: float,  # q_value
                        ):
-        self.table[(a, *tuple(s))] = q
+        _pos = (a, *tuple(np.array(s, dtype=np.int64)))
+        self.table[_pos] = q
 
     def save_knowledge(self, filepath: str):
         np.save(filepath, self.table)
@@ -37,7 +39,7 @@ class KnowledgeModelTable(KnowledgeModel):
 
 class QLearningAgentTable(QLearningAgent):
 
-    def __init__(self, action_count: int, state_shape: tuple[int, int]):
+    def __init__(self, action_count: int, state_shape: tuple):
         super().__init__(
             action_count,
             KnowledgeModelTable(
@@ -49,7 +51,7 @@ class QLearningAgentTable(QLearningAgent):
 
 class SarsaAgentTable(SarsaAgent):
 
-    def __init__(self, action_count: int, state_shape: tuple[int, int]):
+    def __init__(self, action_count: int, state_shape: tuple):
         super().__init__(
             action_count,
             KnowledgeModelTable(
