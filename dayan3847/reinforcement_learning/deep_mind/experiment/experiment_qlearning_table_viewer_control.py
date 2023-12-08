@@ -19,9 +19,10 @@ env: Environment = suite.load(domain_name='cartpole',
                               },
                               visualize_reward=True)
 
-app = viewer.application.Application(title='Q-Learning Agent Gaussian')
+app = viewer.application.Application(title='Q-Learning Agent Table Control')
 
 ag, get_state = balance_qlearning_table_5()
+# ag, get_state = balance_qlearning_table_6()
 
 action_count = ag.action_count
 action_values: np.array = get_action_values(env, action_count)
@@ -48,6 +49,9 @@ def action_from_mouse() -> np.array:
     _max = 1795
     x, y = pyautogui.position()
     # print(f'La posición del cursor del mouse es: ({x}, {y})')
+
+    if y < 1200 or y > 2000:
+        return None
 
     return action_from(x, _min, _max)
 

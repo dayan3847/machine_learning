@@ -10,9 +10,17 @@ from dayan3847.reinforcement_learning.agent.Agent import Agent
 
 def get_action_values(env_: Environment, action_count_: int) -> np.array:
     _spec = env_.action_spec()
-    if action_count_ == 5:
+    if action_count_ == 4:
+        return np.array([
+            -.3, -.1, .1, .3,
+        ], dtype=_spec.dtype)
+    elif action_count_ == 5:
         return np.array([
             -.3, -.1, 0, .1, .3,
+        ], dtype=_spec.dtype)
+    elif action_count_ == 6:
+        return np.array([
+            -.3, -.1, -.05, .05, .1, .3,
         ], dtype=_spec.dtype)
     elif action_count_ == 7:
         return np.array([
@@ -81,8 +89,7 @@ def run_experiment(ag: Agent, get_state: callable, model_name: str, knowledge_ex
         # history_frames: list[np.array] = [ag.env.physics.render(camera_id=0)]
 
         print('saving knowledge')
-        ag.save_knowledge(f'{model_name}_knowledge.{knowledge_extension}')
-        # ag.save_knowledge(f'ep/{name}_{model_name}_knowledge.{knowledge_extension}')
+        ag.save_knowledge()
         print('saving reward')
         np.savetxt('reward.txt', history_reward)
         # np.savetxt(f'ep/{name}_{model_name}_reward.txt', history_reward)

@@ -36,8 +36,8 @@ class KnowledgeModelTable(KnowledgeModel):
         self.table = np.load(FILE_PATH)
 
     def reset_knowledge(self):
-        # self.table = np.zeros_like(self.table)
-        self.table = np.ones_like(self.table)
+        self.table = np.zeros_like(self.table)
+        # self.table = np.ones_like(self.table)
 
 
 class QLearningAgentTable(QLearningAgent):

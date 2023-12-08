@@ -221,6 +221,11 @@ Implementation of the Q-learning algorithm storing knowledge in a neural network
 
 ### Project Instructions
 
+> * Implementar un agente que use Reinforcement Learning en el entorno de Deep Mind para resolver el problema de “péndulo invertido”
+> * Utilizar un modelo gaussiano para almacenar la “policy function” tomando como estado la posición y velocidad.
+> * Las acciones serán discretas.
+> * Implementar algoritmos de  Q-Learning y Sarsa
+> * Consideraciones: graficar curvas de recompensas para poder comparar diferentes variantes del algoritmo.
 > * Q-learning con entradas contínuas en forma de vector de variables
 > * Q-learning con entradas contínuas en forma de frames. Para esta opción consideramos el uso de Autoencoders al estilo
     world models.
