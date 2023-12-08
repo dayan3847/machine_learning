@@ -11,6 +11,8 @@ import pyautogui
 from dayan3847.reinforcement_learning.deep_mind.experiment.agests import balance_qlearning_table_5
 from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import get_action_values
 
+FILE_PATH = 'knowledge_qlearning_table.npy'
+
 random_state = np.random.RandomState(42)
 env: Environment = suite.load(domain_name='cartpole',
                               task_name='balance',
@@ -22,7 +24,7 @@ env: Environment = suite.load(domain_name='cartpole',
 app = viewer.application.Application(title='Q-Learning Agent Gaussian')
 
 ag, get_state = balance_qlearning_table_5()
-# ag.knowledge_model.load_knowledge('knowledge.csv')
+ag.knowledge_model.load_knowledge(FILE_PATH)
 
 action_count = ag.action_count
 action_values: np.array = get_action_values(env, action_count)
@@ -83,7 +85,7 @@ def policy_agent(time_step: TimeStep):
     if counter % 10 == 0:
         print('saving knowledge')
         # ag.knowledge_model.save_knowledge('epc/{}_knowledge.csv'.format(f_name))
-        ag.knowledge_model.save_knowledge('knowledge.csv')
+        ag.knowledge_model.save_knowledge(FILE_PATH)
 
     print('action: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))
     return av
