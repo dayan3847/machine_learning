@@ -13,9 +13,9 @@ def get_state(time_step: TimeStep) -> np.array:
 def run_experiment(ag: TemporalDifferenceLearningAgent, experiments: int, episodes: int):
     reward = np.zeros((experiments, episodes), dtype=np.float64)
     win = np.zeros(episodes, dtype=np.int64)
+    env = CliffWalkingEnvironment()
 
     for _ex in range(experiments):
-        env = CliffWalkingEnvironment()
         ag.reset_knowledge()
 
         def policy_agent(time_step: TimeStep) -> int:

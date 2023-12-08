@@ -2,8 +2,6 @@ import numpy as np
 
 from dayan3847.reinforcement_learning.agent.TemporalDifferenceLearningAgent \
     import KnowledgeModel, QLearningAgent, SarsaAgent
-from dayan3847.reinforcement_learning.cliff_walking.CliffWalkingEnvironment \
-    import ACTIONS_COUNT, BOARD_SHAPE
 
 
 class CliffWalkingKnowledgeModelTable(KnowledgeModel):
@@ -34,9 +32,6 @@ class CliffWalkingKnowledgeModelTable(KnowledgeModel):
 
 class CliffWalkingQLearningAgentTable(QLearningAgent):
 
-    def __init__(self):
-        super().__init__(ACTIONS_COUNT, BOARD_SHAPE)
-
     def reset_knowledge(self) -> KnowledgeModel:
         self.knowledge_model = CliffWalkingKnowledgeModelTable(
             actions_count=self.action_count,
@@ -46,9 +41,6 @@ class CliffWalkingQLearningAgentTable(QLearningAgent):
 
 
 class CliffWalkingSarsaAgentTable(SarsaAgent):
-
-    def __init__(self):
-        super().__init__(ACTIONS_COUNT, BOARD_SHAPE)
 
     def reset_knowledge(self) -> KnowledgeModel:
         self.knowledge_model = CliffWalkingKnowledgeModelTable(
