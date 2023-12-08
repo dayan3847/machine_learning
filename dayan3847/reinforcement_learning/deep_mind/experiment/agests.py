@@ -21,7 +21,7 @@ LIMITS = [
     np.linspace(.2, 1, 10),
     np.linspace(-1, 1, 20),
     np.linspace(-1, 1, 20),
-    np.linspace(-5, 5, 30),
+    np.linspace(-5, 5, 20),
 ]
 
 
@@ -70,21 +70,9 @@ def balance_qlearning_table_5() -> tuple[TemporalDifferenceLearningAgent, callab
     action_count = 5
     ag = QLearningAgentTable(
         action_count=action_count,
-        state_shape=(10, 10, 20, 20, 30),
+        state_shape=(10, 10, 20, 20, 20),
     )
     ag.epsilon = .2
-    ag.knowledge_model.load_knowledge()
-    # ag.knowledge_model.reset_knowledge()
-    return ag, get_state_pos
-
-
-def balance_qlearning_table_6() -> tuple[TemporalDifferenceLearningAgent, callable]:
-    action_count = 6
-    ag = QLearningAgentTable(
-        action_count=action_count,
-        state_shape=(10, 10, 20, 20, 30),
-    )
-    ag.epsilon = .1
     ag.knowledge_model.load_knowledge()
     # ag.knowledge_model.reset_knowledge()
     return ag, get_state_pos

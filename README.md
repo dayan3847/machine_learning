@@ -215,7 +215,7 @@ Implementation of the Q-learning algorithm storing knowledge in Gaussian base fu
 > Implementar el algoritmo Q-learning para estados continuos y acciones discretas, usando un aproximador de funciones de
 > base Gaussiana para almacenar la función Q.
 
-## **Practice 2.6:** "Q-Learning with Neural Network" _Final Project_
+## **Practice 2.6:** "Q-Learning and Sarsa  with Neural Network" _Final Project_
 
 Implementation of the Q-learning algorithm storing knowledge in a neural network.
 
@@ -230,3 +230,4 @@ Implementation of the Q-learning algorithm storing knowledge in a neural network
 > * Q-learning con entradas contínuas en forma de frames. Para esta opción consideramos el uso de Autoencoders al estilo
     world models.
 > * Consideraciones: graficar curvas de recompensas para poder comparar diferentes variantes del algoritmo
+
