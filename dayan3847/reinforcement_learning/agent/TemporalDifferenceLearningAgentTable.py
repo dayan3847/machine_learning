@@ -3,6 +3,8 @@ import numpy as np
 from dayan3847.reinforcement_learning.agent.TemporalDifferenceLearningAgent \
     import KnowledgeModel, QLearningAgent, SarsaAgent
 
+FILE_PATH = 'knowledge_table.npy'
+
 
 class KnowledgeModelTable(KnowledgeModel):
 
@@ -27,14 +29,15 @@ class KnowledgeModelTable(KnowledgeModel):
         _pos = (a, *tuple(np.array(s, dtype=np.int64)))
         self.table[_pos] = q
 
-    def save_knowledge(self, filepath: str):
-        np.save(filepath, self.table)
+    def save_knowledge(self):
+        np.save(FILE_PATH, self.table)
 
-    def load_knowledge(self, filepath: str):
-        self.table = np.load(filepath)
+    def load_knowledge(self):
+        self.table = np.load(FILE_PATH)
 
     def reset_knowledge(self):
-        self.table = np.zeros_like(self.table)
+        # self.table = np.zeros_like(self.table)
+        self.table = np.ones_like(self.table)
 
 
 class QLearningAgentTable(QLearningAgent):

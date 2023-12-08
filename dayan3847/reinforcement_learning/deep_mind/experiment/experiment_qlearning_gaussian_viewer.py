@@ -60,8 +60,7 @@ def policy_agent(time_step: TimeStep):
 
     if counter % 10 == 0:
         print('saving knowledge')
-        ag.knowledge_model.save_knowledge('epc/{}_knowledge.csv'.format(f_name))
-        ag.knowledge_model.save_knowledge('knowledge.csv')
+        ag.save_knowledge()
 
     print('action: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))
     return av

@@ -39,14 +39,14 @@ class KnowledgeModelGaussian(KnowledgeModel):
 
         print('fix: a:{} s:{} q:{}'.format(a, s, q))
 
-    def save_knowledge(self, filepath: str):
+    def save_knowledge(self):
         w_data: np.array = np.array([
             mi.get_ww() for mi in self.models
         ])
-        np.savetxt(filepath, w_data.T, delimiter=',')
+        np.savetxt('knowledge_gaussian.csv', w_data.T, delimiter=',')
 
-    def load_knowledge(self, filepath: str):
-        w_data: np.array = np.loadtxt(filepath, delimiter=',').T
+    def load_knowledge(self):
+        w_data: np.array = np.loadtxt('knowledge_gaussian.csv', delimiter=',').T
         for i, mi in enumerate(self.models):
             mi.set_ww(w_data[i].T)
 

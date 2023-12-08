@@ -22,8 +22,8 @@ def get_action_values(env_: Environment, action_count_: int) -> np.array:
 
 
 def run_experiment(ag: Agent, get_state: callable, model_name: str, knowledge_extension: str = 'csv'):
-    history_global_reward: list[float] = []
-    history_global_state: list[np.array] = []
+    # history_global_reward: list[float] = []
+    # history_global_state: list[np.array] = []
 
     def policy(time_step_: TimeStep) -> int:
         s = get_state(time_step_)
@@ -71,8 +71,8 @@ def run_experiment(ag: Agent, get_state: callable, model_name: str, knowledge_ex
         name: str = datetime.now().strftime('%Y%m%d%H%M%S')
         print(f'running episode {name}')
         history_reward, history_state, _win = run_episode()
-        history_global_reward += history_reward
-        history_global_state += history_state
+        # history_global_reward += history_reward
+        # history_global_state += history_state
         if _win:  # green
             print('\033[92m' + 'WIN' + '\033[00m')
         else:  # red
@@ -88,14 +88,14 @@ def run_experiment(ag: Agent, get_state: callable, model_name: str, knowledge_ex
         # np.savetxt(f'ep/{name}_{model_name}_reward.txt', history_reward)
         print('saving state')
         np.savetxt('state.csv', history_state, delimiter=',')
-        np.savetxt(f'ep/{name}_{model_name}_state.csv', history_state, delimiter=',')
+        # np.savetxt(f'ep/{name}_{model_name}_state.csv', history_state, delimiter=',')
         # print('saving frames')
         # np.save('frames.npy', history_frames)
 
-        print('saving global reward')
-        np.savetxt('global_reward.txt', history_global_reward)
-        print('saving global state')
-        np.savetxt('global_state.csv', history_global_state, delimiter=',')
+        # print('saving global reward')
+        # np.savetxt('global_reward.txt', history_global_reward)
+        # print('saving global state')
+        # np.savetxt('global_state.csv', history_global_state, delimiter=',')
 
         # print in yellow
         print('\033[93m' + 'episode time: ' + str(time.time() - start_time) + '\033[00m')

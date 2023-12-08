@@ -17,10 +17,10 @@ class KnowledgeModel:
                        ):
         pass
 
-    def save_knowledge(self, filepath: str):
+    def save_knowledge(self):
         pass
 
-    def load_knowledge(self, filepath: str):
+    def load_knowledge(self):
         pass
 
     def reset_knowledge(self):
@@ -75,16 +75,18 @@ class TemporalDifferenceLearningAgent(Agent):
     def select_an_action_best_q(self, s: np.array) -> tuple[int, float, bool]:  # best_action, best_q_value
         # Obtener la lista de valores Q de todas las acciones para el estado "s"
         q_values: list[float] = self.read_q_values_x_actions(s)
-        best_q_value = max(q_values)
-        best_action = q_values.index(best_q_value)
+        best_q_value = np.max(q_values)
+        best_actions_list = np.argwhere(q_values == best_q_value).flatten()
+        best_actions_list_len = len(best_actions_list)
+        best_action = best_actions_list[best_actions_list_len // 2]
         # print('max: a: {} q: {}'.format(best_action, best_q_value))
         return int(best_action), float(best_q_value), False
 
     def read_q_values_x_actions(self, s: np.array) -> list[float]:
         return [self.knowledge_model.read_q_value(s, a) for a in range(self.action_count)]
 
-    def save_knowledge(self, filepath: str):
-        self.knowledge_model.save_knowledge(filepath)
+    def save_knowledge(self):
+        self.knowledge_model.save_knowledge()
 
 
 class QLearningAgent(TemporalDifferenceLearningAgent):

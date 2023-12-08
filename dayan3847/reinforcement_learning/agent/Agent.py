@@ -17,5 +17,5 @@ class Agent:
     def select_an_action_random(self) -> int:
         return np.random.randint(self.action_count)
 
-    def save_knowledge(self, filepath: str):
+    def save_knowledge(self):
         pass
