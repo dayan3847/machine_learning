@@ -53,12 +53,6 @@ class TemporalDifferenceLearningAgent(Agent):
 
         self.algorithm_name: str = 'td_learning'
 
-    def train_action(self,
-                     s: np.array,  # State
-                     r_prev: float,  # reward prev
-                     ):
-        pass
-
     def select_an_action_policy_e_greedy(self,
                                          s: np.array,  # State
                                          a: int | None = None  # if is not None, then is the action to apply per force

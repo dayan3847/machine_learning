@@ -11,22 +11,23 @@ def get_state(time_step: TimeStep) -> np.array:
 
 
 def run_experiment(ag: TemporalDifferenceLearningAgent, experiments: int, episodes: int):
+    def policy_agent(time_step_: TimeStep) -> int:
+        s = get_state(time_step_)
+        if not time_step_.first():
+            r = float(time_step_.reward)
+            ag.train_action(s, r)
+
+        a = ag.select_an_action(s)
+
+        return a
+
     reward = np.zeros((experiments, episodes), dtype=np.float64)
     win = np.zeros(episodes, dtype=np.int64)
+
     env = CliffWalkingEnvironment()
 
     for _ex in range(experiments):
         ag.knowledge_model.reset_knowledge()
-
-        def policy_agent(time_step: TimeStep) -> int:
-            s = get_state(time_step)
-            if not time_step.first():
-                r = float(time_step.reward)
-                ag.train_action(s, r)
-
-            a = ag.select_an_action(s)
-
-            return a
 
         for _ep in range(episodes):
             _rew, _win = env.run_episode(policy=policy_agent)

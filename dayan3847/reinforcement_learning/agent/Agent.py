@@ -8,7 +8,10 @@ class Agent:
     def select_an_action(self,
                          s: np.array,  # State
                          a: int | None = None,
-                         ) -> tuple[int, float, bool]:  # action, q, is_random
+                         ) -> int:
+        pass
+
+    def train_action(self, s: np.array, r_prev: float):
         pass
 
     def select_an_action_random(self) -> int:

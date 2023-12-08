@@ -1,9 +1,9 @@
 import time
 from datetime import datetime
 import numpy as np
-from dm_env import StepType
-from dm_control.rl.control import Environment
 from dm_env import TimeStep
+from dm_control import suite
+from dm_control.rl.control import Environment
 
 from dayan3847.reinforcement_learning.agent.Agent import Agent
 
@@ -28,7 +28,43 @@ def get_action_values(env_: Environment, action_count_: int) -> np.array:
     return np.linspace(_spec.minimum, _spec.maximum, action_count_)
 
 
-def deep_mind_experiment(env: Environment, ag: Agent, model_name: str, knowledge_extension: str = 'csv'):
+def run_experiment(ag: Agent, model_name: str, knowledge_extension: str = 'csv'):
+    def policy(time_step_: TimeStep) -> int:
+        s = get_state(time_step_)
+
+        if not time_step_.first():
+            r = float(time_step_.reward)
+            ag.train_action(s, r)
+
+        a = ag.select_an_action(s)
+
+        return a
+
+    env: Environment = suite.load('cartpole', 'balance',
+                                  task_kwargs={'random': np.random.RandomState(42)})
+    action_values: np.array = get_action_values(env, ag.action_count)
+
+    def run_episode() -> tuple[list[float], bool]:  # (reward, win)
+        h_reward: list[float] = []
+        lose: bool = False
+        _time_step = env.reset()
+        episode_step = 0
+        while not _time_step.last() and not lose:
+            if np.loadtxt('stop.txt') == 2:
+                print('\033[96m' + 'stop' + '\033[00m')
+                break
+            episode_step += 1
+            print('\033[96m{}\033[00m'.format(episode_step))
+            action: int = policy(_time_step)
+            action_val: float = float(action_values[action])
+            _time_step = env.step(action_val)
+            r = float(_time_step.reward)
+            h_reward.append(r)
+            if r < .35:
+                lose = True
+        policy(_time_step)
+        return h_reward, not lose
+
     while True:
         start_time = time.time()
         if np.loadtxt('stop.txt') != 0:
@@ -36,35 +72,16 @@ def deep_mind_experiment(env: Environment, ag: Agent, model_name: str, knowledge
             break
         name: str = datetime.now().strftime('%Y%m%d%H%M%S')
         print(f'running episode {name}')
-        history_reward: list[float] = []
-        history_position: list[np.array] = []
-        history_velocity: list[np.array] = []
+        history_reward, _win = run_episode()
+        if _win:  # green
+            print('\033[92m' + 'WIN' + '\033[00m')
+        else:  # red
+            print('\033[91m' + 'LOSE' + '\033[00m')
+
+        # history_reward: list[float] = []
+        # history_position: list[np.array] = []
+        # history_velocity: list[np.array] = []
         # history_frames: list[np.array] = [ag.env.physics.render(camera_id=0)]
-        time_step = env.reset()
-        while StepType.LAST != time_step.step_type:
-            if np.loadtxt('stop.txt') == 2:
-                print('\033[96m' + 'stop' + '\033[00m')
-                break
-            # print('\033[96m{}\033[00m'.format(time_step.step_type.name))
-            _r, _a, _q, _is_random = ag.run_step()
-
-            #         if time_step_prev is None:
-            #     if self.time_step_prev
-            #
-            # if self.time_step.last():
-            #     return None
-            # self.step += 1
-            # a, q, is_random = self.select_an_action()  # action
-            # self.state_pre = self.state_current
-            # self.time_step = self.env.step(float(self.action_values[a]))
-            # self.state_current = self.update_current_state()
-            # r: float = float(self.time_step.reward)
-            # return r, a, q, is_random
-
-            history_reward.append(_r)
-            # history_frames.append(ag.env.physics.render(camera_id=0))
-            history_position.append(time_step.observation['position'])
-            history_velocity.append(time_step.observation['velocity'])
 
         print('saving knowledge')
         ag.save_knowledge(f'{model_name}_knowledge.{knowledge_extension}')
@@ -72,12 +89,12 @@ def deep_mind_experiment(env: Environment, ag: Agent, model_name: str, knowledge
         print('saving reward')
         np.savetxt('reward.txt', history_reward)
         np.savetxt(f'ep/{name}_{model_name}_reward.txt', history_reward)
-        print('saving position')
-        np.savetxt('position.txt', history_position)
-        np.savetxt(f'ep/{name}_{model_name}_position.txt', history_position)
-        print('saving velocity')
-        np.savetxt('velocity.txt', history_velocity)
-        np.savetxt(f'ep/{name}_{model_name}_velocity.txt', history_velocity)
+        # print('saving position')
+        # np.savetxt('position.txt', history_position)
+        # np.savetxt(f'ep/{name}_{model_name}_position.txt', history_position)
+        # print('saving velocity')
+        # np.savetxt('velocity.txt', history_velocity)
+        # np.savetxt(f'ep/{name}_{model_name}_velocity.txt', history_velocity)
         # print('saving frames')
         # np.save('frames.npy', history_frames)
 
