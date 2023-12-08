@@ -9,7 +9,7 @@ from dm_env import TimeStep
 from dayan3847.reinforcement_learning.deep_mind.experiment.agests import balance_qlearning_table_5
 from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import get_action_values
 
-FILE_PATH = 'knowledge.npy'
+FILE_PATH = 'knowledge_table.npy'
 
 random_state = np.random.RandomState(42)
 env: Environment = suite.load(domain_name='cartpole',
