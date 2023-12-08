@@ -6,8 +6,8 @@ from dm_control.rl.control import Environment
 from dm_control import viewer
 from dm_env import TimeStep
 
+from dayan3847.reinforcement_learning.deep_mind.experiment.agests import balance_example_5_11111
 from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import get_action_values, get_state
-from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgentGaussian import QLearningAgentGaussian
 
 random_state = np.random.RandomState(42)
 env: Environment = suite.load(domain_name='cartpole',
@@ -18,7 +18,11 @@ env: Environment = suite.load(domain_name='cartpole',
                               visualize_reward=True)
 
 app = viewer.application.Application(title='Q-Learning Agent Gaussian')
-action_count = 5
+
+ag = balance_example_5_11111()
+# ag.knowledge_model.load_knowledge('knowledge.csv')
+
+action_count = ag.action_count
 action_values: np.array = get_action_values(env, action_count)
 
 counter: int | None = None
@@ -26,9 +30,6 @@ f_name: str | None = None
 r: float | None = None
 h_reward: list[float] | None = None
 h_actions: list[int] | None = None
-
-ag = QLearningAgentGaussian(action_count)
-# ag.knowledge_model.load_knowledge('knowledge.csv')
 
 
 def init_episode():
@@ -46,7 +47,7 @@ def policy_agent(time_step: TimeStep):
     if time_step.first():
         init_episode()
     else:
-        r = float(time_step.reward) #* 10000
+        r = float(time_step.reward)
         ag.train_action(s, r)
 
     a = ag.select_an_action(s)

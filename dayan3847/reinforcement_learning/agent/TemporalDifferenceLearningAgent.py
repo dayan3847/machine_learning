@@ -23,6 +23,9 @@ class KnowledgeModel:
     def load_knowledge(self, filepath: str):
         pass
 
+    def reset_knowledge(self):
+        pass
+
 
 class HistoryItem:
     def __init__(self,
@@ -39,20 +42,16 @@ class HistoryItem:
 
 
 class TemporalDifferenceLearningAgent(Agent):
-    def __init__(self, action_count: int, board_shape: tuple[int, int]):
+    def __init__(self, action_count: int, knowledge_model: KnowledgeModel):
         super().__init__(action_count)
-        self.board_shape: tuple[int, int] = board_shape
         self.alpha = .1
         self.gamma = 1
         self.epsilon = .1
-        self.knowledge_model: KnowledgeModel = self.reset_knowledge()
+        self.knowledge_model: KnowledgeModel = knowledge_model
 
         self.history: list[HistoryItem] = []
 
         self.algorithm_name: str = 'td_learning'
-
-    def reset_knowledge(self) -> KnowledgeModel:
-        pass
 
     def train_action(self,
                      s: np.array,  # State
@@ -95,8 +94,8 @@ class TemporalDifferenceLearningAgent(Agent):
 
 
 class QLearningAgent(TemporalDifferenceLearningAgent):
-    def __init__(self, action_count: int, board_shape: tuple[int, int]):
-        super().__init__(action_count, board_shape)
+    def __init__(self, action_count: int, knowledge_model: KnowledgeModel):
+        super().__init__(action_count, knowledge_model)
         self.algorithm_name = 'qlearning'
 
     def select_an_action(self,
@@ -120,8 +119,8 @@ class QLearningAgent(TemporalDifferenceLearningAgent):
 
 
 class SarsaAgent(TemporalDifferenceLearningAgent):
-    def __init__(self, action_count: int, board_shape: tuple[int, int]):
-        super().__init__(action_count, board_shape)
+    def __init__(self, action_count: int, knowledge_model: KnowledgeModel):
+        super().__init__(action_count, knowledge_model)
         self.A: int | None = None
         self.algorithm_name = 'sarsa'
 

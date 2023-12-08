@@ -4,16 +4,18 @@ from dayan3847.reinforcement_learning.agent.TemporalDifferenceLearningAgent \
     import KnowledgeModel, QLearningAgent, SarsaAgent
 
 
-class CliffWalkingKnowledgeModelTable(KnowledgeModel):
+class KnowledgeModelTable(KnowledgeModel):
 
-    def __init__(self, actions_count: int, board_shape: tuple[int, int]):
-        self.table: np.array = np.zeros((actions_count, *board_shape), dtype=np.float64)
+    def __init__(self, actions_count: int, state_shape: tuple):
+        self.actions_count: int = actions_count
+        self.state_shape: tuple = state_shape
+        self.table: np.array = np.zeros((actions_count, *state_shape), dtype=np.float64)
 
     def read_q_value(self,
                      s: np.array,  # state
                      a: int,  # action
                      ) -> float:
-        q = self.table[a, s[0], s[1]]
+        q = self.table[(a, *tuple(s))]
         return float(q)
 
     def update_q_value(self,
@@ -21,7 +23,7 @@ class CliffWalkingKnowledgeModelTable(KnowledgeModel):
                        a: int,  # action
                        q: float,  # q_value
                        ):
-        self.table[a, s[0], s[1]] = q
+        self.table[(a, *tuple(s))] = q
 
     def save_knowledge(self, filepath: str):
         np.save(filepath, self.table)
@@ -29,22 +31,29 @@ class CliffWalkingKnowledgeModelTable(KnowledgeModel):
     def load_knowledge(self, filepath: str):
         self.table = np.load(filepath)
 
+    def reset_knowledge(self):
+        self.table = np.zeros_like(self.table)
 
-class CliffWalkingQLearningAgentTable(QLearningAgent):
 
-    def reset_knowledge(self) -> KnowledgeModel:
-        self.knowledge_model = CliffWalkingKnowledgeModelTable(
-            actions_count=self.action_count,
-            board_shape=self.board_shape,
+class QLearningAgentTable(QLearningAgent):
+
+    def __init__(self, action_count: int, state_shape: tuple[int, int]):
+        super().__init__(
+            action_count,
+            KnowledgeModelTable(
+                actions_count=action_count,
+                state_shape=state_shape,
+            )
         )
-        return self.knowledge_model
 
 
-class CliffWalkingSarsaAgentTable(SarsaAgent):
+class SarsaAgentTable(SarsaAgent):
 
-    def reset_knowledge(self) -> KnowledgeModel:
-        self.knowledge_model = CliffWalkingKnowledgeModelTable(
-            actions_count=self.action_count,
-            board_shape=self.board_shape,
+    def __init__(self, action_count: int, state_shape: tuple[int, int]):
+        super().__init__(
+            action_count,
+            KnowledgeModelTable(
+                actions_count=action_count,
+                state_shape=state_shape,
+            )
         )
-        return self.knowledge_model

@@ -16,7 +16,7 @@ def run_experiment(ag: TemporalDifferenceLearningAgent, experiments: int, episod
     env = CliffWalkingEnvironment()
 
     for _ex in range(experiments):
-        ag.reset_knowledge()
+        ag.knowledge_model.reset_knowledge()
 
         def policy_agent(time_step: TimeStep) -> int:
             s = get_state(time_step)

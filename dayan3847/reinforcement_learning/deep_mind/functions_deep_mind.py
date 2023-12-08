@@ -17,15 +17,18 @@ def get_state(time_step: TimeStep) -> np.array:
 
 def get_action_values(env_: Environment, action_count_: int) -> np.array:
     _spec = env_.action_spec()
-    # return np.linspace(_spec.minimum, _spec.maximum, action_count_)
-    if action_count_ != 7:
-        raise Exception('for this momento only suport 5 actions')
-    return np.array([
-        -.6, -.3, -.1, 0, .1, .3, .6,
-    ], dtype=_spec.dtype)
+    if action_count_ == 5:
+        return np.array([
+            -.3, -.1, 0, .1, .3,
+        ], dtype=_spec.dtype)
+    elif action_count_ == 7:
+        return np.array([
+            -.6, -.3, -.1, 0, .1, .3, .6,
+        ], dtype=_spec.dtype)
+    return np.linspace(_spec.minimum, _spec.maximum, action_count_)
 
 
-def deep_mind_experiment(ag: Agent, model_name: str, knowledge_extension: str = 'csv'):
+def deep_mind_experiment(env: Environment, ag: Agent, model_name: str, knowledge_extension: str = 'csv'):
     while True:
         start_time = time.time()
         if np.loadtxt('stop.txt') != 0:
@@ -33,17 +36,16 @@ def deep_mind_experiment(ag: Agent, model_name: str, knowledge_extension: str = 
             break
         name: str = datetime.now().strftime('%Y%m%d%H%M%S')
         print(f'running episode {name}')
-        ag.init_episode()
         history_reward: list[float] = []
         history_position: list[np.array] = []
         history_velocity: list[np.array] = []
-
         # history_frames: list[np.array] = [ag.env.physics.render(camera_id=0)]
-        while StepType.LAST != ag.time_step.step_type:
+        time_step = env.reset()
+        while StepType.LAST != time_step.step_type:
             if np.loadtxt('stop.txt') == 2:
                 print('\033[96m' + 'stop' + '\033[00m')
                 break
-            print('\033[96m{}\033[00m'.format(ag.step))
+            # print('\033[96m{}\033[00m'.format(time_step.step_type.name))
             _r, _a, _q, _is_random = ag.run_step()
 
             #         if time_step_prev is None:
@@ -61,8 +63,8 @@ def deep_mind_experiment(ag: Agent, model_name: str, knowledge_extension: str = 
 
             history_reward.append(_r)
             # history_frames.append(ag.env.physics.render(camera_id=0))
-            history_position.append(ag.time_step.observation['position'])
-            history_velocity.append(ag.time_step.observation['velocity'])
+            history_position.append(time_step.observation['position'])
+            history_velocity.append(time_step.observation['velocity'])
 
         print('saving knowledge')
         ag.save_knowledge(f'{model_name}_knowledge.{knowledge_extension}')
