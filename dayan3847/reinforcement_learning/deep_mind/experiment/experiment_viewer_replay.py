@@ -36,13 +36,13 @@ def policy_agent(time_step: TimeStep):
     if time_step.first():
         init_episode()
     else:
-        r = float(time_step.reward)
+        r = float(time_step.reward) * 1e3
 
     a = h_actions[counter]
     counter += 1
 
     av = action_values[a]
-    print('action: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))
+    print('action12: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))
 
     return av
 

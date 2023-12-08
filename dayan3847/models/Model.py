@@ -15,7 +15,7 @@ class Model:
         self.f: int = f
         # Weights Vector:
         self.ww: np.array = np.random.rand(f) - .5 if init_weights is None \
-            else np.full(f, init_weights)
+            else np.full(f, init_weights, dtype=np.float64)
 
     def g(self, x):
         pass

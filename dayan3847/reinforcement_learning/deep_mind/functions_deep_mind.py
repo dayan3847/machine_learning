@@ -5,7 +5,7 @@ from dm_env import StepType
 from dm_control.rl.control import Environment
 from dm_env import TimeStep
 
-from dayan3847.reinforcement_learning.deep_mind.agent.Agent import Agent
+from dayan3847.reinforcement_learning.agent.Agent import Agent
 
 
 def get_state(time_step: TimeStep) -> np.array:
@@ -19,7 +19,7 @@ def get_action_values(env_: Environment, action_count_: int) -> np.array:
     _spec = env_.action_spec()
     # return np.linspace(_spec.minimum, _spec.maximum, action_count_)
     if action_count_ != 7:
-        raise Exception('for this momento only suport 7 actions')
+        raise Exception('for this momento only suport 5 actions')
     return np.array([
         -.6, -.3, -.1, 0, .1, .3, .6,
     ], dtype=_spec.dtype)

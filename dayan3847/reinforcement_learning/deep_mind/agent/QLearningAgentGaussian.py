@@ -1,6 +1,6 @@
 import numpy as np
 
-from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgent import QLearningAgent, KnowledgeModel
+from dayan3847.reinforcement_learning.agent.QLearningAgent import QLearningAgent, KnowledgeModel
 from dayan3847.models.Model import Model
 from dayan3847.models.multivariate.MultivariateGaussianModel import MultivariateGaussianModel
 from dayan3847.models.functions import train_model
@@ -12,18 +12,18 @@ class KnowledgeModelGaussian(KnowledgeModel):
         self.models: list[Model] = [
             MultivariateGaussianModel(
                 [
-                    (-2, 2, 5),
-                    (-1, 1, 5),
-                    (-1, 1, 5),
-                    (-2, 2, 5),
-                    (-15, 15, 9),
+                    (-2, 2, 1),
+                    (-1, 1, 1),
+                    (-1, 1, 1),
+                    (-2, 2, 1),
+                    (-15, 15, 1),
                 ],
                 cov=np.array([
-                    [.08, 0, 0, 0, 0],
-                    [0, .02, 0, 0, 0],
-                    [0, 0, .02, 0, 0],
-                    [0, 0, 0, .08, 0],
-                    [0, 0, 0, 0, 1],
+                    [2, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0],
+                    [0, 0, 1, 0, 0],
+                    [0, 0, 0, 2, 0],
+                    [0, 0, 0, 0, 5],
                 ]),
                 init_weights=0,
             ) for _ in range(size_actions)
@@ -42,12 +42,13 @@ class KnowledgeModelGaussian(KnowledgeModel):
                        a: int,  # action
                        q: float,  # q_value
                        ):
+        print('\033[92m', f'update: a:{a} s:{s} q:{q}', '\033[0m')
         train_model(self.models[a],
                     data_x=s,
                     data_y=q,
-                    a=.1,
-                    epochs_count=100,
-                    error_threshold=1e-5,
+                    a=.3,
+                    epochs_count=1000,
+                    error_threshold=.001,
                     )
 
         print('fix: a:{} s:{} q:{}'.format(a, s, q))

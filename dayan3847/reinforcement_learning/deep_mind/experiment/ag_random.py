@@ -2,7 +2,7 @@ import numpy as np
 from dm_control import suite
 from dm_control.rl.control import Environment
 
-from dayan3847.reinforcement_learning.deep_mind.agent.RandomAgent import RandomAgent
+from dayan3847.reinforcement_learning.agent.RandomAgent import RandomAgent
 from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import deep_mind_experiment
 
 if __name__ == '__main__':

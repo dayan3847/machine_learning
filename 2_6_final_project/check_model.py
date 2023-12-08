@@ -6,6 +6,7 @@ from dayan3847.models.multivariate.MultivariateGaussianModel import Multivariate
 
 if __name__ == '__main__':
     np.random.seed(0)
+
     # gaussian_x_dim: list[
     #     tuple[
     #         float,  # min
@@ -26,6 +27,7 @@ if __name__ == '__main__':
     #     [0, 0, 0, .1, 0],
     #     [0, 0, 0, 0, .1],
     # ])
+
     gaussian_x_dim: list[
         tuple[
             float,  # min

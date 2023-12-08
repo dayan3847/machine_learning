@@ -1,4 +1,4 @@
-from dayan3847.reinforcement_learning.deep_mind.agent.Agent import Agent
+from dayan3847.reinforcement_learning.agent.Agent import Agent
 
 
 class RandomAgent(Agent):

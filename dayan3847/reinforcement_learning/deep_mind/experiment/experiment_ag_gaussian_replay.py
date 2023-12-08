@@ -21,13 +21,14 @@ app = viewer.application.Application(title='Q-Learning Agent Gaussian Replay "{}
 action_count = 7
 action_values: np.array = get_action_values(env, action_count)
 
-ag = QLearningAgentGaussian(action_count)
-ag.knowledge_model.load_knowledge('epc/{}_knowledge.csv'.format(f_name))
-
 h_actions = np.loadtxt(f'epc/{f_name}_actions.txt').astype(np.int32)
 counter: int = 0
 r = None
 
+ag = QLearningAgentGaussian(action_count)
+
+
+# ag.knowledge_model.load_knowledge('epc/{}_knowledge.csv'.format(f_name))
 
 def init_episode():
     global counter, r
@@ -41,11 +42,12 @@ def policy_agent(time_step: TimeStep):
     if time_step.first():
         init_episode()
     else:
-        r = float(time_step.reward)
-        ag.train_action(s, r)
+        r = float(time_step.reward) * 1000
+        # ag.train_action(s, r)
 
-    a = h_actions[counter]
-    a = ag.select_an_action(s, a)
+    # a = h_actions[counter]
+    # a = ag.select_an_action(s, a)
+    a = ag.select_an_action(s)
     counter += 1
 
     av = action_values[a]

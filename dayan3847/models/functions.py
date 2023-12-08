@@ -10,6 +10,7 @@ def get_model_error(model: Model,
     g: np.array = model.g(data_x)
     y: np.array = data_y
     dif: np.array = g - y
+    # return np.sum(abs(dif))
     return np.sum(dif ** 2) / 2
 
 

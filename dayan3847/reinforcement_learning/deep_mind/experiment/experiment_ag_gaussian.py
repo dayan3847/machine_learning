@@ -6,11 +6,6 @@ from dm_control.rl.control import Environment
 from dm_control import viewer
 from dm_env import TimeStep
 
-# mouse
-import pyautogui
-# joystick
-# import pygame
-
 from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import get_action_values, get_state
 from dayan3847.reinforcement_learning.deep_mind.agent.QLearningAgentGaussian import QLearningAgentGaussian
 
@@ -23,67 +18,51 @@ env: Environment = suite.load(domain_name='cartpole',
                               visualize_reward=True)
 
 app = viewer.application.Application(title='Q-Learning Agent Gaussian')
-action_count = 7
+action_count = 5
 action_values: np.array = get_action_values(env, action_count)
 
+counter: int | None = None
+f_name: str | None = None
+r: float | None = None
+h_reward: list[float] | None = None
+h_actions: list[int] | None = None
+
 ag = QLearningAgentGaussian(action_count)
+# ag.knowledge_model.load_knowledge('knowledge.csv')
 
 
-def action_from(x, _min, _max) -> np.array:
-    global action_count
-    x = np.clip(x, _min, _max)
-    a = (x - _min) / (_max - _min)
-    a *= (action_count - 1)
-    a = int(round(a))
-
-    return a
-
-
-def action_from_mouse() -> np.array:
-    _min = 765
-    _max = 1795
-    x, y = pyautogui.position()
-    # print(f'La posición del cursor del mouse es: ({x}, {y})')
-
-    return action_from(x, _min, _max)
-
-
-# pygame.init()
-# pygame.joystick.init()
-#
-# joystick = None
-# if pygame.joystick.get_count() > 0:
-#     joystick = pygame.joystick.Joystick(0)
-#     joystick.init()
-# else:
-#     raise Exception('no joystick found')
-
-
-# def action_from_joystick() -> np.array:
-#     global joystick
-#     _min = -.69
-#     _max = .78
-#     x = joystick.get_axis(0)
-#     # y = joystick.get_axis(1)
-#     # print(f'La posición del joystick es: ({x}, {y})')
-#
-#     return action_from(x, _min, _max)
+def init_episode():
+    global h_reward, h_actions, counter, f_name, r
+    f_name = datetime.now().strftime('%Y%m%d%H%M%S')
+    counter = 0
+    r = 1
+    h_reward = []
+    h_actions = []
 
 
 def policy_agent(time_step: TimeStep):
-    global ag, action_values
+    global ag, action_values, h_actions, counter, r
     s = get_state(time_step)
-    if not time_step.first():
-        r = float(time_step.reward)
-        ag.train_action(s, r)
+    if time_step.first():
+        init_episode()
     else:
-        r = 1
+        r = float(time_step.reward) #* 10000
+        ag.train_action(s, r)
+
     a = ag.select_an_action(s)
+    counter += 1
+
     av = action_values[a]
 
     if r < .35:
         app._restart_runtime()
 
+    if counter % 10 == 0:
+        print('saving knowledge')
+        ag.knowledge_model.save_knowledge('epc/{}_knowledge.csv'.format(f_name))
+        ag.knowledge_model.save_knowledge('knowledge.csv')
+
+    print('action: {}({}) step: {}/{} r: {}'.format(a, av, counter, 1000, r))
     return av
 
 
