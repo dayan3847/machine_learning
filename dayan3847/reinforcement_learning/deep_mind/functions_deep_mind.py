@@ -14,15 +14,15 @@ def get_action_values(env_: Environment, action_count_: int) -> np.array:
         return np.array([
             -.3, -.1, .1, .3,
         ], dtype=_spec.dtype)
-    elif action_count_ == 5:
+    if action_count_ == 5:
         return np.array([
             -.3, -.1, 0, .1, .3,
         ], dtype=_spec.dtype)
-    elif action_count_ == 6:
+    if action_count_ == 6:
         return np.array([
             -.3, -.1, -.05, .05, .1, .3,
         ], dtype=_spec.dtype)
-    elif action_count_ == 7:
+    if action_count_ == 7:
         return np.array([
             -.6, -.3, -.1, 0, .1, .3, .6,
         ], dtype=_spec.dtype)

@@ -13,7 +13,7 @@ import pyautogui
 
 from dayan3847.reinforcement_learning.deep_mind.functions_deep_mind import get_action_values
 
-random_state = np.random.RandomState(42)
+random_state = np.random.RandomState()
 env: Environment = suite.load(domain_name='cartpole',
                               task_name='balance',
                               task_kwargs={

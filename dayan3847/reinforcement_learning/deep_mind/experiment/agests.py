@@ -72,7 +72,7 @@ def balance_qlearning_table_5() -> tuple[TemporalDifferenceLearningAgent, callab
         action_count=action_count,
         state_shape=(10, 10, 20, 20, 20),
     )
-    ag.epsilon = .2
+    ag.epsilon = .01
     ag.knowledge_model.load_knowledge()
     # ag.knowledge_model.reset_knowledge()
     return ag, get_state_pos

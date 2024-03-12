@@ -16,7 +16,7 @@ class Network:
     _neurons_input: List[NeuronInput]  # _neurons[0]
     _neurons_output: List[NeuronOutput]  # _neurons[-1]
 
-    def __init__(self, topology: List[int]):
+    def __init__(self, topology: List[int]):  # ex: [2, 2, 2]
         topology_len: int = len(topology)
         if topology_len < 2:
             raise Exception("Network must have at least 2 layers")
